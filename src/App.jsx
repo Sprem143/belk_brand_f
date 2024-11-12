@@ -207,7 +207,7 @@ function App() {
                   <td>
                     <p>{u.url}</p>
                     <ul>
-                      {u.upc.map((p)=>(
+                      {u.upc.length>0 && u.upc.map((p)=>(
                         <li>{p}</li>
                       ))}
                     </ul>
