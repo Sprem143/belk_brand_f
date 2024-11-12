@@ -102,7 +102,7 @@ function App() {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'finalsheet.xlsx'); // File name
+      link.setAttribute('download', 'comparison_sheet.xlsx'); // File name
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -123,7 +123,7 @@ function App() {
     <input type="text" onChange={(e) => setUrl(e.target.value)} placeholder='Brand URL' />
     <input type="text" className='ms-3' onChange={(e) => setNum(e.target.value)} placeholder='Number of products' />
 
-    <button className='ms-4' onClick={fetchbrand}>Fetch All product</button>
+    <button className='ms-4' onClick={fetchbrand}>Fetch All product URLs</button>
     <br />
     {/* <input type="text" onChange={(e) => setPurl(e.target.value)} placeholder='Brand URL' /> */}
     <button className='ms-4' onClick={scrapproduct}>Start Scraping UPCs</button>
@@ -132,12 +132,12 @@ function App() {
       </button>
 
       <div className='d-flex mt-4'>
-        <h2 className='me-4'>Upload Excel File</h2>
+        <h2 className='me-4'>Upload UPC List</h2>
         <form onSubmit={handleSubmit}>
           <input type="file" onChange={handleFileChange} accept=".xlsx, .xls" />
           <button className='me-4' type="submit">Upload</button>
         </form>
-        <button onClick={downloadFinalSheet}>Download Final Sheet</button>
+        <button onClick={downloadFinalSheet}>Download Comparison Sheet</button>
 
       </div>
    </div>
