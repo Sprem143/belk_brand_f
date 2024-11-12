@@ -21,7 +21,7 @@ function App() {
       })
       result= await result.json();
       console.log(result);
-      scrapproduct()
+      // scrapproduct()
     }else{
       alert("Please enter number of products on vender website")
     }
