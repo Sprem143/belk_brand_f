@@ -2,43 +2,49 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import Spinner from 'react-bootstrap/Spinner';
 
 function App() {
   const [url, setUrl] = useState('');
   const [num, setNum]=useState(0);
   const [purl,setPurl]=useState('');
   const [file,setFile]=useState('');
+  const [loading, setLoading] = useState(false);
+
 
   const fetchbrand=async()=>{
     if(num>0){
+      setLoading(true)
       let result= await fetch('https://brand-b.onrender.com/fetchbrand',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({url,num})
       })
       result= await result.json();
+      setLoading(false)
       console.log(result);
       // scrapproduct()
     }else{
-      alert("Please enter number of products on vender website")
+      alert("Please enter number of products on vender website");
+      setLoading(false)
     }
-   
   }
 
   const scrapproduct=async()=>{
-
+    alert("Your Previous saved data will be deleted");
+    setLoading(true);
     let result= await fetch('https://brand-b.onrender.com/scrapproduct',{
         method:'get',
         headers:{'Content-Type':'application/json'},
     })
     console.log(result);
+    alert(result);
+    setLoading(false);
   }
   
   const downloadExcel = async () => {
     try {
+      setLoading(true)
       const response = await axios({
         url: 'https://brand-b.onrender.com/download-excel', // Replace with your backend URL
         method: 'GET',
@@ -49,12 +55,14 @@ function App() {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'data.xlsx'); // File name
+      link.setAttribute('download', 'Upc_list.xlsx'); // File name
       document.body.appendChild(link);
       link.click();
       link.remove();
+      setLoading(false)
     } catch (error) {
       console.error('Error downloading the file:', error);
+      setLoading(false)
     }
   };
 
@@ -64,15 +72,16 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData();
     formData.append('file', file);
-
     try {
       const response = await axios.post('https://brand-b.onrender.com/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
+      setLoading(false)
       alert(response.data);
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -82,6 +91,7 @@ function App() {
 
   const downloadFinalSheet=async()=>{
     try {
+      setLoading(true);
       const response = await axios({
         url: 'https://brand-b.onrender.com/downloadfinalSheet', // Replace with your backend URL
         method: 'GET',
@@ -96,12 +106,19 @@ function App() {
       document.body.appendChild(link);
       link.click();
       link.remove();
+      setLoading(false)
     } catch (error) {
       console.error('Error downloading the file:', error);
+      setLoading(false)
     }
   }
   return (
-   <>
+   <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black': null}}>
+     {loading && ( // Show spinner while loading is true
+        <div className="loading-overlay">
+          <Spinner animation="border" variant="primary" /> {/* Spinner from Bootstrap */}
+        </div>
+      )}
     <p>Brand URL</p>
     <input type="text" onChange={(e) => setUrl(e.target.value)} placeholder='Brand URL' />
     <input type="text" className='ms-3' onChange={(e) => setNum(e.target.value)} placeholder='Number of products' />
@@ -123,7 +140,7 @@ function App() {
         <button onClick={downloadFinalSheet}>Download Final Sheet</button>
 
       </div>
-   </>
+   </div>
 
    
    
