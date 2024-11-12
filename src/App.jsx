@@ -3,45 +3,52 @@ import './App.css'
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Spinner from 'react-bootstrap/Spinner';
+import Accordion from 'react-bootstrap/Accordion';
+import Table from 'react-bootstrap/Table';
+
 
 function App() {
   const [url, setUrl] = useState('');
-  const [num, setNum]=useState(0);
-  const [purl,setPurl]=useState('');
-  const [file,setFile]=useState('');
+  const [num, setNum] = useState(0);
+  const [productUrl, setProductUrl] = useState([]);
+  const [file, setFile] = useState('');
   const [loading, setLoading] = useState(false);
+  const [upc,setUpc]=useState([{}]);
 
+  useEffect(() => {
+    getproductslink();
+  }, [])
 
-  const fetchbrand=async()=>{
-    if(num>0){
+  const fetchbrand = async () => {
+    if (num > 0) {
       setLoading(true)
-      let result= await fetch('https://brand-b.onrender.com/fetchbrand',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({url,num})
+      let result = await fetch('https://brand-b.onrender.com/fetchbrand', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, num })
       })
-      result= await result.json();
+      result = await result.json();
       setLoading(false)
       console.log(result);
       // scrapproduct()
-    }else{
+    } else {
       alert("Please enter number of products on vender website");
       setLoading(false)
     }
   }
 
-  const scrapproduct=async()=>{
+  const scrapproduct = async () => {
     alert("Your Previous saved data will be deleted");
     setLoading(true);
-    let result= await fetch('https://brand-b.onrender.com/scrapproduct',{
-        method:'get',
-        headers:{'Content-Type':'application/json'},
+    let result = await fetch('https://brand-b.onrender.com/scrapproduct', {
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
     })
     console.log(result);
     alert(result);
     setLoading(false);
   }
-  
+
   const downloadExcel = async () => {
     try {
       setLoading(true)
@@ -89,7 +96,7 @@ function App() {
     }
   };
 
-  const downloadFinalSheet=async()=>{
+  const downloadFinalSheet = async () => {
     try {
       setLoading(true);
       const response = await axios({
@@ -112,22 +119,34 @@ function App() {
       setLoading(false)
     }
   }
+
+  // -----get products links-------
+  const getproductslink = async () => {
+    let data = await fetch('https://brand-b.onrender.com/getproducturl', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    data =await data.json();
+    setProductUrl(data.url);
+    setUpc(data.upc);
+    console.log(data)
+  }
   return (
-   <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black': null}}>
-     {loading && ( // Show spinner while loading is true
+    <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null }}>
+      {loading && ( // Show spinner while loading is true
         <div className="loading-overlay">
           <Spinner animation="border" variant="primary" /> {/* Spinner from Bootstrap */}
         </div>
       )}
-    <p>Brand URL</p>
-    <input type="text" onChange={(e) => setUrl(e.target.value)} placeholder='Brand URL' />
-    <input type="text" className='ms-3' onChange={(e) => setNum(e.target.value)} placeholder='Number of products' />
+      <p>Brand URL</p>
+      <input type="text" onChange={(e) => setUrl(e.target.value)} placeholder='Brand URL' />
+      <input type="text" className='ms-3' onChange={(e) => setNum(e.target.value)} placeholder='Number of products' />
 
-    <button className='ms-4' onClick={fetchbrand}>Fetch All product URLs</button>
-    <br />
-    {/* <input type="text" onChange={(e) => setPurl(e.target.value)} placeholder='Brand URL' /> */}
-    <button className='ms-4' onClick={scrapproduct}>Start Scraping UPCs</button>
-    <button className='ms-4 mt-4' variant="secondary" onClick={downloadExcel}>
+      <button className='ms-4' onClick={fetchbrand}>Fetch All product URLs</button>
+      <br />
+      {/* <input type="text" onChange={(e) => setPurl(e.target.value)} placeholder='Brand URL' /> */}
+      <button className='ms-4' onClick={scrapproduct}>Start Scraping UPCs</button>
+      <button className='ms-4 mt-4' variant="secondary" onClick={downloadExcel}>
         Download UPC List
       </button>
 
@@ -140,10 +159,75 @@ function App() {
         <button onClick={downloadFinalSheet}>Download Comparison Sheet</button>
 
       </div>
-   </div>
 
-   
-   
+
+
+      <Accordion className='mt-4'>
+        <Accordion.Item eventKey="0">
+          <Accordion.Header>Number of Products fetched : {productUrl.length}</Accordion.Header>
+          <Accordion.Body>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>Products' url</th>
+                </tr>
+              </thead>
+              {productUrl.length > 0 && productUrl.map((p, i) => (
+                <tbody>
+                  <tr key={i}>
+                    <td style={{ padding: '0 !important' }}>
+                      {i + 1}
+                    </td>
+                    <a style={{background:'white !important'}} href={p}>{p}</a>
+                  </tr>
+                </tbody>
+              ))}
+            </Table>
+          </Accordion.Body>
+        </Accordion.Item>
+        <Accordion.Item eventKey="1">
+        <Accordion.Header>Price Increased: {upc.length}</Accordion.Header>
+        <Accordion.Body>
+        <Table striped bordered hover>
+            <thead>
+              <tr>
+            
+                <th>S.No</th>
+                <th>Product URL</th>
+              </tr>
+            </thead>
+            {upc.length > 0 && upc.map((u, i) => (
+              <tbody>
+                <tr key={i}>
+                  <td style={{ padding: '0 !important' }}>
+                    {i + 1}
+                  </td>
+                 
+                  <td>
+                    <p>{u.url}</p>
+                    <ul>
+                      {u.upc.map((p)=>(
+                        <li>{p}</li>
+                      ))}
+                    </ul>
+                  </td>
+                 
+                  </tr>
+              </tbody>
+            ))}
+          </Table>
+        </Accordion.Body>
+      </Accordion.Item>
+
+
+
+
+      </Accordion>
+    </div>
+
+
+
   )
 }
 
