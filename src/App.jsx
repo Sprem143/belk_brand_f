@@ -186,6 +186,8 @@ function App() {
         }
       });
       alert(response.data.msg);
+      getinvproducts();
+      getproductslink();
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('Failed to upload file');
@@ -214,17 +216,16 @@ function App() {
     console.log("Starting autofetch...");
     let index = 0; // Starting index
   
-    while (index < 5) {
+    while (index < links.length) {
       try {
         const result = await autofetchData(links[index]); // Wait for autofetchData to complete
-        
         console.log("Index:", index);
         console.log("Result:", result);
         if (result === true) {
           index++; 
           // getnumberofupdatedpr(); 
         } else {
-          console.log("No update required for this link or an error occurred.");
+          console.log("An error occurred.");
            index=index
         }
       } catch (err) {
@@ -233,6 +234,29 @@ function App() {
       }
     }
   };
+
+  const downloadInvontory=async()=>{
+    try {
+      setLoading(true)
+      const response = await axios({
+        url: 'https://brand-b.onrender.com/download-inventory', // Replace with your backend URL
+        method: 'GET',
+        responseType: 'blob', // Important to get the response as a blob (binary data)
+      });
+      // Create a link element to trigger download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Updated_inventory.xlsx'); // File name
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setLoading(false)
+    } catch (error) {
+      console.error('Error downloading the file:', error);
+      setLoading(false)
+    }
+  }
   return (
     <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null }}>
       {loading && ( // Show spinner while loading is true
@@ -329,6 +353,9 @@ function App() {
         <Button variant="secondary" className='me-4' onClick={autofetch}>
         Start Auto Fetch
       </Button>
+      <button className='ms-4 mt-4' variant="secondary" onClick={downloadInvontory}>
+        Download UPC List
+      </button>
       </div>
 
       <Accordion className='mt-4'>
@@ -358,7 +385,7 @@ function App() {
 
         {/* -------inventory updated price and quantity---- */}
         <Accordion.Item eventKey="1">
-          <Accordion.Header>Total Updated Products detail : {invProduct>1?invProduct.length:0}</Accordion.Header>
+          <Accordion.Header>Total Updated Products detail : {invProduct?invProduct.length:0}</Accordion.Header>
           <Accordion.Body>
             <Table striped bordered hover>
               <thead>
