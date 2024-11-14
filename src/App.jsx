@@ -7,6 +7,8 @@ import Accordion from 'react-bootstrap/Accordion';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 function App() {
   const [url, setUrl] = useState('');
@@ -16,7 +18,6 @@ function App() {
   const [invfile, setInvFile] = useState('');
   const [loading, setLoading] = useState(false);
   const [upc, setUpc] = useState([{}]);
-  const [links, setLinks] = useState([]);
   const [links1, setLinks1] = useState([]);
   const [links2, setLinks2] = useState([]);
   const [invProduct, setInvProduct] = useState([{}]);
@@ -24,7 +25,8 @@ function App() {
   const [startIndex2, setStartIndex2] = useState(0);
   const [customIndex, setCustomIndex] = useState();
   const [customIndex2, setCustomIndex2] = useState();
-
+  const [index1, setIndex1] = useState();
+  const [index2, setIndex2] = useState();
 
   useEffect(() => {
     getinvurl();
@@ -39,7 +41,8 @@ function App() {
     });
     result = await result.json();
     setStartIndex(result.startIndex1.start_index);
-    setStartIndex2(result.startIndex2.start_index);
+    setIndex1(result.startIndex1.start_index);
+    setIndex2(result.startIndex2.start_index);
   }
 
   const getinvproducts = async () => {
@@ -186,9 +189,9 @@ function App() {
 
   const uploadinventoryfile = async (e) => {
     e.preventDefault();
+    setLoading(true)
     const formData = new FormData();
     formData.append('file', invfile);
-
     try {
       const response = await axios.post('https://brand-b.onrender.com/uploadinvfile', formData, {
         headers: {
@@ -196,8 +199,10 @@ function App() {
         }
       });
       alert(response.data.msg);
+      setLoading(false)
       getinvproducts();
       getproductslink();
+
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('Failed to upload file');
@@ -206,22 +211,26 @@ function App() {
 
   // ------setIndex----
   const setindex = async (index) => {
-
     let result = await fetch('https://brand-b.onrender.com/setindex', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: index })
     });
-    result ? null : setindex(index);
+    result = await result.json();
+    result.status ? null : setindex(index);
+    console.log(result)
+    if (result.status) {
+      setIndex1(result.index);
+    } else { setindex(index) }
   };
   const setindex2 = async (index) => {
-
     let result = await fetch('https://brand-b.onrender.com/setindex2', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: index })
     });
-    result ? null : setindex2(index);
+    result.status ? null : setindex2(index);
+    setIndex2(result.index)
   };
 
   const handleIndexChange = () => {
@@ -275,7 +284,7 @@ function App() {
     while (index < links1.length) {
       try {
         const result = await autofetchData(links1[index]);
-        console.log(" First URL:",links1[index]);
+        console.log(" First URL:", links1[index]);
         console.log(" First Index:", index);
         console.log(" First Result:", result);
 
@@ -296,7 +305,7 @@ function App() {
     while (index < links2.length) {
       try {
         const result = await autofetchData2(links2[index]);
-        console.log(" Second URL:",links2[index]);
+        console.log(" Second URL:", links2[index]);
         console.log(" Second Index:", index);
         console.log(" Second Result:", result);
 
@@ -343,6 +352,8 @@ function App() {
           <Spinner animation="border" variant="primary" /> {/* Spinner from Bootstrap */}
         </div>
       )}
+
+
       <p>Brand URL</p>
       <input type="text" onChange={(e) => setUrl(e.target.value)} placeholder='Brand URL' />
       <input type="text" className='ms-3' onChange={(e) => setNum(e.target.value)} placeholder='Number of products' />
@@ -411,8 +422,8 @@ function App() {
                     <td>
                       <p>{u.url}</p>
                       <ul>
-                        {u.upc ? u.upc.length > 0 && u.upc.map((p) => (
-                          <li>{p}</li>
+                        {u.upc ? u.upc.length > 0 && u.upc.map((p, index) => (
+                          <li key={index}>{p}</li>
                         )) : null}
                       </ul>
                     </td>
@@ -436,7 +447,7 @@ function App() {
           Download Updated Inventory
         </button>
       </div>
-      <Accordion className='mt-4'>
+      <Accordion className='mt-4' defaultActiveKey="0">
         <Accordion.Item eventKey="0">
           <Accordion.Header>Number of Product's URL to be fetched : {links1 ? links1.length + links2.length : 0}</Accordion.Header>
           <Accordion.Body>
@@ -449,7 +460,7 @@ function App() {
                   <input
                     type="number"
                     className='me-4 p-1'
-                    style={{ width: '50px' }}
+                    style={{ width: '70px' }}
                     placeholder={startIndex}
                     onChange={(e) => setCustomIndex(e.target.value)}
                   />
@@ -460,11 +471,28 @@ function App() {
                   <Button variant="secondary" className='me-4' onClick={autofetch}>
                     Resume
                   </Button>
+                  <hr />
+
+
+                  <div className="container">
+                    <div className="row">
+                      <div className="col-md-6 d-flex justify-content-center align-items-center">
+                        <h1>
+                          {index1}/{links1.length}
+                        </h1>
+                      </div>
+                      <div className="col-md-6">
+                        <div style={{ height: 100, width: 100 }}>
+                          <CircularProgressbar value={(index1 / links1.length * 100)} text={`${(index1 / links1.length * 100).toFixed(0)}%`} />;
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <Table className='mt-4' striped bordered hover>
                     <thead>
                       <tr>
                         <th>S.No</th>
-                        <th>Inventory Products' url</th>
+                        <th>Inventory Products' url: {links1.length}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -490,7 +518,7 @@ function App() {
                   <input
                     type="number"
                     className='me-4 p-1'
-                    style={{ width: '50px' }}
+                    style={{ width: '70px' }}
                     placeholder={startIndex2}
                     onChange={(e) => setCustomIndex2(e.target.value)}
                   />
@@ -501,11 +529,26 @@ function App() {
                   <Button variant="secondary" className='me-4' onClick={autofetch2}>
                     Resume
                   </Button>
+                  <hr />
+                  <div className="container">
+                    <div className="row">
+                      <div className="col-md-6 d-flex justify-content-center align-items-center">
+                        <h1>
+                          {index2}/{links2.length}
+                        </h1>
+                      </div>
+                      <div className="col-md-6">
+                        <div style={{ height: 100, width: 100 }}>
+                          <CircularProgressbar value={(index2 /links2.length * 100)} text={`${(index1 / links2.length * 100).toFixed(0)}%`} />;
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <Table className='mt-4' striped bordered hover>
                     <thead>
                       <tr>
                         <th>S.No</th>
-                        <th>Inventory Products' url</th>
+                        <th>Inventory Products' url: {links2.length}</th>
                       </tr>
                     </thead>
                     <tbody>
