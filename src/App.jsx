@@ -15,19 +15,30 @@ function App() {
   const [file, setFile] = useState('');
   const [invfile, setInvFile] = useState('');
   const [loading, setLoading] = useState(false);
-  const [upc,setUpc]=useState([{}]);
+  const [upc, setUpc] = useState([{}]);
   const [links, setLinks] = useState([]);
-  const [invProduct,setInvProduct]=useState([{}]);
+  const [invProduct, setInvProduct] = useState([{}]);
+  const [startIndex, setStartIndex] = useState(0);
+  const [customIndex,setCustomIndex]=useState();
 
 
   useEffect(() => {
     getinvurl();
     getinvproducts();
     getproductslink();
-    
+    getserialnumber()
   }, []);
+  const getserialnumber = async () => {
+    let result = await fetch('https://brand-b.onrender.com/getserialnumber', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    result = await result.json();
+    setStartIndex(result.start_index);
+    console.log("serial number", result.start_index)
+  }
 
-  const getinvproducts=async()=>{
+  const getinvproducts = async () => {
     try {
       console.log("get links called")
       let result = await fetch('https://brand-b.onrender.com/getinvproduct', {
@@ -163,7 +174,7 @@ function App() {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     });
-    data =await data.json();
+    data = await data.json();
     setProductUrl(data.url);
     setUpc(data.upc);
     console.log(data)
@@ -177,7 +188,7 @@ function App() {
   const uploadinventoryfile = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('file',invfile);
+    formData.append('file', invfile);
 
     try {
       const response = await axios.post('https://brand-b.onrender.com/uploadinvfile', formData, {
@@ -194,6 +205,27 @@ function App() {
     }
   };
 
+  // ------setIndex----
+  const setindex = async (index) => {
+    // setStartIndex(index); 
+    console.log("Setting new start index:", index);
+  
+   let result= await fetch('https://brand-b.onrender.com/setindex', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_index: index })
+    });
+    result? null: setindex(index);
+  };
+  
+  const handleIndexChange = () => {
+    const newIndex = parseInt(customIndex, 10);
+    if (!isNaN(newIndex)) {
+      setindex(newIndex);
+    }
+  };
+  
+
   // ----auto fetch data call----------
 
   const autofetchData = async (link) => {
@@ -204,38 +236,36 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link: link })
       });
-      result = await result.json(); 
+      result = await result.json();
       return result
     } catch (err) {
       console.log("Error in autofetchData:", err);
       return false; // Return false in case of error to prevent further execution
     }
   };
-  
+
   const autofetch = async () => {
     console.log("Starting autofetch...");
-    let index = 0; // Starting index
-  
+    let index = startIndex;
     while (index < links.length) {
       try {
         const result = await autofetchData(links[index]); // Wait for autofetchData to complete
         console.log("Index:", index);
         console.log("Result:", result);
         if (result === true) {
-          index++; 
-          // getnumberofupdatedpr(); 
+          index++;
+          setindex(index)
         } else {
           console.log("An error occurred.");
-           index=index
+          index = index;
         }
       } catch (err) {
         console.log("Error in autofetch:", err);
-        break; 
       }
     }
   };
 
-  const downloadInvontory=async()=>{
+  const downloadInvontory = async () => {
     try {
       setLoading(true)
       const response = await axios({
@@ -257,6 +287,7 @@ function App() {
       setLoading(false)
     }
   }
+
   return (
     <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null }}>
       {loading && ( // Show spinner while loading is true
@@ -302,7 +333,7 @@ function App() {
                     <td style={{ padding: '0 !important' }}>
                       {i + 1}
                     </td>
-                    <a style={{background:'white !important'}} href={p}>{p}</a>
+                    <a style={{ background: 'white !important' }} href={p}>{p}</a>
                   </tr>
                 </tbody>
               ))}
@@ -310,38 +341,38 @@ function App() {
           </Accordion.Body>
         </Accordion.Item>
         <Accordion.Item eventKey="1">
-        <Accordion.Header>TOtal UPCs list: {upc.length}</Accordion.Header>
-        <Accordion.Body>
-        <Table striped bordered hover>
-            <thead>
-              <tr>
-            
-                <th>S.No</th>
-                <th>Product URL</th>
-              </tr>
-            </thead>
-            {upc.length > 0 && upc.map((u, i) => (
-              <tbody>
-                <tr key={i}>
-                  <td style={{ padding: '0 !important' }}>
-                    {i + 1}
-                  </td>
-                 
-                  <td>
-                    <p>{u.url}</p>
-                    <ul>
-                      {u.upc? u.upc.length>0 && u.upc.map((p)=>(
-                        <li>{p}</li>
-                      )):null}
-                    </ul>
-                  </td>
-                 
+          <Accordion.Header>TOtal UPCs list: {upc.length}</Accordion.Header>
+          <Accordion.Body>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+
+                  <th>S.No</th>
+                  <th>Product URL</th>
+                </tr>
+              </thead>
+              {upc.length > 0 && upc.map((u, i) => (
+                <tbody>
+                  <tr key={i}>
+                    <td style={{ padding: '0 !important' }}>
+                      {i + 1}
+                    </td>
+
+                    <td>
+                      <p>{u.url}</p>
+                      <ul>
+                        {u.upc ? u.upc.length > 0 && u.upc.map((p) => (
+                          <li>{p}</li>
+                        )) : null}
+                      </ul>
+                    </td>
+
                   </tr>
-              </tbody>
-            ))}
-          </Table>
-        </Accordion.Body>
-      </Accordion.Item>
+                </tbody>
+              ))}
+            </Table>
+          </Accordion.Body>
+        </Accordion.Item>
       </Accordion>
       <hr />
       <div>
@@ -351,16 +382,30 @@ function App() {
           <button type="submit">Upload</button>
         </form>
         <Button variant="secondary" className='me-4' onClick={autofetch}>
-        Start Auto Fetch
-      </Button>
-      <button className='ms-4 mt-4' variant="secondary" onClick={downloadInvontory}>
-        Download UPC List
-      </button>
+          Start Auto Fetch
+        </Button>
+        <input
+          type="number"
+          className='me-4 p-1'
+          style={{ width: '50px' }}
+          placeholder={startIndex}
+          onChange={(e)=>setCustomIndex(e.target.value)}
+        />   
+        
+        <Button variant="secondary" className='me-4' onClick={handleIndexChange}>
+          Set Index
+        </Button>
+           <Button variant="secondary" className='me-4' onClick={autofetch}>
+          Resume
+        </Button>
+        <button className='ms-4 mt-4' variant="secondary" onClick={downloadInvontory}>
+          Download Updated Inventory
+        </button>
       </div>
 
       <Accordion className='mt-4'>
         <Accordion.Item eventKey="0">
-          <Accordion.Header>Number of Product's URL to be fetched : {links?links.length:0}</Accordion.Header>
+          <Accordion.Header>Number of Product's URL to be fetched : {links ? links.length : 0}</Accordion.Header>
           <Accordion.Body>
             <Table striped bordered hover>
               <thead>
@@ -369,13 +414,13 @@ function App() {
                   <th>Inventory Products' url</th>
                 </tr>
               </thead>
-              { links.length > 0 && links.map((l, i) => (
+              {links.length > 0 && links.map((l, i) => (
                 <tbody>
                   <tr key={i}>
                     <td style={{ padding: '0 !important' }}>
-                      {i + 1}
+                      {i}
                     </td>
-                    <a style={{background:'white !important'}} href={l}>{l}</a>
+                    <a style={{ background: 'white !important' }} href={l}>{l}</a>
                   </tr>
                 </tbody>
               ))}
@@ -385,49 +430,45 @@ function App() {
 
         {/* -------inventory updated price and quantity---- */}
         <Accordion.Item eventKey="1">
-          <Accordion.Header>Total Updated Products detail : {invProduct?invProduct.length:0}</Accordion.Header>
+          <Accordion.Header>Total Updated Products detail : {invProduct ? invProduct.length : 0}</Accordion.Header>
           <Accordion.Body>
             <Table striped bordered hover>
               <thead>
                 <tr>
-                <th>No</th>
-                <th>Image</th>
-                <th>UPC</th>
-                <th>New Price</th>
-                <th>Offer Price</th>
-                <th>Old Price</th>
-                <th>Color & Size</th>
-                <th>Quantity</th>
-                <th>Available</th>
-                <th>Product URL</th>
+                  <th>No</th>
+                  <th>Image</th>
+                  <th>Input UPC</th>
+                  <th>ASIN</th>
+                  <th>SKU</th>
+                  <th>Old Price</th>
+                  <th>Current Price</th>
+                  <th>Quantity</th>
+                  <th>Product URL</th>
                 </tr>
               </thead>
-              { invProduct.length > 0 && invProduct.map((detailArray, i) => (
+              {invProduct.length > 0 && invProduct.map((detailArray, i) => (
                 <tbody>
 
-                <tr key={i}>
-                  <td style={{ padding: '0 !important' }}>
-                    {i + 1}
-                  </td>
-                  <td style={{ padding: '0 !important' }}>
-                    <img src={detailArray.imgurl} alt="" height='40px' />
-                  </td>
-                  <td>{detailArray.upc}</td>
-                  <td>{detailArray.newPrice}</td>
-                  {detailArray.onsale==='false'  && detailArray.offer !==null ?<td style={{ color: "#0b6bff", fontWeight: 'bold' }}>{detailArray.newPrice  && (detailArray.newPrice - (detailArray.newPrice * Number(detailArray.offer) / 100)).toFixed(2)} <br /> <span style={{color:'black', fontWeight:'initial'}}>{detailArray.offerend}</span></td>
-                : <td>NA</td> }
-                  <td style={{ color: Number(detailArray.oldPrice) !== Number(detailArray.newPrice) ? 'red' : 'black' }}>
-                    {detailArray.oldPrice && detailArray.oldPrice.toFixed(2)}
-                  </td>
-                  <td>{detailArray.clrsize}</td>
-                  <td style={{ color: (detailArray.quantity < 8 && detailArray.available === 'T') || (detailArray.quantity > 8 && detailArray.available === 'F') ? 'red' : 'black' }}>
-                  {detailArray.quantity}
-                  </td>
-                  <td>{detailArray.available}</td>
-                  <td> <a href={detailArray.url} target='_blank'>{detailArray.url}</a> </td>
-                </tr>
+                  <tr key={i}>
+                    <td style={{ padding: '0 !important' }}>
+                      {i + 1}
+                    </td>
+                    <td style={{ padding: '0 !important' }}>
+                      <img src={detailArray['Image link']} alt="" height='40px' />
+                    </td>
+                    <td>{detailArray['Input UPC']}</td>
+                    <td>{detailArray['ASIN']}</td>
+                    <td>{detailArray['SKU']}</td>
+                    <td>{detailArray['Product price']}</td>
+                    <td>{detailArray['Current Price']}</td>
+                    <td>{detailArray['Current Quantity']}</td>
+                    <td><a href={detailArray['Product link']}>Click to see details</a></td>
 
-              </tbody>
+
+
+                  </tr>
+
+                </tbody>
               ))}
             </Table>
           </Accordion.Body>
