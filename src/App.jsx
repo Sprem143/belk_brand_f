@@ -21,12 +21,16 @@ function App() {
   const [links1, setLinks1] = useState([]);
   const [links2, setLinks2] = useState([]);
   const [invProduct, setInvProduct] = useState([{}]);
-  const [startIndex, setStartIndex] = useState(0);
-  const [startIndex2, setStartIndex2] = useState(0);
+  // const [startIndex, setStartIndex] = useState(0);
+  // const [startIndex2, setStartIndex2] = useState(0);
   const [customIndex, setCustomIndex] = useState();
   const [customIndex2, setCustomIndex2] = useState();
+  const [customIndex3, setCustomIndex3] = useState();
+  const [customIndex4, setCustomIndex4] = useState();
   const [index1, setIndex1] = useState();
   const [index2, setIndex2] = useState();
+  const [index3, setIndex3] = useState();
+  const [index4, setIndex4] = useState();
 
   useEffect(() => {
     getinvurl();
@@ -40,9 +44,12 @@ function App() {
       headers: { 'Content-Type': 'application/json' }
     });
     result = await result.json();
-    setStartIndex(result.startIndex1.start_index);
-    setIndex1(result.startIndex1.start_index);
-    setIndex2(result.startIndex2.start_index);
+    console.log(result)
+    setIndex1(result.start_index1);
+    setIndex2(result.start_index2);
+    setIndex3(result.start_index3);
+    setIndex4(result.start_index4);
+
   }
 
   const getinvproducts = async () => {
@@ -210,45 +217,53 @@ function App() {
   };
 
   // ------setIndex----
-  const setindex = async (index) => {
+  const setindex = async () => {
+    const newIndex = parseInt(customIndex, 10);
     let result = await fetch('https://brand-b.onrender.com/setindex', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: index })
+      body: JSON.stringify({ start_index: newIndex })
     });
     result = await result.json();
-    result.status ? null : setindex(index);
-    console.log(result)
     if (result.status) {
       setIndex1(result.index);
-    } else { setindex(index) }
+    } else { setindex() }
   };
-  const setindex2 = async (index) => {
+  const setindex2 = async () => {
+    const newIndex = parseInt(customIndex2, 10);
     let result = await fetch('https://brand-b.onrender.com/setindex2', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: index })
+      body: JSON.stringify({ start_index: newIndex })
     });
-    result.status ? null : setindex2(index);
+    result=await result.json();
+    result.status ? null : setindex2();
     setIndex2(result.index)
   };
-
-  const handleIndexChange = () => {
-    const newIndex = parseInt(customIndex, 10);
-    if (!isNaN(newIndex)) {
-      setindex(newIndex);
-    }
+  const setindex3 = async () => {
+    const newIndex = parseInt(customIndex3, 10);
+    let result = await fetch('https://brand-b.onrender.com/setindex3', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_index: newIndex})
+    });
+    result=await result.json();
+    result.status ? null : setindex3();
+    setIndex3(result.index)
   };
-  const handleIndexChange2 = () => {
-    const newIndex = parseInt(customIndex2, 10);
-    if (!isNaN(newIndex)) {
-      setindex2(newIndex);
-    }
+  const setindex4 = async () => {
+    const newIndex = parseInt(customIndex4, 10);
+    let result = await fetch('https://brand-b.onrender.com/setindex4', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_index: newIndex})
+    });
+    result=await result.json();
+    result.status ? null : setindex4();
+    setIndex4(result.index)
   };
 
-
-  // ----auto fetch data call----------
-
+ 
   const autofetchData = async (link) => {
     try {
       let result = await fetch('https://brand-b.onrender.com/autofetchdata', {
@@ -278,9 +293,30 @@ function App() {
       return false; // Return false in case of error to prevent further execution
     }
   };
-
+const setautoindex1=async(index)=>{
+  const newIndex = parseInt(index, 10);
+  let result = await fetch('https://brand-b.onrender.com/setindex', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ start_index: newIndex })
+  });
+  result= await result.json();
+  result.status ? null : setautoindex1();
+  setIndex1(result.index)
+}
+const setautoindex2=async(index)=>{
+  const newIndex = parseInt(index, 10);
+  let result = await fetch('https://brand-b.onrender.com/setindex2', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ start_index: newIndex })
+  });
+  result= await result.json();
+  result.status ? null : setautoindex2();
+  setIndex2(result.index)
+}
   const autofetch = async () => {
-    let index = startIndex;
+    let index = index1;
     while (index < links1.length) {
       try {
         const result = await autofetchData(links1[index]);
@@ -289,8 +325,8 @@ function App() {
         console.log(" First Result:", result);
 
         if (result === true) {
-          index++;
-          setindex(index)
+          index+=1;
+          setautoindex1(index)
         } else {
           console.log("An error occurred.");
           index = index;
@@ -301,7 +337,7 @@ function App() {
     }
   };
   const autofetch2 = async () => {
-    let index = startIndex2;
+    let index = index2;
     while (index < links2.length) {
       try {
         const result = await autofetchData2(links2[index]);
@@ -310,8 +346,8 @@ function App() {
         console.log(" Second Result:", result);
 
         if (result === true) {
-          index++;
-          setindex2(index)
+          index+=1;
+          setautoindex2(index)
         } else {
           console.log("An error occurred.");
           index = index;
@@ -449,23 +485,23 @@ function App() {
       </div>
       <Accordion className='mt-4' defaultActiveKey="0">
         <Accordion.Item eventKey="0">
-          <Accordion.Header>Number of Product's URL to be fetched : {links1 ? links1.length + links2.length : 0}</Accordion.Header>
+          <Accordion.Header>Total Number of Product's URL: {links1 ? links1.length + links2.length : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Total Number of urls fetched : {index1+index2} &nbsp;&nbsp; || &nbsp;&nbsp; Remaining urls :  {links1 ? links1.length + links2.length-(index1+index2) : 0}</Accordion.Header>
           <Accordion.Body>
             <div className="container">
               <div className="row">
                 <div className="col-lg-6">
                   <Button variant="secondary" className='me-4' onClick={autofetch}>
-                    Start Fetching1
+                    Start-1
                   </Button>
                   <input
                     type="number"
                     className='me-4 p-1'
                     style={{ width: '70px' }}
-                    placeholder={startIndex}
+                    placeholder={index1}
                     onChange={(e) => setCustomIndex(e.target.value)}
                   />
 
-                  <Button variant="secondary" className='me-4' onClick={handleIndexChange}>
+                  <Button variant="secondary" className='me-4' onClick={setindex}>
                     Set Index
                   </Button>
                   <Button variant="secondary" className='me-4' onClick={autofetch}>
@@ -492,38 +528,31 @@ function App() {
                     <thead>
                       <tr>
                         <th>S.No</th>
-                        <th>Inventory Products' url: {links1.length}</th>
+                        <th>Current url &nbsp; &nbsp;(Total urls : {links1.length})</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {links1.length > 0 && links1.map((l, i) => (
-                        <tr key={i}>
-                          <td style={{ padding: '0 !important' }}>
-                            {i}
-                          </td>
-                          <td>
-                            <a style={{ background: 'white !important' }} href={l} target='_blank'>{l}</a>
-                          </td>
-                        </tr>
-
-                      ))}
+                      <tr>
+                        <td>{index1}</td>
+                        <td><a href={links1[index1]} target='_blank'>{links1[index1]}</a></td>
+                      </tr>
                     </tbody>
 
                   </Table>
                 </div>
                 <div className="col-lg-6">
                   <Button variant="secondary" className='me-4' onClick={autofetch2}>
-                    Start Fetching 2
+                    Start-2
                   </Button>
                   <input
                     type="number"
                     className='me-4 p-1'
                     style={{ width: '70px' }}
-                    placeholder={startIndex2}
+                    placeholder={index2}
                     onChange={(e) => setCustomIndex2(e.target.value)}
                   />
 
-                  <Button variant="secondary" className='me-4' onClick={handleIndexChange2}>
+                  <Button variant="secondary" className='me-4' onClick={setindex2}>
                     Set Index
                   </Button>
                   <Button variant="secondary" className='me-4' onClick={autofetch2}>
@@ -539,7 +568,7 @@ function App() {
                       </div>
                       <div className="col-md-6">
                         <div style={{ height: 100, width: 100 }}>
-                          <CircularProgressbar value={(index2 /links2.length * 100)} text={`${(index1 / links2.length * 100).toFixed(0)}%`} />;
+                          <CircularProgressbar value={(index2 / links2.length * 100)} text={`${(index2 / links2.length * 100).toFixed(0)}%`} />;
                         </div>
                       </div>
                     </div>
@@ -548,21 +577,14 @@ function App() {
                     <thead>
                       <tr>
                         <th>S.No</th>
-                        <th>Inventory Products' url: {links2.length}</th>
+                        <th>Current url &nbsp; &nbsp;(Total urls : {links2.length})</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {links2.length > 0 && links2.map((l, i) => (
-
-                        <tr key={i}>
-                          <td style={{ padding: '0 !important' }}>
-                            {i}
-                          </td>
-                          <td>
-                            <a style={{ background: 'white !important' }} href={l} target='_blank'>{l}</a>
-                          </td>
-                        </tr>
-                      ))}
+                      <tr>
+                        <td>{index2}</td>
+                        <td><a href={links2[index2]} target='_blank'>{links2[index2]}</a></td>
+                      </tr>
                     </tbody>
 
                   </Table>
