@@ -39,7 +39,7 @@ function App() {
     getserialnumber()
   }, []);
   const getserialnumber = async () => {
-    let result = await fetch('https://brand-b.onrender.com/getserialnumber', {
+    let result = await fetch('https://brand-b-1.onrender.com/getserialnumber', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     });
@@ -54,7 +54,7 @@ function App() {
 
   const getinvproducts = async () => {
     try {
-      let result = await fetch('https://brand-b.onrender.com/getinvproduct', {
+      let result = await fetch('https://brand-b-1.onrender.com/getinvproduct', {
         method: "GET",
         headers: { 'Content-Type': 'application/json' }
       })
@@ -66,7 +66,7 @@ function App() {
   }
   const getinvurl = async () => {
     try {
-      let result = await fetch('https://brand-b.onrender.com/getinvurl', {
+      let result = await fetch('https://brand-b-1.onrender.com/getinvurl', {
         method: "GET",
         headers: { 'Content-Type': 'application/json' }
       })
@@ -82,7 +82,7 @@ function App() {
   const fetchbrand = async () => {
     if (num > 0) {
       setLoading(true)
-      let result = await fetch('https://brand-b.onrender.com/fetchbrand', {
+      let result = await fetch('https://brand-b-1.onrender.com/fetchbrand', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, num })
@@ -99,7 +99,7 @@ function App() {
   const scrapproduct = async () => {
     alert("Your Previous saved data will be deleted");
     setLoading(true);
-    let result = await fetch('https://brand-b.onrender.com/scrapproduct', {
+    let result = await fetch('https://brand-b-1.onrender.com/scrapproduct', {
       method: 'get',
       headers: { 'Content-Type': 'application/json' },
     })
@@ -111,7 +111,7 @@ function App() {
     try {
       setLoading(true)
       const response = await axios({
-        url: 'https://brand-b.onrender.com/download-excel', // Replace with your backend URL
+        url: 'https://brand-b-1.onrender.com/download-excel', // Replace with your backend URL
         method: 'GET',
         responseType: 'blob', // Important to get the response as a blob (binary data)
       });
@@ -141,7 +141,7 @@ function App() {
     const formData = new FormData();
     formData.append('file', file);
     try {
-      const response = await axios.post('https://brand-b.onrender.com/upload', formData, {
+      const response = await axios.post('https://brand-b-1.onrender.com/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -158,7 +158,7 @@ function App() {
     try {
       setLoading(true);
       const response = await axios({
-        url: 'https://brand-b.onrender.com/downloadfinalSheet', // Replace with your backend URL
+        url: 'https://brand-b-1.onrender.com/downloadfinalSheet', // Replace with your backend URL
         method: 'GET',
         responseType: 'blob', // Important to get the response as a blob (binary data)
       });
@@ -180,7 +180,7 @@ function App() {
 
   // -----get products links-------
   const getproductslink = async () => {
-    let data = await fetch('https://brand-b.onrender.com/getproducturl', {
+    let data = await fetch('https://brand-b-1.onrender.com/getproducturl', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     });
@@ -200,7 +200,7 @@ function App() {
     const formData = new FormData();
     formData.append('file', invfile);
     try {
-      const response = await axios.post('https://brand-b.onrender.com/uploadinvfile', formData, {
+      const response = await axios.post('https://brand-b-1.onrender.com/uploadinvfile', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -219,7 +219,7 @@ function App() {
   // ------setIndex----
   const setindex = async () => {
     const newIndex = parseInt(customIndex, 10);
-    let result = await fetch('https://brand-b.onrender.com/setindex', {
+    let result = await fetch('https://brand-b-1.onrender.com/setindex', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: newIndex })
@@ -231,7 +231,7 @@ function App() {
   };
   const setindex2 = async () => {
     const newIndex = parseInt(customIndex2, 10);
-    let result = await fetch('https://brand-b.onrender.com/setindex2', {
+    let result = await fetch('https://brand-b-1.onrender.com/setindex2', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: newIndex })
@@ -242,7 +242,7 @@ function App() {
   };
   const setindex3 = async () => {
     const newIndex = parseInt(customIndex3, 10);
-    let result = await fetch('https://brand-b.onrender.com/setindex3', {
+    let result = await fetch('https://brand-b-1.onrender.com/setindex3', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: newIndex})
@@ -253,7 +253,7 @@ function App() {
   };
   const setindex4 = async () => {
     const newIndex = parseInt(customIndex4, 10);
-    let result = await fetch('https://brand-b.onrender.com/setindex4', {
+    let result = await fetch('https://brand-b-1.onrender.com/setindex4', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: newIndex})
@@ -266,7 +266,7 @@ function App() {
  
   const autofetchData = async (link) => {
     try {
-      let result = await fetch('https://brand-b.onrender.com/autofetchdata', {
+      let result = await fetch('https://brand-b-1.onrender.com/autofetchdata', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link: link })
@@ -281,7 +281,7 @@ function App() {
 
   const autofetchData2 = async (link) => {
     try {
-      let result = await fetch('https://brand-b.onrender.com/autofetchdata2', {
+      let result = await fetch('https://brand-b-1.onrender.com/inv/autofetchdata2', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link: link })
@@ -295,7 +295,7 @@ function App() {
   };
 const setautoindex1=async(index)=>{
   const newIndex = parseInt(index, 10);
-  let result = await fetch('https://brand-b.onrender.com/setindex', {
+  let result = await fetch('https://brand-b-1.onrender.com/setindex', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ start_index: newIndex })
@@ -306,7 +306,7 @@ const setautoindex1=async(index)=>{
 }
 const setautoindex2=async(index)=>{
   const newIndex = parseInt(index, 10);
-  let result = await fetch('https://brand-b.onrender.com/setindex2', {
+  let result = await fetch('https://brand-b-1.onrender.com/setindex2', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ start_index: newIndex })
@@ -362,7 +362,7 @@ const setautoindex2=async(index)=>{
     try {
       setLoading(true)
       const response = await axios({
-        url: 'https://brand-b.onrender.com/download-inventory', // Replace with your backend URL
+        url: 'https://brand-b-1.onrender.com/download-inventory', // Replace with your backend URL
         method: 'GET',
         responseType: 'blob', // Important to get the response as a blob (binary data)
       });
@@ -382,7 +382,7 @@ const setautoindex2=async(index)=>{
   }
 
   return (
-    <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null }}>
+    <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null , paddingLeft:'3vw', paddingRight:'3vw'}}>
       {loading && ( // Show spinner while loading is true
         <div className="loading-overlay">
           <Spinner animation="border" variant="primary" /> {/* Spinner from Bootstrap */}
