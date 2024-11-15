@@ -317,7 +317,7 @@ const setautoindex2=async(index)=>{
 }
   const autofetch = async () => {
     let index = index1;
-    while (index < links1.length) {
+    while (index <links1.length) {
       try {
         const result = await autofetchData(links1[index]);
         console.log(" First URL:", links1[index]);
