@@ -646,7 +646,12 @@ const setautoindex8=async(index)=>{
       setLoading(false)
     }
   }
-
+ const startall=()=>{
+      autofetch();
+      autofetch2();
+      autofetch3();
+      autofetch4();
+ }
   return (
     <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null , paddingLeft:'3vw', paddingRight:'3vw'}}>
       {loading && ( // Show spinner while loading is true
@@ -654,12 +659,12 @@ const setautoindex8=async(index)=>{
           <Spinner animation="border" variant="primary" /> {/* Spinner from Bootstrap */}
         </div>
       )}
-
       <div>
         <h2>Inventory Updation</h2>
         <div>
           <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
           <button onClick={uploadinventoryfile} >Upload</button>
+          <button onClick={startall} >Start All</button>
           <button className='ms-4 mt-4' variant="secondary" onClick={downloadInvontory}>
           Download Result
         </button>
