@@ -396,7 +396,7 @@ const setautoindex4=async(index)=>{
       </div>
       <Accordion className='mt-4' defaultActiveKey="0">
         <Accordion.Item eventKey="0">
-          <Accordion.Header>Total Number of Product's URL: {links1 ? links1.length + links2.length : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Total Number of urls fetched : {index1+index2} &nbsp;&nbsp; || &nbsp;&nbsp; Remaining urls :  {links1 ? links1.length + links2.length-(index1+index2) : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Net Speed : {(speed1+speed2+speed3+speed4)/4} s / URL</Accordion.Header>
+          <Accordion.Header>Total Number of Product's URL: {links1 ? links1.length + links2.length : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Total Number of urls fetched : {index1+index2} &nbsp;&nbsp; || &nbsp;&nbsp; Remaining urls :  {links1 ? links1.length + links2.length-(index1+index2) : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Net Speed : <span style={{color:'red'}}>{(speed1+speed2+speed3+speed4)/16} s / URL</span> (Only if all thread started)</Accordion.Header>
           <Accordion.Body>
             <div className="container">
               <div className="row">
