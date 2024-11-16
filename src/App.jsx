@@ -39,22 +39,22 @@ function App() {
   const [customIndex6, setCustomIndex6] = useState();
   const [customIndex7, setCustomIndex7] = useState();
   const [customIndex8, setCustomIndex8] = useState();
-  const [index1, setIndex1] = useState();
-  const [index2, setIndex2] = useState();
-  const [index3, setIndex3] = useState();
-  const [index4, setIndex4] = useState();
-  const [index5, setIndex5] = useState();
-  const [index6, setIndex6] = useState();
-  const [index7, setIndex7] = useState();
-  const [index8, setIndex8] = useState();
-  const [speed1,setSpeed1]=useState(0);
-  const [speed2,setSpeed2]=useState(0);
-  const [speed3,setSpeed3]=useState(0);
-  const [speed4,setSpeed4]=useState(0);
-  const [speed5,setSpeed5]=useState(0);
-  const [speed6,setSpeed6]=useState(0);
-  const [speed7,setSpeed7]=useState(0);
-  const [speed8,setSpeed8]=useState(0);
+  const [index1, setIndex1] = useState(0);
+  const [index2, setIndex2] = useState(0);
+  const [index3, setIndex3] = useState(0);
+  const [index4, setIndex4] = useState(0);
+  const [index5, setIndex5] = useState(0);
+  const [index6, setIndex6] = useState(0);
+  const [index7, setIndex7] = useState(0);
+  const [index8, setIndex8] = useState(0);
+  const [speed1, setSpeed1] = useState(0);
+  const [speed2, setSpeed2] = useState(0);
+  const [speed3, setSpeed3] = useState(0);
+  const [speed4, setSpeed4] = useState(0);
+  const [speed5, setSpeed5] = useState(0);
+  const [speed6, setSpeed6] = useState(0);
+  const [speed7, setSpeed7] = useState(0);
+  const [speed8, setSpeed8] = useState(0);
 
   useEffect(() => {
     getinvurl();
@@ -110,7 +110,7 @@ function App() {
       console.log(err)
     }
   };
- 
+
   // --------upload file for inventory update----
   const setInventoryfile = (e) => {
     setInvFile(e.target.files[0]);
@@ -158,7 +158,7 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: newIndex })
     });
-    result=await result.json();
+    result = await result.json();
     result.status ? null : setindex2();
     setIndex2(result.index)
   };
@@ -167,9 +167,9 @@ function App() {
     let result = await fetch('https://brand-b-1.onrender.com/setindex3', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex})
+      body: JSON.stringify({ start_index: newIndex })
     });
-    result=await result.json();
+    result = await result.json();
     result.status ? null : setindex3();
     setIndex3(result.index)
   };
@@ -178,9 +178,9 @@ function App() {
     let result = await fetch('https://brand-b-1.onrender.com/setindex4', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex})
+      body: JSON.stringify({ start_index: newIndex })
     });
-    result=await result.json();
+    result = await result.json();
     result.status ? null : setindex4();
     setIndex4(result.index)
   };
@@ -189,9 +189,9 @@ function App() {
     let result = await fetch('https://brand-b-1.onrender.com/setindex5', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex})
+      body: JSON.stringify({ start_index: newIndex })
     });
-    result=await result.json();
+    result = await result.json();
     result.status ? null : setindex5();
     setIndex5(result.index)
   };
@@ -201,9 +201,9 @@ function App() {
     let result = await fetch('https://brand-b-1.onrender.com/setindex6', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex})
+      body: JSON.stringify({ start_index: newIndex })
     });
-    result=await result.json();
+    result = await result.json();
     result.status ? null : setindex6();
     setIndex6(result.index)
   };
@@ -212,9 +212,9 @@ function App() {
     let result = await fetch('https://brand-b-1.onrender.com/setindex7', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex})
+      body: JSON.stringify({ start_index: newIndex })
     });
-    result=await result.json();
+    result = await result.json();
     result.status ? null : setindex7();
     setIndex7(result.index)
   };
@@ -223,14 +223,14 @@ function App() {
     let result = await fetch('https://brand-b-1.onrender.com/setindex8', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex})
+      body: JSON.stringify({ start_index: newIndex })
     });
-    result=await result.json();
+    result = await result.json();
     result.status ? null : setindex8();
     setIndex8(result.index)
   };
 
- 
+
   const autofetchData = async (link) => {
     try {
       let result = await fetch('https://brand-b-1.onrender.com/autofetchdata', {
@@ -343,100 +343,100 @@ function App() {
       return false; // Return false in case of error to prevent further execution
     }
   };
-const setautoindex1=async(index)=>{
-  const newIndex = parseInt(index, 10);
-  let result = await fetch('https://brand-b-1.onrender.com/setindex', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ start_index: newIndex })
-  });
-  result= await result.json();
-  result.status ? null : setautoindex1();
-  setIndex1(result.index)
-}
-const setautoindex2=async(index)=>{
-  const newIndex = parseInt(index, 10);
-  let result = await fetch('https://brand-b-1.onrender.com/setindex2', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ start_index: newIndex })
-  });
-  result= await result.json();
-  result.status ? null : setautoindex2();
-  setIndex2(result.index)
-}
-const setautoindex3=async(index)=>{
-  const newIndex = parseInt(index, 10);
-  let result = await fetch('https://brand-b-1.onrender.com/setindex3', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ start_index: newIndex })
-  });
-  result= await result.json();
-  result.status ? null : setautoindex3();
-  setIndex3(result.index)
-}
-const setautoindex4=async(index)=>{
-  const newIndex = parseInt(index, 10);
-  let result = await fetch('https://brand-b-1.onrender.com/setindex4', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ start_index: newIndex })
-  });
-  result= await result.json();
-  result.status ? null : setautoindex4();
-  setIndex4(result.index)
-}
-const setautoindex5=async(index)=>{
-  const newIndex = parseInt(index, 10);
-  let result = await fetch('https://brand-b-1.onrender.com/setindex5', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ start_index: newIndex })
-  });
-  result= await result.json();
-  result.status ? null : setautoindex5();
-  setIndex5(result.index)
-}
+  const setautoindex1 = async (index) => {
+    const newIndex = parseInt(index, 10);
+    let result = await fetch('https://brand-b-1.onrender.com/setindex', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_index: newIndex })
+    });
+    result = await result.json();
+    result.status ? null : setautoindex1();
+    setIndex1(result.index)
+  }
+  const setautoindex2 = async (index) => {
+    const newIndex = parseInt(index, 10);
+    let result = await fetch('https://brand-b-1.onrender.com/setindex2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_index: newIndex })
+    });
+    result = await result.json();
+    result.status ? null : setautoindex2();
+    setIndex2(result.index)
+  }
+  const setautoindex3 = async (index) => {
+    const newIndex = parseInt(index, 10);
+    let result = await fetch('https://brand-b-1.onrender.com/setindex3', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_index: newIndex })
+    });
+    result = await result.json();
+    result.status ? null : setautoindex3();
+    setIndex3(result.index)
+  }
+  const setautoindex4 = async (index) => {
+    const newIndex = parseInt(index, 10);
+    let result = await fetch('https://brand-b-1.onrender.com/setindex4', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_index: newIndex })
+    });
+    result = await result.json();
+    result.status ? null : setautoindex4();
+    setIndex4(result.index)
+  }
+  const setautoindex5 = async (index) => {
+    const newIndex = parseInt(index, 10);
+    let result = await fetch('https://brand-b-1.onrender.com/setindex5', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_index: newIndex })
+    });
+    result = await result.json();
+    result.status ? null : setautoindex5();
+    setIndex5(result.index)
+  }
 
-const setautoindex6=async(index)=>{
-  const newIndex = parseInt(index, 10);
-  let result = await fetch('https://brand-b-1.onrender.com/setindex6', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ start_index: newIndex })
-  });
-  result= await result.json();
-  result.status ? null : setautoindex6();
-  setIndex6(result.index)
-}
-const setautoindex7=async(index)=>{
-  const newIndex = parseInt(index, 10);
-  let result = await fetch('https://brand-b-1.onrender.com/setindex7', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ start_index: newIndex })
-  });
-  result= await result.json();
-  result.status ? null : setautoindex7();
-  setIndex7(result.index)
-}
+  const setautoindex6 = async (index) => {
+    const newIndex = parseInt(index, 10);
+    let result = await fetch('https://brand-b-1.onrender.com/setindex6', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_index: newIndex })
+    });
+    result = await result.json();
+    result.status ? null : setautoindex6();
+    setIndex6(result.index)
+  }
+  const setautoindex7 = async (index) => {
+    const newIndex = parseInt(index, 10);
+    let result = await fetch('https://brand-b-1.onrender.com/setindex7', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_index: newIndex })
+    });
+    result = await result.json();
+    result.status ? null : setautoindex7();
+    setIndex7(result.index)
+  }
 
-const setautoindex8=async(index)=>{
-  const newIndex = parseInt(index, 10);
-  let result = await fetch('https://brand-b-1.onrender.com/setindex8', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ start_index: newIndex })
-  });
-  result= await result.json();
-  result.status ? null : setautoindex8();
-  setIndex8(result.index)
-}
+  const setautoindex8 = async (index) => {
+    const newIndex = parseInt(index, 10);
+    let result = await fetch('https://brand-b-1.onrender.com/setindex8', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_index: newIndex })
+    });
+    result = await result.json();
+    result.status ? null : setautoindex8();
+    setIndex8(result.index)
+  }
   const autofetch = async () => {
     let index = index1;
     setLoading1(true)
-    while (index <links1.length) {
+    while (index < links1.length) {
       try {
         const startTime = performance.now(); // Start the timer
         const result = await autofetchData(links1[index]);
@@ -446,7 +446,7 @@ const setautoindex8=async(index)=>{
         console.log(`Thread-I || index: ${index} || result ${result}`);
 
         if (result === true) {
-          index+=1;
+          index += 1;
           setautoindex1(index);
         } else {
           console.log("An error occurred.");
@@ -460,7 +460,7 @@ const setautoindex8=async(index)=>{
   const autofetch2 = async () => {
     let index = index2;
     setLoading2(true)
-    while (index < links2.length) { 
+    while (index < links2.length) {
       try {
         const startTime = performance.now(); // Start the timer
         const result = await autofetchData2(links2[index]);
@@ -469,7 +469,7 @@ const setautoindex8=async(index)=>{
         setSpeed2(timeTaken1.toFixed(1));
         console.log(`Thread-II || index: ${index} || result ${result}`);
         if (result === true) {
-          index+=1;
+          index += 1;
           setautoindex2(index)
         } else {
           console.log("An error occurred.");
@@ -482,7 +482,7 @@ const setautoindex8=async(index)=>{
   };
   const autofetch3 = async () => {
     let index = index3;
-    setLinks3(true)
+    setLoading3(true)
     while (index < links3.length) {
       try {
         const startTime = performance.now(); // Start the timer
@@ -492,7 +492,7 @@ const setautoindex8=async(index)=>{
         setSpeed3(timeTaken1.toFixed(1));
         console.log(`Thread-III || index: ${index} || result ${result}`);
         if (result === true) {
-          index+=1;
+          index += 1;
           setautoindex3(index)
         } else {
           console.log("An error occurred.");
@@ -501,10 +501,10 @@ const setautoindex8=async(index)=>{
       } catch (err) {
         console.log("Error in autofetch:", err);
       }
-    } setLinks3(false)
+    } setLoading3(false)
   };
   const autofetch4 = async () => {
-    let index =index4;
+    let index = index4;
     setLoading4(true)
     while (index < links4.length) {
       try {
@@ -517,7 +517,7 @@ const setautoindex8=async(index)=>{
 
 
         if (result === true) {
-          index+=1;
+          index += 1;
           setautoindex4(index)
         } else {
           console.log("An error occurred.");
@@ -526,10 +526,10 @@ const setautoindex8=async(index)=>{
       } catch (err) {
         console.log("Error in autofetch:", err);
       }
-    }setLoading4(false)
+    } setLoading4(false)
   };
   const autofetch5 = async () => {
-    let index =index5;
+    let index = index5;
     setLoading5(true)
     while (index < links5.length) {
       try {
@@ -540,7 +540,7 @@ const setautoindex8=async(index)=>{
         setSpeed5(timeTaken1.toFixed(1));
         console.log(`Thread-V || index: ${index} || result ${result}`);
         if (result === true) {
-          index+=1;
+          index += 1;
           setautoindex5(index)
         } else {
           console.log("An error occurred.");
@@ -549,11 +549,11 @@ const setautoindex8=async(index)=>{
       } catch (err) {
         console.log("Error in autofetch5:", err);
       }
-    }setLoading5(false)
+    } setLoading5(false)
   };
 
   const autofetch6 = async () => {
-    let index =index6;
+    let index = index6;
     setLoading6(true)
     while (index < links6.length) {
       try {
@@ -564,7 +564,7 @@ const setautoindex8=async(index)=>{
         setSpeed6(timeTaken1.toFixed(1));
         console.log(`Thread-VI || index: ${index} || result ${result}`);
         if (result === true) {
-          index+=1;
+          index += 1;
           setautoindex6(index)
         } else {
           console.log("An error occurred.");
@@ -573,11 +573,11 @@ const setautoindex8=async(index)=>{
       } catch (err) {
         console.log("Error in autofetch6:", err);
       }
-    }setLoading6(false)
+    } setLoading6(false)
   };
 
   const autofetch7 = async () => {
-    let index =index7;
+    let index = index7;
     setLoading7(true)
     while (index < links7.length) {
       try {
@@ -588,7 +588,7 @@ const setautoindex8=async(index)=>{
         setSpeed7(timeTaken1.toFixed(1));
         console.log(`Thread-VII || index: ${index} || result ${result}`);
         if (result === true) {
-          index+=1;
+          index += 1;
           setautoindex7(index)
         } else {
           console.log("An error occurred.");
@@ -597,11 +597,11 @@ const setautoindex8=async(index)=>{
       } catch (err) {
         console.log("Error in autofetch7:", err);
       }
-    }setLoading7(false)
+    } setLoading7(false)
   };
 
   const autofetch8 = async () => {
-    let index =index8;
+    let index = index8;
     setLoading8(true)
     while (index < links8.length) {
       try {
@@ -612,7 +612,7 @@ const setautoindex8=async(index)=>{
         setSpeed8(timeTaken1.toFixed(1));
         console.log(`Thread-VIII || index: ${index} || result ${result}`);
         if (result === true) {
-          index+=1;
+          index += 1;
           setautoindex8(index)
         } else {
           console.log("An error occurred.");
@@ -621,7 +621,7 @@ const setautoindex8=async(index)=>{
       } catch (err) {
         console.log("Error in autofetch8:", err);
       }
-    }setLoading8(false)
+    } setLoading8(false)
   };
 
   const downloadInvontory = async () => {
@@ -646,14 +646,14 @@ const setautoindex8=async(index)=>{
       setLoading(false)
     }
   }
- const startall=()=>{
-      autofetch();
-      autofetch2();
-      autofetch3();
-      autofetch4();
- }
+  const startall = () => {
+    autofetch();
+    autofetch2();
+    autofetch3();
+    autofetch4();
+  }
   return (
-    <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null , paddingLeft:'3vw', paddingRight:'3vw'}}>
+    <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
       {loading && ( // Show spinner while loading is true
         <div className="loading-overlay">
           <Spinner animation="border" variant="primary" /> {/* Spinner from Bootstrap */}
@@ -664,17 +664,17 @@ const setautoindex8=async(index)=>{
         <div>
           <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
           <button onClick={uploadinventoryfile} >Upload</button>
-          <button onClick={startall} >Start All</button>
+          <button onClick={startall} className='ms-4' >Start All</button>
           <button className='ms-4 mt-4' variant="secondary" onClick={downloadInvontory}>
-          Download Result
-        </button>
+            Download Result
+          </button>
         </div>
 
-       
+
       </div>
       <Accordion className='mt-4' defaultActiveKey="0">
         <Accordion.Item eventKey="0">
-          <Accordion.Header>Total Number of Product's URL: {links1 ? links1.length + links2.length : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Total Number of urls fetched : {index1+index2} &nbsp;&nbsp; || &nbsp;&nbsp; Remaining urls :  {links1 ? links1.length + links2.length-(index1+index2) : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Net Speed : <span style={{color:'red'}}>{(speed1+speed2+speed3+speed4)/16} s / URL</span> (Only if all thread started)</Accordion.Header>
+          <Accordion.Header>Total Number of Product's URL: {links1 ? links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Total Number of urls fetched : {index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8} &nbsp;&nbsp; || &nbsp;&nbsp; Remaining urls :  {links1 ? links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length - (index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8) : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Net Speed : <span style={{ color: 'red' }}>{(speed1 + speed2 + speed3 + speed4 + speed5 + speed6 + speed7 + speed8) / 64} s / URL</span> </Accordion.Header>
           <Accordion.Body>
             {/* --------first row of process */}
             <div className="container">
@@ -699,17 +699,22 @@ const setautoindex8=async(index)=>{
 
                   <div className="container">
                     <div className="row">
-                      <div className="col-md-4 d-flex justify-content-center align-items-center">
-                        <h1>
+                      <div className="col-lg-4 d-flex justify-content-center align-items-center">
+                        <h4>
                           {index1}/{links1.length}
-                        </h1>
+                        </h4>
+                        {loading1 && (
+                    <div className="loading-overlay ms-2">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
                       </div>
-                      <div className="col-md-4 d-flex justify-content-center">
-                        <div style={{ height: 100, width: 100 }}>
+                      <div className="col-lg-4 d-flex justify-content-center">
+                        <div style={{ height: 70, width: 70 }}>
                           <CircularProgressbar value={(index1 / links1.length * 100)} text={`${(index1 / links1.length * 100).toFixed(0)}%`} />;
                         </div>
                       </div>
-                      <div className="col-md-4 d-flex justify-content-start align-items-center">
+                      <div className="col-lg-4 d-flex justify-content-start align-items-center">
                         <h3>
                           {speed1} s / URL
                         </h3>
@@ -751,12 +756,17 @@ const setautoindex8=async(index)=>{
                   <div className="container">
                     <div className="row">
                       <div className="col-md-4 d-flex justify-content-center align-items-center">
-                        <h1>
+                        <h4>
                           {index2}/{links2.length}
-                        </h1>
+                        </h4>
+                        {loading2 && (
+                    <div className="loading-overlay ms-2">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
-                        <div style={{ height: 100, width: 100 }}>
+                        <div style={{ height: 70, width: 70 }}>
                           <CircularProgressbar value={(index2 / links2.length * 100)} text={`${(index2 / links2.length * 100).toFixed(0)}%`} />;
                         </div>
                       </div>
@@ -785,7 +795,7 @@ const setautoindex8=async(index)=>{
                 </div>
               </div>
             </div>
-{/* -------------second row of process--- */}
+            {/* -------------second row of process--- */}
             <div className="container">
               <div className="row">
                 <div className="col-lg-6">
@@ -809,12 +819,17 @@ const setautoindex8=async(index)=>{
                   <div className="container">
                     <div className="row">
                       <div className="col-md-4 d-flex justify-content-center align-items-center">
-                        <h1>
+                        <h4>
                           {index3}/{links3.length}
-                        </h1>
+                        </h4>
+                        {loading3 && (
+                    <div className="loading-overlay ms-2">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
-                        <div style={{ height: 100, width: 100 }}>
+                        <div style={{ height: 70, width: 70 }}>
                           <CircularProgressbar value={(index3 / links3.length * 100)} text={`${(index3 / links3.length * 100).toFixed(0)}%`} />;
                         </div>
                       </div>
@@ -860,12 +875,17 @@ const setautoindex8=async(index)=>{
                   <div className="container">
                     <div className="row">
                       <div className="col-md-4 d-flex justify-content-center align-items-center">
-                        <h1>
+                        <h4>
                           {index4}/{links4.length}
-                        </h1>
+                        </h4>
+                        {loading4 && (
+                    <div className="loading-overlay ms-2">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
-                        <div style={{ height: 100, width: 100 }}>
+                        <div style={{ height: 70, width: 70 }}>
                           <CircularProgressbar value={(index4 / links4.length * 100)} text={`${(index4 / links4.length * 100).toFixed(0)}%`} />;
                         </div>
                       </div>
@@ -919,12 +939,17 @@ const setautoindex8=async(index)=>{
                   <div className="container">
                     <div className="row">
                       <div className="col-md-4 d-flex justify-content-center align-items-center">
-                        <h1>
+                        <h4>
                           {index5}/{links5.length}
-                        </h1>
+                        </h4>
+                        {loading5 && (
+                    <div className="loading-overlay ms-2">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
-                        <div style={{ height: 100, width: 100 }}>
+                        <div style={{ height: 70, width: 70 }}>
                           <CircularProgressbar value={(index5 / links5.length * 100)} text={`${(index5 / links5.length * 100).toFixed(0)}%`} />;
                         </div>
                       </div>
@@ -970,13 +995,18 @@ const setautoindex8=async(index)=>{
                   <div className="container">
                     <div className="row">
                       <div className="col-md-4 d-flex justify-content-center align-items-center">
-                        <h1>
+                        <h4>
                           {index6}/{links6.length}
-                        </h1>
+                        </h4>
+                        {loading6 && (
+                    <div className="loading-overlay ms-2">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
-                        <div style={{ height: 100, width: 100 }}>
-                          <CircularProgressbar value={(index6/ links6.length * 100)} text={`${(index6 / links6.length * 100).toFixed(0)}%`} />;
+                        <div style={{ height: 70, width: 70 }}>
+                          <CircularProgressbar value={(index6 / links6.length * 100)} text={`${(index6 / links6.length * 100).toFixed(0)}%`} />;
                         </div>
                       </div>
                       <div className="col-md-4 d-flex justify-content-start align-items-center">
@@ -1027,12 +1057,17 @@ const setautoindex8=async(index)=>{
                   <div className="container">
                     <div className="row">
                       <div className="col-md-4 d-flex justify-content-center align-items-center">
-                        <h1>
+                        <h4>
                           {index7}/{links7.length}
-                        </h1>
+                        </h4>
+                        {loading7 && (
+                    <div className="loading-overlay ms-2">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
-                        <div style={{ height: 100, width: 100 }}>
+                        <div style={{ height: 70, width: 70 }}>
                           <CircularProgressbar value={(index7 / links7.length * 100)} text={`${(index7 / links7.length * 100).toFixed(0)}%`} />;
                         </div>
                       </div>
@@ -1078,13 +1113,18 @@ const setautoindex8=async(index)=>{
                   <div className="container">
                     <div className="row">
                       <div className="col-md-4 d-flex justify-content-center align-items-center">
-                        <h1>
+                        <h4>
                           {index8}/{links8.length}
-                        </h1>
+                        </h4>
+                        {loading8 && (
+                    <div className="loading-overlay ms-2">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
-                        <div style={{ height: 100, width: 100 }}>
-                          <CircularProgressbar value={(index8/ links8.length * 100)} text={`${(index8 / links8.length * 100).toFixed(0)}%`} />;
+                        <div style={{ height: 70, width: 70 }}>
+                          <CircularProgressbar value={(index8 / links8.length * 100)} text={`${(index8 / links8.length * 100).toFixed(0)}%`} />;
                         </div>
                       </div>
                       <div className="col-md-4 d-flex justify-content-start align-items-center">
