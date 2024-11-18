@@ -56,8 +56,8 @@ function App() {
   const [speed7, setSpeed7] = useState(0);
   const [speed8, setSpeed8] = useState(0);
   const stopRef = useRef(false);
-  const timerRef = useRef(null); 
-  const [elapsedTime, setElapsedTime] = useState(0); 
+  const timerRef = useRef(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
   useEffect(() => {
     getinvurl();
     getinvproducts();
@@ -71,30 +71,26 @@ function App() {
     console.log("Page is about to be closed or refreshed.");
     event.preventDefault();
     stopTimer();
-    setindex();
-    setindex2();
-    setindex3();
-    setindex4();
-    setindex5();
-    setindex6();
-    setindex7();
-    setindex8();
-    event.returnValue = ""; 
   };
   const startTimer = () => {
     timerRef.current = setInterval(() => {
       setElapsedTime((prevTime) => prevTime + 1);
     }, 1000); // Increment every second
-    
+
   };
-  const stopTimer = async() => {
+  const stopTimer = async () => {
     settime(timerRef.current)
     clearInterval(timerRef.current);
     timerRef.current = null;
   };
   const formatElapsedTime = (time) => {
     const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
+    const seconds = (time % 60).toFixed(1);
+    return `${minutes} m ${seconds} s`;
+  };
+  const formatElapsedTime1 = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = (time % 60).toFixed(0);
     return `${minutes} m ${seconds} s`;
   };
   const getserialnumber = async () => {
@@ -164,6 +160,7 @@ function App() {
         }
       });
       alert(response.data.msg);
+      window.location.reload();
       setLoading(false)
       getinvproducts();
 
@@ -172,15 +169,15 @@ function App() {
       alert('Failed to upload file');
     }
   };
-   const settime=(time)=>{
+  const settime = (time) => {
     console.log("set time called")
-    console.log(time+elapsedTime)
-      fetch('https://brand-b-1.onrender.com/settime',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({time: time+elapsedTime})
+    console.log(time + elapsedTime)
+    fetch('https://brand-b-1.onrender.com/settime', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ time: time + elapsedTime })
     })
-   }
+  }
   // ------setIndex----
   const setindex = async () => {
     const newIndex = parseInt(customIndex, 10);
@@ -490,15 +487,15 @@ function App() {
         console.log(`Thread-I || index: ${index} || result ${result}`);
         if (result === true) {
           index += 1;
+          setautoindex1(index)
         } else {
           console.log("An error occurred.");
           index = index;
-          setautoindex1(index)
         }
       } catch (err) {
         console.log("Error in autofetch:", err);
       }
-    } 
+    }
     setLoading1(false);
     stopTimer();
   };
@@ -633,9 +630,9 @@ function App() {
     stopRef.current = false;
     while (index < links7.length && !stopRef.current) {
       try {
-        const startTime = performance.now(); 
+        const startTime = performance.now();
         const result = await autofetchData7(links7[index]);
-        const endTime = performance.now(); 
+        const endTime = performance.now();
         const timeTaken1 = (endTime - startTime) / 1000;
         setSpeed7(timeTaken1.toFixed(1));
         console.log(`Thread-VII || index: ${index} || result ${result}`);
@@ -726,18 +723,22 @@ function App() {
           <button onClick={uploadinventoryfile} >Upload</button>
           <button onClick={startall} className='ms-4' >Start All</button>
           <button onClick={stopFetching} className='ms-4' disabled={!loading1}>
-        Pause
-      </button>
+            Pause
+          </button>
           <button className='ms-4 mt-4' variant="secondary" onClick={downloadInvontory}>
             Download Result
           </button>
         </div>
-
-
       </div>
+      <div className="timer_container mt-4">
+        <div className='timer'>Elapsed Time : &nbsp;<span style={{ fontWeight: 'bolder' }}>{formatElapsedTime(elapsedTime)}</span></div>
+        {
+          (loading1 || loading2 || loading3 || loading4 || loading5 || loading6 || loading7 || loading8) && <div className='timer'>Expected Time :&nbsp;<span style={{ fontWeight: 'bolder' }}>{formatElapsedTime1((speed1 / 8) * (links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length - (index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8)))}</span> </div>  
+     }
+</div> 
       <Accordion className='mt-4' defaultActiveKey="0">
         <Accordion.Item eventKey="0">
-          <Accordion.Header>Total Number of Product's URL: {links1 ? links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Total Number of urls fetched : {index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8} &nbsp;&nbsp; || &nbsp;&nbsp; Remaining urls :  {links1 ? links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length - (index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8) : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Net Speed : &nbsp; <span style={{ color: 'red' }}> {(speed1/8).toFixed(1)} s / URL</span>&nbsp;&nbsp; || &nbsp;&nbsp; Elapsed Time :&nbsp;<span style={{ color: 'red' }}> {formatElapsedTime(elapsedTime)}</span> </Accordion.Header>
+          <Accordion.Header>Total Number of Product's URL: {links1 ? links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Total Number of urls fetched : {index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8} &nbsp;&nbsp; || &nbsp;&nbsp; Remaining urls :  {links1 ? links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length - (index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8) : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Net Speed : &nbsp; <span style={{ color: 'red' }}> {(speed1 / 8).toFixed(1)} s / URL</span></Accordion.Header>
           <Accordion.Body>
             {/* --------first row of process */}
             <div className="container">
@@ -767,10 +768,10 @@ function App() {
                           {index1}/{links1.length}
                         </h4>
                         {loading1 && (
-                    <div className="loading-overlay ms-2">
-                      <Spinner animation="border" variant="primary" />
-                    </div>
-                  )}
+                          <div className="loading-overlay ms-2">
+                            <Spinner animation="border" variant="primary" />
+                          </div>
+                        )}
                       </div>
                       <div className="col-lg-4 d-flex justify-content-center">
                         <div style={{ height: 70, width: 70 }}>
@@ -794,7 +795,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index1}</td>
-                        <td><a href={links1[index1]} target='_blank'>{index1===links1.length?links1[index1]:"Completed"}</a></td>
+                        <td><a href={links1[index1]} target='_blank'>{index1 === links1.length ? links1[index1] : "Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -823,10 +824,10 @@ function App() {
                           {index2}/{links2.length}
                         </h4>
                         {loading2 && (
-                    <div className="loading-overlay ms-2">
-                      <Spinner animation="border" variant="primary" />
-                    </div>
-                  )}
+                          <div className="loading-overlay ms-2">
+                            <Spinner animation="border" variant="primary" />
+                          </div>
+                        )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
                         <div style={{ height: 70, width: 70 }}>
@@ -850,7 +851,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index2}</td>
-                        <td><a href={links2[index2]} target='_blank'>{index2===links2.length?links2[index2]:"Completed"}</a></td>
+                        <td><a href={links2[index2]} target='_blank'>{index2 === links2.length ? links2[index2] : "Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -886,10 +887,10 @@ function App() {
                           {index3}/{links3.length}
                         </h4>
                         {loading3 && (
-                    <div className="loading-overlay ms-2">
-                      <Spinner animation="border" variant="primary" />
-                    </div>
-                  )}
+                          <div className="loading-overlay ms-2">
+                            <Spinner animation="border" variant="primary" />
+                          </div>
+                        )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
                         <div style={{ height: 70, width: 70 }}>
@@ -913,7 +914,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index3}</td>
-                        <td><a href={links3[index3]} target='_blank'>{index3===links3.length?links3[index3]:"Completed"}</a></td>
+                        <td><a href={links3[index3]} target='_blank'>{index3 === links3.length ? links3[index3] : "Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -942,10 +943,10 @@ function App() {
                           {index4}/{links4.length}
                         </h4>
                         {loading4 && (
-                    <div className="loading-overlay ms-2">
-                      <Spinner animation="border" variant="primary" />
-                    </div>
-                  )}
+                          <div className="loading-overlay ms-2">
+                            <Spinner animation="border" variant="primary" />
+                          </div>
+                        )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
                         <div style={{ height: 70, width: 70 }}>
@@ -969,7 +970,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index4}</td>
-                        <td><a href={links4[index4]} target='_blank'>{index4===links4.length?links4[index4]:"Completed"}</a></td>
+                        <td><a href={links4[index4]} target='_blank'>{index4 === links4.length ? links4[index4] : "Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -1006,10 +1007,10 @@ function App() {
                           {index5}/{links5.length}
                         </h4>
                         {loading5 && (
-                    <div className="loading-overlay ms-2">
-                      <Spinner animation="border" variant="primary" />
-                    </div>
-                  )}
+                          <div className="loading-overlay ms-2">
+                            <Spinner animation="border" variant="primary" />
+                          </div>
+                        )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
                         <div style={{ height: 70, width: 70 }}>
@@ -1033,7 +1034,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index5}</td>
-                        <td><a href={links5[index5]} target='_blank'>{index5===links5.length?links5[index5]:"Completed"}</a></td>
+                        <td><a href={links5[index5]} target='_blank'>{index5 === links5.length ? links5[index5] : "Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -1062,10 +1063,10 @@ function App() {
                           {index6}/{links6.length}
                         </h4>
                         {loading6 && (
-                    <div className="loading-overlay ms-2">
-                      <Spinner animation="border" variant="primary" />
-                    </div>
-                  )}
+                          <div className="loading-overlay ms-2">
+                            <Spinner animation="border" variant="primary" />
+                          </div>
+                        )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
                         <div style={{ height: 70, width: 70 }}>
@@ -1089,7 +1090,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index6}</td>
-                        <td><a href={links6[index6]} target='_blank'>{index6===links6.length?links6[index6]:"Completed"}</a></td>
+                        <td><a href={links6[index6]} target='_blank'>{index6 === links6.length ? links6[index6] : "Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -1124,10 +1125,10 @@ function App() {
                           {index7}/{links7.length}
                         </h4>
                         {loading7 && (
-                    <div className="loading-overlay ms-2">
-                      <Spinner animation="border" variant="primary" />
-                    </div>
-                  )}
+                          <div className="loading-overlay ms-2">
+                            <Spinner animation="border" variant="primary" />
+                          </div>
+                        )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
                         <div style={{ height: 70, width: 70 }}>
@@ -1151,7 +1152,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index7}</td>
-                        <td><a href={links7[index7]} target='_blank'>{index7===links7.length?links7[index7]:"Completed"}</a></td>
+                        <td><a href={links7[index7]} target='_blank'>{index7 === links7.length ? links7[index7] : "Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -1180,10 +1181,10 @@ function App() {
                           {index8}/{links8.length}
                         </h4>
                         {loading8 && (
-                    <div className="loading-overlay ms-2">
-                      <Spinner animation="border" variant="primary" />
-                    </div>
-                  )}
+                          <div className="loading-overlay ms-2">
+                            <Spinner animation="border" variant="primary" />
+                          </div>
+                        )}
                       </div>
                       <div className="col-md-4 d-flex justify-content-center">
                         <div style={{ height: 70, width: 70 }}>
@@ -1207,7 +1208,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index8}</td>
-                        <td><a href={links8[index8]} target='_blank'>{index8===links8.length?links8[index8]:"Completed"}</a></td>
+                        <td><a href={links8[index8]} target='_blank'>{index8 === links8.length ? links8[index8] : "Completed"}</a></td>
                       </tr>
                     </tbody>
                   </Table>
