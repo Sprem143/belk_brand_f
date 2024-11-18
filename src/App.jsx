@@ -55,6 +55,7 @@ function App() {
   const [speed6, setSpeed6] = useState(0);
   const [speed7, setSpeed7] = useState(0);
   const [speed8, setSpeed8] = useState(0);
+  const [totalProduct, setTotalProduct] = useState(0);
   const stopRef = useRef(false);
   const timerRef = useRef(null);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -62,13 +63,13 @@ function App() {
     getinvurl();
     getinvproducts();
     getserialnumber();
+    getupdatedproduct()
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
   const handleBeforeUnload = (event) => {
-    console.log("Page is about to be closed or refreshed.");
     event.preventDefault();
     stopTimer();
   };
@@ -107,7 +108,8 @@ function App() {
     setIndex6(result.start_index6);
     setIndex7(result.start_index7);
     setIndex8(result.start_index8);
-    setElapsedTime(result.time)
+    setElapsedTime(result.time);
+
   }
 
   const getinvproducts = async () => {
@@ -170,8 +172,6 @@ function App() {
     }
   };
   const settime = (time) => {
-    console.log("set time called")
-    console.log(time + elapsedTime)
     fetch('https://brand-b-1.onrender.com/settime', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -676,6 +676,16 @@ function App() {
   const stopFetching = () => {
     stopRef.current = true; // Set stop condition
   };
+
+  const getupdatedproduct=async()=>{
+
+    let result= await fetch('https://brand-b-1.onrender.com/getupdatedproduct',{
+      method:'GET',
+      headers:{'Content-Type':'application/json'}
+    });
+    result= await result.json();
+    setTotalProduct(result.num);
+  }
   const downloadInvontory = async () => {
     try {
       setLoading(true)
@@ -733,9 +743,15 @@ function App() {
       <div className="timer_container mt-4">
         <div className='timer'>Elapsed Time : &nbsp;<span style={{ fontWeight: 'bolder' }}>{formatElapsedTime(elapsedTime)}</span></div>
         {
-          (loading1 || loading2 || loading3 || loading4 || loading5 || loading6 || loading7 || loading8) && <div className='timer'>Expected Time :&nbsp;<span style={{ fontWeight: 'bolder' }}>{formatElapsedTime1((speed1 / 8) * (links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length - (index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8)))}</span> </div>  
-     }
-</div> 
+          (loading1 || loading2 || loading3 || loading4 || loading5 || loading6 || loading7 || loading8) && <div className='timer'>Expected Time :&nbsp;<span style={{ fontWeight: 'bolder' }}>{formatElapsedTime1((speed1 / 8) * (links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length - (index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8)))}</span> </div>
+        }
+        <div className="timer">
+        Total updated Product : {totalProduct} <span onClick={getupdatedproduct}><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="ms-4 bi bi-arrow-clockwise" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
+          </svg></span> 
+        </div>
+      </div>
       <Accordion className='mt-4' defaultActiveKey="0">
         <Accordion.Item eventKey="0">
           <Accordion.Header>Total Number of Product's URL: {links1 ? links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Total Number of urls fetched : {index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8} &nbsp;&nbsp; || &nbsp;&nbsp; Remaining urls :  {links1 ? links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length - (index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8) : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Net Speed : &nbsp; <span style={{ color: 'red' }}> {(speed1 / 8).toFixed(1)} s / URL</span></Accordion.Header>

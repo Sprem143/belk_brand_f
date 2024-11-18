@@ -20,33 +20,31 @@ const fs = require('fs');
 const path = require('path');
 // ---------download upc list scrapped from brand url----------
 exports.downloadExcel = async(req, res) => {
-    try {
-        const data = await Upc.find();
-        const mergedArray = data.map(item => item.upc).flat();
-        const jsondata = mergedArray.map((d) => ({
-            UPC: d
-        }));
-        const worksheet = xlsx.utils.json_to_sheet(jsondata);
-        const workbook = xlsx.utils.book_new();
+        try {
+            const data = await Upc.find();
+            const mergedArray = data.map(item => item.upc).flat();
+            const jsondata = mergedArray.map((d) => ({
+                UPC: d
+            }));
+            const worksheet = xlsx.utils.json_to_sheet(jsondata);
+            const workbook = xlsx.utils.book_new();
 
-        xlsx.utils.book_append_sheet(workbook, worksheet, "Products");
-        const filePath = path.join(__dirname, 'data.xlsx');
-        xlsx.writeFile(workbook, filePath);
+            xlsx.utils.book_append_sheet(workbook, worksheet, "Products");
+            const filePath = path.join(__dirname, 'data.xlsx');
+            xlsx.writeFile(workbook, filePath);
 
-        // Send the Excel file for download
-        res.download(filePath, (err) => {
-            if (err) {
-                console.error('Error sending file:', err);
-            }
-            // Delete the file after download
-            fs.unlinkSync(filePath);
-        });
-    } catch (err) {
-        console.log(err)
+            // Send the Excel file for download
+            res.download(filePath, (err) => {
+                if (err) {
+                    console.error('Error sending file:', err);
+                }
+                fs.unlinkSync(filePath);
+            });
+        } catch (err) {
+            console.log(err)
+        }
     }
-}
-
-// -----------upload asin-scope data-------------
+    // -----------upload asin-scope data-------------
 exports.uploaddata = async(req, res) => {
     try {
         const file = req.file;
@@ -505,7 +503,6 @@ exports.settime = async(req, res) => {
 
     Serial.findOneAndUpdate({}, { time: num }, { new: true })
         .then(updatedDoc => {
-            console.log(updatedDoc)
             if (updatedDoc) {
                 res.status(200).json({ status: true })
             }
@@ -513,4 +510,13 @@ exports.settime = async(req, res) => {
         .catch(error => {
             console.error("Error updating document:", error);
         });
+}
+
+exports.getupdatedproduct = async(req, res) => {
+    try {
+        let num = await InvProduct.countDocuments();
+        res.status(200).json({ num: num })
+    } catch (err) {
+        console.log(err)
+    }
 }
