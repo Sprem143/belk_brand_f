@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -55,12 +55,48 @@ function App() {
   const [speed6, setSpeed6] = useState(0);
   const [speed7, setSpeed7] = useState(0);
   const [speed8, setSpeed8] = useState(0);
-
+  const stopRef = useRef(false);
+  const timerRef = useRef(null); 
+  const [elapsedTime, setElapsedTime] = useState(0); 
   useEffect(() => {
     getinvurl();
     getinvproducts();
-    getserialnumber()
+    getserialnumber();
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, []);
+  const handleBeforeUnload = (event) => {
+    console.log("Page is about to be closed or refreshed.");
+    event.preventDefault();
+    stopTimer();
+    setindex();
+    setindex2();
+    setindex3();
+    setindex4();
+    setindex5();
+    setindex6();
+    setindex7();
+    setindex8();
+    event.returnValue = ""; 
+  };
+  const startTimer = () => {
+    timerRef.current = setInterval(() => {
+      setElapsedTime((prevTime) => prevTime + 1);
+    }, 1000); // Increment every second
+    
+  };
+  const stopTimer = async() => {
+    settime(timerRef.current)
+    clearInterval(timerRef.current);
+    timerRef.current = null;
+  };
+  const formatElapsedTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes} m ${seconds} s`;
+  };
   const getserialnumber = async () => {
     let result = await fetch('https://brand-b-1.onrender.com/getserialnumber', {
       method: 'GET',
@@ -75,7 +111,7 @@ function App() {
     setIndex6(result.start_index6);
     setIndex7(result.start_index7);
     setIndex8(result.start_index8);
-
+    setElapsedTime(result.time)
   }
 
   const getinvproducts = async () => {
@@ -97,7 +133,6 @@ function App() {
         headers: { 'Content-Type': 'application/json' }
       })
       result = await result.json();
-      console.log(result)
       setLinks1(result.links1[0].url);
       setLinks2(result.links2[0].url);
       setLinks3(result.links3[0].url);
@@ -137,7 +172,15 @@ function App() {
       alert('Failed to upload file');
     }
   };
-
+   const settime=(time)=>{
+    console.log("set time called")
+    console.log(time+elapsedTime)
+      fetch('https://brand-b-1.onrender.com/settime',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({time: time+elapsedTime})
+    })
+   }
   // ------setIndex----
   const setindex = async () => {
     const newIndex = parseInt(customIndex, 10);
@@ -195,7 +238,6 @@ function App() {
     result.status ? null : setindex5();
     setIndex5(result.index)
   };
-
   const setindex6 = async () => {
     const newIndex = parseInt(customIndex6, 10);
     let result = await fetch('https://brand-b-1.onrender.com/setindex6', {
@@ -435,8 +477,10 @@ function App() {
   }
   const autofetch = async () => {
     let index = index1;
-    setLoading1(true)
-    while (index < links1.length) {
+    setLoading1(true);
+    startTimer();
+    stopRef.current = false;
+    while (index < links1.length && !stopRef.current) {
       try {
         const startTime = performance.now(); // Start the timer
         const result = await autofetchData(links1[index]);
@@ -444,23 +488,25 @@ function App() {
         const timeTaken1 = (endTime - startTime) / 1000;
         setSpeed1(timeTaken1.toFixed(1));
         console.log(`Thread-I || index: ${index} || result ${result}`);
-
         if (result === true) {
           index += 1;
-          setautoindex1(index);
         } else {
           console.log("An error occurred.");
           index = index;
+          setautoindex1(index)
         }
       } catch (err) {
         console.log("Error in autofetch:", err);
       }
-    } setLoading1(false)
+    } 
+    setLoading1(false);
+    stopTimer();
   };
   const autofetch2 = async () => {
     let index = index2;
-    setLoading2(true)
-    while (index < links2.length) {
+    setLoading2(true);
+    stopRef.current = false;
+    while (index < links2.length && !stopRef.current) {
       try {
         const startTime = performance.now(); // Start the timer
         const result = await autofetchData2(links2[index]);
@@ -482,8 +528,9 @@ function App() {
   };
   const autofetch3 = async () => {
     let index = index3;
-    setLoading3(true)
-    while (index < links3.length) {
+    setLoading3(true);
+    stopRef.current = false;
+    while (index < links3.length && !stopRef.current) {
       try {
         const startTime = performance.now(); // Start the timer
         const result = await autofetchData3(links3[index]);
@@ -505,8 +552,9 @@ function App() {
   };
   const autofetch4 = async () => {
     let index = index4;
-    setLoading4(true)
-    while (index < links4.length) {
+    setLoading4(true);
+    stopRef.current = false;
+    while (index < links4.length && !stopRef.current) {
       try {
         const startTime = performance.now(); // Start the timer
         const result = await autofetchData4(links4[index]);
@@ -530,8 +578,9 @@ function App() {
   };
   const autofetch5 = async () => {
     let index = index5;
-    setLoading5(true)
-    while (index < links5.length) {
+    setLoading5(true);
+    stopRef.current = false;
+    while (index < links5.length && !stopRef.current) {
       try {
         const startTime = performance.now(); // Start the timer
         const result = await autofetchData5(links5[index]);
@@ -554,8 +603,9 @@ function App() {
 
   const autofetch6 = async () => {
     let index = index6;
-    setLoading6(true)
-    while (index < links6.length) {
+    setLoading6(true);
+    stopRef.current = false;
+    while (index < links6.length && !stopRef.current) {
       try {
         const startTime = performance.now(); // Start the timer
         const result = await autofetchData6(links6[index]);
@@ -578,12 +628,14 @@ function App() {
 
   const autofetch7 = async () => {
     let index = index7;
-    setLoading7(true)
-    while (index < links7.length) {
+    setLoading7(true);
+    stopRef.current = false;
+    stopRef.current = false;
+    while (index < links7.length && !stopRef.current) {
       try {
-        const startTime = performance.now(); // Start the timer
+        const startTime = performance.now(); 
         const result = await autofetchData7(links7[index]);
-        const endTime = performance.now(); // End the timer
+        const endTime = performance.now(); 
         const timeTaken1 = (endTime - startTime) / 1000;
         setSpeed7(timeTaken1.toFixed(1));
         console.log(`Thread-VII || index: ${index} || result ${result}`);
@@ -602,8 +654,9 @@ function App() {
 
   const autofetch8 = async () => {
     let index = index8;
-    setLoading8(true)
-    while (index < links8.length) {
+    setLoading8(true);
+    stopRef.current = false;
+    while (index < links8.length && !stopRef.current) {
       try {
         const startTime = performance.now(); // Start the timer
         const result = await autofetchData8(links7[index]);
@@ -623,7 +676,9 @@ function App() {
       }
     } setLoading8(false)
   };
-
+  const stopFetching = () => {
+    stopRef.current = true; // Set stop condition
+  };
   const downloadInvontory = async () => {
     try {
       setLoading(true)
@@ -646,11 +701,16 @@ function App() {
       setLoading(false)
     }
   }
+
   const startall = () => {
     autofetch();
     autofetch2();
     autofetch3();
     autofetch4();
+    autofetch5();
+    autofetch6();
+    autofetch7();
+    autofetch8();
   }
   return (
     <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
@@ -665,6 +725,9 @@ function App() {
           <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
           <button onClick={uploadinventoryfile} >Upload</button>
           <button onClick={startall} className='ms-4' >Start All</button>
+          <button onClick={stopFetching} className='ms-4' disabled={!loading1}>
+        Pause
+      </button>
           <button className='ms-4 mt-4' variant="secondary" onClick={downloadInvontory}>
             Download Result
           </button>
@@ -674,7 +737,7 @@ function App() {
       </div>
       <Accordion className='mt-4' defaultActiveKey="0">
         <Accordion.Item eventKey="0">
-          <Accordion.Header>Total Number of Product's URL: {links1 ? links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Total Number of urls fetched : {index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8} &nbsp;&nbsp; || &nbsp;&nbsp; Remaining urls :  {links1 ? links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length - (index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8) : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Net Speed : <span style={{ color: 'red' }}>{(speed1 + speed2 + speed3 + speed4 + speed5 + speed6 + speed7 + speed8) / 64} s / URL</span> </Accordion.Header>
+          <Accordion.Header>Total Number of Product's URL: {links1 ? links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Total Number of urls fetched : {index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8} &nbsp;&nbsp; || &nbsp;&nbsp; Remaining urls :  {links1 ? links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length - (index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8) : 0} &nbsp;&nbsp; || &nbsp;&nbsp; Net Speed : &nbsp; <span style={{ color: 'red' }}> {(speed1/8).toFixed(1)} s / URL</span>&nbsp;&nbsp; || &nbsp;&nbsp; Elapsed Time :&nbsp;<span style={{ color: 'red' }}> {formatElapsedTime(elapsedTime)}</span> </Accordion.Header>
           <Accordion.Body>
             {/* --------first row of process */}
             <div className="container">
@@ -731,7 +794,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index1}</td>
-                        <td><a href={links1[index1]} target='_blank'>{links1[index1]}</a></td>
+                        <td><a href={links1[index1]} target='_blank'>{index1===links1.length?links1[index1]:"Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -787,7 +850,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index2}</td>
-                        <td><a href={links2[index2]} target='_blank'>{links2[index2]}</a></td>
+                        <td><a href={links2[index2]} target='_blank'>{index2===links2.length?links2[index2]:"Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -850,7 +913,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index3}</td>
-                        <td><a href={links3[index3]} target='_blank'>{links3[index3]}</a></td>
+                        <td><a href={links3[index3]} target='_blank'>{index3===links3.length?links3[index3]:"Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -906,7 +969,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index4}</td>
-                        <td><a href={links4[index4]} target='_blank'>{links4[index4]}</a></td>
+                        <td><a href={links4[index4]} target='_blank'>{index4===links4.length?links4[index4]:"Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -970,7 +1033,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index5}</td>
-                        <td><a href={links5[index5]} target='_blank'>{links5[index5]}</a></td>
+                        <td><a href={links5[index5]} target='_blank'>{index5===links5.length?links5[index5]:"Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -1026,7 +1089,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index6}</td>
-                        <td><a href={links6[index6]} target='_blank'>{links6[index6]}</a></td>
+                        <td><a href={links6[index6]} target='_blank'>{index6===links6.length?links6[index6]:"Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -1088,7 +1151,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index7}</td>
-                        <td><a href={links7[index7]} target='_blank'>{links7[index7]}</a></td>
+                        <td><a href={links7[index7]} target='_blank'>{index7===links7.length?links7[index7]:"Completed"}</a></td>
                       </tr>
                     </tbody>
 
@@ -1144,7 +1207,7 @@ function App() {
                     <tbody>
                       <tr>
                         <td>{index8}</td>
-                        <td><a href={links8[index8]} target='_blank'>{links8[index8]}</a></td>
+                        <td><a href={links8[index8]} target='_blank'>{index8===links8.length?links8[index8]:"Completed"}</a></td>
                       </tr>
                     </tbody>
                   </Table>
