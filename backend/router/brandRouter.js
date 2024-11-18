@@ -18,7 +18,6 @@ router.get('/getinvproduct', getinvproduct);
 router.post('/upload', upload.single('file'), uploaddata);
 router.post('/uploadinvfile', upload.single('file'), uploadinvdata);
 router.post('/autofetchdata', autofetchdata);
-// router.post('/autofetchdata2', autofetchdata2);
 router.post('/setindex', setindex);
 router.post('/setindex2', setindex2);
 router.post('/setindex3', setindex3);

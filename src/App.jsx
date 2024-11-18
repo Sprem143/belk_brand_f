@@ -9,6 +9,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { Link, Outlet } from 'react-router-dom';
 
 function App() {
 
@@ -738,6 +739,8 @@ function App() {
           <button className='ms-4 mt-4' variant="secondary" onClick={downloadInvontory}>
             Download Result
           </button>
+          <Link className='ms-4' to='analysis'>Analysis Data</Link>
+
         </div>
       </div>
       <div className="timer_container mt-4">
@@ -1281,6 +1284,7 @@ function App() {
         </Accordion.Item>
       </Accordion>
       <hr />
+      <Outlet/>
     </div>
 
 
