@@ -4,9 +4,7 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Spinner from 'react-bootstrap/Spinner';
 import Accordion from 'react-bootstrap/Accordion';
-import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { Link, Outlet } from 'react-router-dom';
@@ -23,6 +21,7 @@ function App() {
   const [loading6, setLoading6] = useState(false);
   const [loading7, setLoading7] = useState(false);
   const [loading8, setLoading8] = useState(false);
+  const [errorloading, seterrorLoading] = useState(false);
   const [links1, setLinks1] = useState([]);
   const [links2, setLinks2] = useState([]);
   const [links3, setLinks3] = useState([]);
@@ -31,7 +30,7 @@ function App() {
   const [links6, setLinks6] = useState([]);
   const [links7, setLinks7] = useState([]);
   const [links8, setLinks8] = useState([]);
-  const [invProduct, setInvProduct] = useState([{}]);
+  const [errorlinks, seterrorLinks] = useState([]);
   const [customIndex, setCustomIndex] = useState(0);
   const [customIndex2, setCustomIndex2] = useState(0);
   const [customIndex3, setCustomIndex3] = useState(0);
@@ -40,6 +39,8 @@ function App() {
   const [customIndex6, setCustomIndex6] = useState(0);
   const [customIndex7, setCustomIndex7] = useState(0);
   const [customIndex8, setCustomIndex8] = useState(0);
+  const [errorcustomIndex, seterrorCustomIndex] = useState(0);
+
   const [index1, setIndex1] = useState(0);
   const [index2, setIndex2] = useState(0);
   const [index3, setIndex3] = useState(0);
@@ -48,6 +49,8 @@ function App() {
   const [index6, setIndex6] = useState(0);
   const [index7, setIndex7] = useState(0);
   const [index8, setIndex8] = useState(0);
+  const [errorindex, seterrorIndex] = useState(0);
+
   const [speed1, setSpeed1] = useState(0);
   const [speed2, setSpeed2] = useState(0);
   const [speed3, setSpeed3] = useState(0);
@@ -56,15 +59,26 @@ function App() {
   const [speed6, setSpeed6] = useState(0);
   const [speed7, setSpeed7] = useState(0);
   const [speed8, setSpeed8] = useState(0);
+  const [errorspeed, setSpeederror] = useState(0);
+
   const [totalProduct, setTotalProduct] = useState(0);
+  const [urlError1, setUrlError1] = useState(false);
+  const [urlError2, setUrlError2] = useState(false);
+  const [urlError8, setUrlError8] = useState(false);
+  const [urlError3, setUrlError3] = useState(false);
+  const [urlError4, setUrlError4] = useState(false);
+  const [urlError5, setUrlError5] = useState(false);
+  const [urlError6, setUrlError6] = useState(false);
+  const [urlError7, setUrlError7] = useState(false);
+  const [errurlerr, setErrurlerr] = useState(false)
   const stopRef = useRef(false);
   const timerRef = useRef(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   useEffect(() => {
     getinvurl();
-    getinvproducts();
     getserialnumber();
-    getupdatedproduct()
+    getupdatedproduct();
+    geterrorurl()
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
@@ -113,18 +127,7 @@ function App() {
 
   }
 
-  const getinvproducts = async () => {
-    try {
-      let result = await fetch('https://brand-b-1.onrender.com/getinvproduct', {
-        method: "GET",
-        headers: { 'Content-Type': 'application/json' }
-      })
-      result = await result.json();
-      setInvProduct(result);
-    } catch (err) {
-      console.log(err)
-    }
-  }
+
   const getinvurl = async () => {
     try {
       let result = await fetch('https://brand-b-1.onrender.com/getinvurl', {
@@ -145,7 +148,18 @@ function App() {
       console.log(err)
     }
   };
-
+  const geterrorurl = async () => {
+    try {
+      let result = await fetch('https://brand-b-1.onrender.com/geterrorurl', {
+        method: "GET",
+        headers: { 'Content-Type': 'application/json' }
+      })
+      result = await result.json();
+      seterrorLinks(result.links);
+    } catch (err) {
+      console.log(err)
+    }
+  };
   // --------upload file for inventory update----
   const setInventoryfile = (e) => {
     setInvFile(e.target.files[0]);
@@ -164,11 +178,11 @@ function App() {
       });
       alert(response.data.msg);
       window.location.reload();
-      setLoading(false)
       getinvproducts();
 
     } catch (error) {
       console.error('Error uploading file:', error);
+      setLoading(false)
       alert('Failed to upload file');
     }
   };
@@ -269,7 +283,17 @@ function App() {
     result.status ? null : setindex8();
     setIndex8(result.index)
   };
-
+  const seterrorindex = async () => {
+    const newIndex = parseInt(errorcustomIndex, 10);
+    let result = await fetch('https://brand-b-1.onrender.com/seterrorindex', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_index: newIndex })
+    });
+    result = await result.json();
+    result.status ? null : seterrorindex();
+    seterrorIndex(result.index)
+  };
 
   const autofetchData = async (link) => {
     try {
@@ -281,6 +305,7 @@ function App() {
       result = await result.json();
       return result
     } catch (err) {
+      setUrlError1(true);
       console.log("Error in autofetchData:", err);
       return false; // Return false in case of error to prevent further execution
     }
@@ -383,6 +408,21 @@ function App() {
       return false; // Return false in case of error to prevent further execution
     }
   };
+  const autofetchDataerror = async (link) => {
+    try {
+      let result = await fetch('https://brand-b-1.onrender.com/autofetchdata', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ link: link })
+      });
+      result = await result.json();
+      return result
+    } catch (err) {
+      setErrurlerr(true);
+      console.log("Error in autofetchData:", err);
+      return false; // Return false in case of error to prevent further execution
+    }
+  };
   const setautoindex1 = async (index) => {
     const newIndex = parseInt(index, 10);
     let result = await fetch('https://brand-b-1.onrender.com/setindex', {
@@ -473,6 +513,9 @@ function App() {
     result.status ? null : setautoindex8();
     setIndex8(result.index)
   }
+
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
   const autofetch = async () => {
     let index = index1;
     setLoading1(true);
@@ -488,10 +531,13 @@ function App() {
         console.log(`Thread-I || index: ${index} || result ${result}`);
         if (result === true) {
           index += 1;
-          setautoindex1(index)
+          setautoindex1(index);
+          setUrlError1(false)
         } else {
+          setUrlError1(true);
           console.log("An error occurred.");
-          index = index;
+          await delay(5000);
+          index += 1;
         }
       } catch (err) {
         console.log("Error in autofetch:", err);
@@ -515,9 +561,12 @@ function App() {
         if (result === true) {
           index += 1;
           setautoindex2(index)
+          setUrlError2(false)
         } else {
+          setUrlError2(true);
           console.log("An error occurred.");
-          index = index;
+          await delay(5000);
+          index += 1;
         }
       } catch (err) {
         console.log("Error in autofetch:", err);
@@ -539,9 +588,12 @@ function App() {
         if (result === true) {
           index += 1;
           setautoindex3(index)
+          setUrlError3(false)
         } else {
+          setUrlError3(true);
           console.log("An error occurred.");
-          index = index;
+          await delay(5000);
+          index += 1;
         }
       } catch (err) {
         console.log("Error in autofetch:", err);
@@ -560,14 +612,15 @@ function App() {
         const timeTaken1 = (endTime - startTime) / 1000;
         setSpeed4(timeTaken1.toFixed(1));
         console.log(`Thread-IV || index: ${index} || result ${result}`);
-
-
         if (result === true) {
           index += 1;
           setautoindex4(index)
+          setUrlError4(false)
         } else {
+          setUrlError4(true);
           console.log("An error occurred.");
-          index = index;
+          await delay(5000);
+          index += 1;
         }
       } catch (err) {
         console.log("Error in autofetch:", err);
@@ -589,9 +642,12 @@ function App() {
         if (result === true) {
           index += 1;
           setautoindex5(index)
+          setUrlError5(false)
         } else {
+          setUrlError5(true);
           console.log("An error occurred.");
-          index = index;
+          await delay(5000);
+          index += 1;
         }
       } catch (err) {
         console.log("Error in autofetch5:", err);
@@ -614,9 +670,12 @@ function App() {
         if (result === true) {
           index += 1;
           setautoindex6(index)
+          setUrlError6(false)
         } else {
+          setUrlError6(true);
           console.log("An error occurred.");
-          index = index;
+          await delay(5000);
+          index += 1;
         }
       } catch (err) {
         console.log("Error in autofetch6:", err);
@@ -640,9 +699,12 @@ function App() {
         if (result === true) {
           index += 1;
           setautoindex7(index)
+          setUrlError7(false)
         } else {
+          setUrlError7(true);
           console.log("An error occurred.");
-          index = index;
+          await delay(5000);
+          index += 1;
         }
       } catch (err) {
         console.log("Error in autofetch7:", err);
@@ -665,45 +727,86 @@ function App() {
         if (result === true) {
           index += 1;
           setautoindex8(index)
+          setUrlError8(false)
         } else {
+          setUrlError8(true);
           console.log("An error occurred.");
-          index = index;
+          await delay(5000);
+          index += 1;
         }
       } catch (err) {
         console.log("Error in autofetch8:", err);
       }
     } setLoading8(false)
   };
+  const autofetcherror = async () => {
+    let index = errorindex;
+    seterrorLoading(true);
+    startTimer();
+    stopRef.current = false;
+    while (index < errorlinks.length && !stopRef.current) {
+      try {
+        const startTime = performance.now(); // Start the timer
+        const result = await autofetchDataerror(errorlinks[index]);
+        const endTime = performance.now(); // End the timer
+        const timeTaken1 = (endTime - startTime) / 1000;
+        setSpeederror(timeTaken1.toFixed(1));
+        console.log(`Thread-Error || error_index: ${errorindex} || result ${result}`);
+        if (result === true) {
+          index += 1;
+          seterrorindex(index);
+          setErrurlerr(false)
+        } else {
+          setErrurlerr(true);
+          console.log("An error occurred.");
+          await delay(5000);
+          index += 1;
+        }
+      } catch (err) {
+        console.log("Error in autofetch:", err);
+      }
+    }
+    seterrorLoading(false);
+    stopTimer();
+  };
   const stopFetching = () => {
     stopRef.current = true; // Set stop condition
   };
 
-  const getupdatedproduct=async()=>{
+  const getupdatedproduct = async () => {
 
-    let result= await fetch('https://brand-b-1.onrender.com/getupdatedproduct',{
-      method:'GET',
-      headers:{'Content-Type':'application/json'}
+    let result = await fetch('https://brand-b-1.onrender.com/getupdatedproduct', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
     });
-    result= await result.json();
+    result = await result.json();
     setTotalProduct(result.num);
   }
   const downloadInvontory = async () => {
     try {
-      setLoading(true)
-      const response = await axios({
-        url: 'https://brand-b-1.onrender.com/download-inventory', // Replace with your backend URL
-        method: 'GET',
-        responseType: 'blob', // Important to get the response as a blob (binary data)
-      });
-      // Create a link element to trigger download
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'Updated_inventory.xlsx'); // File name
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      setLoading(false)
+      var ans;
+      if (errorlinks.length > 0) {
+        ans = confirm("There are some invalid or such a url where error occur. If you visited that then press ok neigher check those url and retry")
+      }
+      console.log(ans)
+      if(!ans){geterrorurl(); return;}
+      if (ans=== undefined || true) {
+        setLoading(true)
+        const response = await axios({
+          url: 'https://brand-b-1.onrender.com/download-inventory', // Replace with your backend URL
+          method: 'GET',
+          responseType: 'blob', // Important to get the response as a blob (binary data)
+        });
+        // Create a link element to trigger download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'Updated_inventory.xlsx'); // File name
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setLoading(false)
+      }
     } catch (error) {
       console.error('Error downloading the file:', error);
       setLoading(false)
@@ -749,10 +852,10 @@ function App() {
           (loading1 || loading2 || loading3 || loading4 || loading5 || loading6 || loading7 || loading8) && <div className='timer'>Expected Time :&nbsp;<span style={{ fontWeight: 'bolder' }}>{formatElapsedTime1((speed1 / 8) * (links1.length + links2.length + links3.length + links4.length + links5.length + links6.length + links7.length + links8.length - (index1 + index2 + index3 + index4 + index5 + index6 + index7 + index8)))}</span> </div>
         }
         <div className="timer">
-        Total updated Product : {totalProduct} <span onClick={getupdatedproduct}><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="ms-4 bi bi-arrow-clockwise" viewBox="0 0 16 16">
+          Total updated Product : {totalProduct} <span onClick={getupdatedproduct}><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="ms-4 bi bi-arrow-clockwise" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
             <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
-          </svg></span> 
+          </svg></span>
         </div>
       </div>
       <Accordion className='mt-4' defaultActiveKey="0">
@@ -761,6 +864,7 @@ function App() {
           <Accordion.Body>
             {/* --------first row of process */}
             <div className="container">
+
               <div className="row">
                 <div className="col-lg-6">
                   <Button variant="secondary" className='me-4' onClick={autofetch}>
@@ -777,10 +881,7 @@ function App() {
                   <Button variant="secondary" className='me-4' onClick={setindex}>
                     Set Index
                   </Button>
-                  <hr />
-
-
-                  <div className="container">
+                  <div className="container mt-2">
                     <div className="row">
                       <div className="col-lg-4 d-flex justify-content-center align-items-center">
                         <h4>
@@ -804,21 +905,8 @@ function App() {
                       </div>
                     </div>
                   </div>
-                  <Table className='mt-4' striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th>Index</th>
-                        <th>Current url &nbsp; &nbsp;(Total urls : {links1.length})</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{index1}</td>
-                        <td><a href={links1[index1]} target='_blank'>{index1 === links1.length ? links1[index1] : "Completed"}</a></td>
-                      </tr>
-                    </tbody>
-
-                  </Table>
+                  {urlError1 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
+                  <a href={links1[index1]} target='_blank' style={{ color: urlError1 ? 'red' : '#1970ff' }}>{index1 === links1.length ? "Completed" : links1[index1]}</a>
                 </div>
                 <div className="col-lg-6">
                   <Button variant="secondary" className='me-4' onClick={autofetch2}>
@@ -835,7 +923,6 @@ function App() {
                   <Button variant="secondary" className='me-4' onClick={setindex2}>
                     Set Index
                   </Button>
-                  <hr />
                   <div className="container">
                     <div className="row">
                       <div className="col-md-4 d-flex justify-content-center align-items-center">
@@ -860,25 +947,13 @@ function App() {
                       </div>
                     </div>
                   </div>
-                  <Table className='mt-4' striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th>Index</th>
-                        <th>Current url &nbsp; &nbsp;(Total urls : {links2.length})</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{index2}</td>
-                        <td><a href={links2[index2]} target='_blank'>{index2 === links2.length ? links2[index2] : "Completed"}</a></td>
-                      </tr>
-                    </tbody>
-
-                  </Table>
+                  {urlError2 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
+                  <a href={links2[index2]} target='_blank' style={{ color: urlError2 ? 'red' : '#1970ff' }}>{index2 === links2.length ? "Completed" : links2[index2]}</a>
                 </div>
               </div>
             </div>
             {/* -------------second row of process--- */}
+            <hr />
             <div className="container">
               <div className="row">
                 <div className="col-lg-6">
@@ -896,9 +971,6 @@ function App() {
                   <Button variant="secondary" className='me-4' onClick={setindex3}>
                     Set Index
                   </Button>
-                  <hr />
-
-
                   <div className="container">
                     <div className="row">
                       <div className="col-md-4 d-flex justify-content-center align-items-center">
@@ -923,21 +995,8 @@ function App() {
                       </div>
                     </div>
                   </div>
-                  <Table className='mt-4' striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th>Index</th>
-                        <th>Current url &nbsp; &nbsp;(Total urls : {links3.length})</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{index3}</td>
-                        <td><a href={links3[index3]} target='_blank'>{index3 === links3.length ? links3[index3] : "Completed"}</a></td>
-                      </tr>
-                    </tbody>
-
-                  </Table>
+                  {urlError1 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
+                  <a href={links3[index3]} target='_blank' style={{ color: urlError3 ? 'red' : '#1970ff' }}>{index3 === links3.length ? "Completed" : links3[index3]}</a>
                 </div>
                 <div className="col-lg-6">
                   <Button variant="secondary" className='me-4' onClick={autofetch4}>
@@ -954,7 +1013,6 @@ function App() {
                   <Button variant="secondary" className='me-4' onClick={setindex4}>
                     Set Index
                   </Button>
-                  <hr />
                   <div className="container">
                     <div className="row">
                       <div className="col-md-4 d-flex justify-content-center align-items-center">
@@ -979,26 +1037,13 @@ function App() {
                       </div>
                     </div>
                   </div>
-                  <Table className='mt-4' striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th>Index</th>
-                        <th>Current url &nbsp; &nbsp;(Total urls : {links4.length})</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{index4}</td>
-                        <td><a href={links4[index4]} target='_blank'>{index4 === links4.length ? links4[index4] : "Completed"}</a></td>
-                      </tr>
-                    </tbody>
-
-                  </Table>
-                </div>
+                  {urlError4 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
+                  <a href={links4[index4]} target='_blank' style={{ color: urlError4 ? 'red' : '#1970ff' }}>{index4 === links4.length ? "Completed" : links4[index4]}</a>                </div>
               </div>
             </div>
 
             {/* ----------third row of process-------- */}
+            <hr />
             <div className="container">
               <div className="row">
                 <div className="col-lg-6">
@@ -1016,9 +1061,6 @@ function App() {
                   <Button variant="secondary" className='me-4' onClick={setindex5}>
                     Set Index
                   </Button>
-                  <hr />
-
-
                   <div className="container">
                     <div className="row">
                       <div className="col-md-4 d-flex justify-content-center align-items-center">
@@ -1043,22 +1085,8 @@ function App() {
                       </div>
                     </div>
                   </div>
-                  <Table className='mt-4' striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th>Index</th>
-                        <th>Current url &nbsp; &nbsp;(Total urls : {links5.length})</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{index5}</td>
-                        <td><a href={links5[index5]} target='_blank'>{index5 === links5.length ? links5[index5] : "Completed"}</a></td>
-                      </tr>
-                    </tbody>
-
-                  </Table>
-                </div>
+                  {urlError5 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
+                  <a href={links5[index5]} target='_blank' style={{ color: urlError5 ? 'red' : '#1970ff' }}>{index5 === links5.length ? "Completed" : links5[index5]}</a>                </div>
                 <div className="col-lg-6">
                   <Button variant="secondary" className='me-4' onClick={autofetch6}>
                     Start-6
@@ -1099,26 +1127,13 @@ function App() {
                       </div>
                     </div>
                   </div>
-                  <Table className='mt-4' striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th>Index</th>
-                        <th>Current url &nbsp; &nbsp;(Total urls : {links6.length})</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{index6}</td>
-                        <td><a href={links6[index6]} target='_blank'>{index6 === links6.length ? links6[index6] : "Completed"}</a></td>
-                      </tr>
-                    </tbody>
-
-                  </Table>
-                </div>
+                  {urlError6 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
+                  <a href={links6[index6]} target='_blank' style={{ color: urlError6 ? 'red' : '#1970ff' }}>{index6 === links6.length ? "Completed" : links6[index6]}</a>                </div>
               </div>
             </div>
 
             {/* --------fourth row of process---------- */}
+            <hr />
             <div className="container">
               <div className="row">
                 <div className="col-lg-6">
@@ -1136,7 +1151,6 @@ function App() {
                   <Button variant="secondary" className='me-4' onClick={setindex7}>
                     Set Index
                   </Button>
-                  <hr />
                   <div className="container">
                     <div className="row">
                       <div className="col-md-4 d-flex justify-content-center align-items-center">
@@ -1161,22 +1175,8 @@ function App() {
                       </div>
                     </div>
                   </div>
-                  <Table className='mt-4' striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th>Index</th>
-                        <th>Current url &nbsp; &nbsp;(Total urls : {links7.length})</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{index7}</td>
-                        <td><a href={links7[index7]} target='_blank'>{index7 === links7.length ? links7[index7] : "Completed"}</a></td>
-                      </tr>
-                    </tbody>
-
-                  </Table>
-                </div>
+                  {urlError7 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
+                  <a href={links7[index7]} target='_blank' style={{ color: urlError7 ? 'red' : '#1970ff' }}>{index7 === links7.length ? "Completed" : links7[index7]}</a>                </div>
                 <div className="col-lg-6">
                   <Button variant="secondary" className='me-4' onClick={autofetch8}>
                     Start-8
@@ -1192,103 +1192,112 @@ function App() {
                   <Button variant="secondary" className='me-4' onClick={setindex8}>
                     Set Index
                   </Button>
-                  <hr />
-                  <div className="container">
-                    <div className="row">
-                      <div className="col-md-4 d-flex justify-content-center align-items-center">
-                        <h4>
-                          {index8}/{links8.length}
-                        </h4>
-                        {loading8 && (
-                          <div className="loading-overlay ms-2">
-                            <Spinner animation="border" variant="primary" />
+                  <div className="col-lg-12">
+                    <div className="container">
+                      <div className="row">
+                        <div className="col-md-4 d-flex justify-content-center align-items-center">
+                          <h4>
+                            {index8}/{links8.length}
+                          </h4>
+                          {loading8 && (
+                            <div className="loading-overlay ms-2">
+                              <Spinner animation="border" variant="primary" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="col-md-4 d-flex justify-content-center">
+                          <div style={{ height: 70, width: 70 }}>
+                            <CircularProgressbar value={(index8 / links8.length * 100)} text={`${(index8 / links8.length * 100).toFixed(0)}%`} />;
                           </div>
-                        )}
-                      </div>
-                      <div className="col-md-4 d-flex justify-content-center">
-                        <div style={{ height: 70, width: 70 }}>
-                          <CircularProgressbar value={(index8 / links8.length * 100)} text={`${(index8 / links8.length * 100).toFixed(0)}%`} />;
+                        </div>
+                        <div className="col-md-4 d-flex justify-content-start align-items-center">
+                          <h3>
+                            {speed8} s / URL
+                          </h3>
                         </div>
                       </div>
-                      <div className="col-md-4 d-flex justify-content-start align-items-center">
-                        <h3>
-                          {speed8} s / URL
-                        </h3>
-                      </div>
                     </div>
+
+                    {urlError8 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
+                    <a href={links8[index8]} target='_blank' style={{ color: urlError8 ? 'red' : '#1970ff' }}>{index8 === links8.length ? "Completed" : links8[index8]}</a>
                   </div>
-                  <Table className='mt-4' striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th>Index</th>
-                        <th>Current url &nbsp; &nbsp;(Total urls : {links8.length})</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{index8}</td>
-                        <td><a href={links8[index8]} target='_blank'>{index8 === links8.length ? links8[index8] : "Completed"}</a></td>
-                      </tr>
-                    </tbody>
-                  </Table>
                 </div>
               </div>
             </div>
           </Accordion.Body>
         </Accordion.Item>
 
-        {/* -------inventory updated price and quantity---- */}
+       {
+        errorlinks.length>0 && 
         <Accordion.Item eventKey="1">
-          <Accordion.Header>Total Updated Products detail : {invProduct ? invProduct.length : 0}</Accordion.Header>
-          <Accordion.Body>
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Image</th>
-                  <th>Input UPC</th>
-                  <th>ASIN</th>
-                  <th>SKU</th>
-                  <th>Old Price</th>
-                  <th>Current Price</th>
-                  <th>Quantity</th>
-                  <th>Product URL</th>
-                </tr>
-              </thead>
-              {invProduct.length > 0 && invProduct.map((detailArray, i) => (
-                <tbody>
+        <Accordion.Header> <span style={{color:'red'}}>Number of url in which error occur: &nbsp; {errorlinks.length} </span> </Accordion.Header>
+        <Accordion.Body>
+          {/* --------first row of process */}
+          <div className="container">
 
-                  <tr key={i}>
-                    <td style={{ padding: '0 !important' }}>
-                      {i + 1}
-                    </td>
-                    <td style={{ padding: '0 !important' }}>
-                      <img src={detailArray['Image link']} alt="" height='40px' />
-                    </td>
-                    <td>{detailArray['Input UPC']}</td>
-                    <td>{detailArray['ASIN']}</td>
-                    <td>{detailArray['SKU']}</td>
-                    <td>{detailArray['Product price']}</td>
-                    <td>{detailArray['Current Price']}</td>
-                    <td>{detailArray['Current Quantity']}</td>
-                    <td><a href={detailArray['Product link']} target='_blank'>Click to see details</a></td>
+            <div className="row">
+              <div className="col-lg-12">
+                <Button variant="secondary" className='me-4' onClick={autofetcherror}>
+                  Retry
+                </Button>
+                  <input
+                    type="number"
+                    className='me-4 p-1'
+                    style={{ width: '70px' }}
+                    placeholder={index2}
+                    onChange={(e) => seterrorCustomIndex(e.target.value)}
+                  />
+
+                  <Button variant="secondary" className='me-4' onClick={seterrorindex}>
+                    Set Index
+                  </Button>
 
 
+                <div className="container mt-2">
+                  <div className="row">
+                    <div className="col-lg-4 d-flex justify-content-center align-items-center">
+                      <h4>
+                        {errorindex}/{errorlinks.length}
+                      </h4>
+                      {errorloading && (
+                        <div className="loading-overlay ms-2">
+                          <Spinner animation="border" variant="primary" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="col-lg-4 d-flex justify-content-center">
+                      <div style={{ height: 70, width: 70 }}>
+                        <CircularProgressbar value={(errorindex / errorlinks.length * 100)} text={`${(errorindex / errorlinks.length * 100).toFixed(0)}%`} />;
+                      </div>
+                    </div>
+                    <div className="col-lg-4 d-flex justify-content-start align-items-center">
+                      <h3>
+                        {errorspeed} s / URL
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+                {errurlerr && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
+                <a href={errorlinks[errorindex]} target='_blank' style={{ color: errurlerr ? 'red' : '#1970ff' }}>{errorindex === errorlinks.length ? "Completed" : errorlinks[errorindex]}</a>
+                <hr />
+                <ol>
+                  {
+                    errorlinks.map((el) => (
+                      <li><a href={el} target='_blank'>{el}</a></li>
+                    ))
+                  }
+                </ol>
+              </div>
+            </div>
+          </div>
 
-                  </tr>
-
-                </tbody>
-              ))}
-            </Table>
-          </Accordion.Body>
-        </Accordion.Item>
+        </Accordion.Body>
+      </Accordion.Item>
+       }
       </Accordion>
       <hr />
-      <Outlet/>
+      <Outlet />
     </div>
-
-
-
   )
 }
 
