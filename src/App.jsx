@@ -68,11 +68,12 @@ function App() {
   const [urlError5, setUrlError5] = useState(false);
   const [urlError6, setUrlError6] = useState(false);
   const [urlError7, setUrlError7] = useState(false);
-  const [errurlerr, setErrurlerr] = useState(false)
+  const [errurlerr, setErrurlerr] = useState(false);
+  const [graph, setGraph] = useState(null)
   const stopRef = useRef(false);
   const timerRef = useRef(null);
   const [elapsedTime, setElapsedTime] = useState(0);
-  
+
   useEffect(() => {
     getinvurl();
     getserialnumber();
@@ -83,6 +84,33 @@ function App() {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
+
+  const categorizePriceRanges = (products) => {
+    const ranges = [
+      { range: "0-50", count: 0 },
+      { range: "51-100", count: 0 },
+      { range: "101-150", count: 0 },
+      { range: "151-200", count: 0 },
+      { range: "201+", count: 0 },
+    ];
+
+    products.forEach((product) => {
+      const price = product.price;
+      if (price <= 50) ranges[0].count += 1;
+      else if (price <= 100) ranges[1].count += 1;
+      else if (price <= 150) ranges[2].count += 1;
+      else if (price <= 200) ranges[3].count += 1;
+      else ranges[4].count += 1;
+    });
+
+    return ranges;
+  };
+
+  const showgraph = () => {
+    const gr = categorizePriceRanges();
+    setGraph(gr);
+  }
+
   const handleBeforeUnload = (event) => {
     event.preventDefault();
     stopTimer();
@@ -121,6 +149,7 @@ function App() {
     setIndex6(result.start_index6);
     setIndex7(result.start_index7);
     setIndex8(result.start_index8);
+    seterrorIndex(result.start_error_index);
     setElapsedTime(result.time);
 
   }
@@ -141,13 +170,13 @@ function App() {
       setLinks6(result.links6[0].url);
       setLinks7(result.links7[0].url);
       setLinks8(result.links8[0].url);
+
       // setNoOfTotalPr(result.notp)
     } catch (err) {
       console.log(err)
     }
   };
   const geterrorurl = async () => {
-    console.log("get eror")
     try {
       let result = await fetch('https://brand-b-1.onrender.com/geterrorurl', {
         method: "GET",
@@ -155,7 +184,6 @@ function App() {
       })
       result = await result.json();
       seterrorLinks(result.links);
-      console.log("error call")
     } catch (err) {
       console.log(err)
     }
@@ -192,108 +220,6 @@ function App() {
       body: JSON.stringify({ time: time + elapsedTime })
     })
   }
-  // ------setIndex----
-  const setindex = async () => {
-    const newIndex = parseInt(customIndex, 10);
-    let result = await fetch('https://brand-b-1.onrender.com/setindex', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex })
-    });
-    result = await result.json();
-    if (result.status) {
-      setIndex1(result.index);
-    } else { setindex() }
-  };
-  const setindex2 = async () => {
-    const newIndex = parseInt(customIndex2, 10);
-    let result = await fetch('https://brand-b-1.onrender.com/setindex2', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex })
-    });
-    result = await result.json();
-    result.status ? null : setindex2();
-    setIndex2(result.index)
-  };
-  const setindex3 = async () => {
-    const newIndex = parseInt(customIndex3, 10);
-    let result = await fetch('https://brand-b-1.onrender.com/setindex3', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex })
-    });
-    result = await result.json();
-    result.status ? null : setindex3();
-    setIndex3(result.index)
-  };
-  const setindex4 = async () => {
-    const newIndex = parseInt(customIndex4, 10);
-    let result = await fetch('https://brand-b-1.onrender.com/setindex4', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex })
-    });
-    result = await result.json();
-    result.status ? null : setindex4();
-    setIndex4(result.index)
-  };
-  const setindex5 = async () => {
-    const newIndex = parseInt(customIndex5, 10);
-    let result = await fetch('https://brand-b-1.onrender.com/setindex5', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex })
-    });
-    result = await result.json();
-    result.status ? null : setindex5();
-    setIndex5(result.index)
-  };
-  const setindex6 = async () => {
-    const newIndex = parseInt(customIndex6, 10);
-    let result = await fetch('https://brand-b-1.onrender.com/setindex6', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex })
-    });
-    result = await result.json();
-    result.status ? null : setindex6();
-    setIndex6(result.index)
-  };
-  const setindex7 = async () => {
-    const newIndex = parseInt(customIndex7, 10);
-    let result = await fetch('https://brand-b-1.onrender.com/setindex7', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex })
-    });
-    result = await result.json();
-    result.status ? null : setindex7();
-    setIndex7(result.index)
-  };
-  const setindex8 = async () => {
-    const newIndex = parseInt(customIndex8, 10);
-    let result = await fetch('https://brand-b-1.onrender.com/setindex8', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex })
-    });
-    result = await result.json();
-    result.status ? null : setindex8();
-    setIndex8(result.index)
-  };
-  const seterrorindex = async () => {
-    const newIndex = parseInt(errorcustomIndex, 10);
-    let result = await fetch('https://brand-b-1.onrender.com/seterrorindex', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ start_index: newIndex })
-    });
-    result = await result.json();
-    result.status ? null : seterrorindex();
-    seterrorIndex(result.index)
-  };
-
   const autofetchData = async (link) => {
     try {
       let result = await fetch('https://brand-b-1.onrender.com/autofetchdata', {
@@ -409,7 +335,7 @@ function App() {
   };
   const autofetchDataerror = async (link) => {
     try {
-      let result = await fetch('https://brand-b-1.onrender.com/autofetchdata', {
+      let result = await fetch('https://brand-b-1.onrender.com/inv/errorautofetchdata', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link: link })
@@ -429,9 +355,6 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: newIndex })
     });
-    result = await result.json();
-    result.status ? null : setautoindex1();
-    setIndex1(result.index)
   }
   const setautoindex2 = async (index) => {
     const newIndex = parseInt(index, 10);
@@ -440,9 +363,6 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: newIndex })
     });
-    result = await result.json();
-    result.status ? null : setautoindex2();
-    setIndex2(result.index)
   }
   const setautoindex3 = async (index) => {
     const newIndex = parseInt(index, 10);
@@ -451,9 +371,6 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: newIndex })
     });
-    result = await result.json();
-    result.status ? null : setautoindex3();
-    setIndex3(result.index)
   }
   const setautoindex4 = async (index) => {
     const newIndex = parseInt(index, 10);
@@ -462,9 +379,6 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: newIndex })
     });
-    result = await result.json();
-    result.status ? null : setautoindex4();
-    setIndex4(result.index)
   }
   const setautoindex5 = async (index) => {
     const newIndex = parseInt(index, 10);
@@ -473,11 +387,7 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: newIndex })
     });
-    result = await result.json();
-    result.status ? null : setautoindex5();
-    setIndex5(result.index)
   }
-
   const setautoindex6 = async (index) => {
     const newIndex = parseInt(index, 10);
     let result = await fetch('https://brand-b-1.onrender.com/setindex6', {
@@ -485,9 +395,6 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: newIndex })
     });
-    result = await result.json();
-    result.status ? null : setautoindex6();
-    setIndex6(result.index)
   }
   const setautoindex7 = async (index) => {
     const newIndex = parseInt(index, 10);
@@ -496,9 +403,6 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: newIndex })
     });
-    result = await result.json();
-    result.status ? null : setautoindex7();
-    setIndex7(result.index)
   }
 
   const setautoindex8 = async (index) => {
@@ -508,31 +412,36 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start_index: newIndex })
     });
-    result = await result.json();
-    result.status ? null : setautoindex8();
-    setIndex8(result.index)
+  }
+
+  const setautoerrorindex = async (index) => {
+    const newIndex = parseInt(errorcustomIndex, 10);
+    let result = await fetch('https://brand-b-1.onrender.com/seterrorindex', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_index: newIndex })
+    });
   }
 
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-  const delay2 = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   const autofetch = async () => {
-
     let index = index1;
     setLoading1(true);
     startTimer();
     stopRef.current = false;
     while (index < links1.length && !stopRef.current) {
       try {
-        const startTime = performance.now(); // Start the timer
+        const startTime = performance.now();
         const result = await autofetchData(links1[index]);
-        const endTime = performance.now(); // End the timer
+        const endTime = performance.now();
         const timeTaken1 = (endTime - startTime) / 1000;
         setSpeed1(timeTaken1.toFixed(1));
         console.log(`Thread-I || index: ${index} || result ${result}`);
         if (result === true) {
           index += 1;
-          setautoindex1(index);
+          setIndex1(index)
+          index % 10 == 0 || index == links1.length ? setautoindex1(index) : null;
           setUrlError1(false)
         } else {
           setUrlError1(true);
@@ -562,7 +471,8 @@ function App() {
         console.log(`Thread-II || index: ${index} || result ${result}`);
         if (result === true) {
           index += 1;
-          setautoindex2(index)
+          setIndex2(index)
+          index % 10 == 0 || index == links2.length ? setautoindex2(index) : null;
           setUrlError2(false)
         } else {
           setUrlError2(true);
@@ -590,7 +500,8 @@ function App() {
         console.log(`Thread-III || index: ${index} || result ${result}`);
         if (result === true) {
           index += 1;
-          setautoindex3(index)
+          setIndex3(index)
+          index % 10 == 0 || index == links3.length ? setautoindex3(index) : null;
           setUrlError3(false)
         } else {
           setUrlError3(true);
@@ -618,7 +529,8 @@ function App() {
         console.log(`Thread-IV || index: ${index} || result ${result}`);
         if (result === true) {
           index += 1;
-          setautoindex4(index)
+          setIndex4(index)
+          index % 10 == 0 || index == links4.length ? setautoindex4(index) : null;
           setUrlError4(false)
         } else {
           setUrlError4(true);
@@ -646,7 +558,8 @@ function App() {
         console.log(`Thread-V || index: ${index} || result ${result}`);
         if (result === true) {
           index += 1;
-          setautoindex5(index)
+          setIndex5(index)
+          index % 10 == 0 || index == links5.length ? setautoindex5(index) : null;
           setUrlError5(false)
         } else {
           setUrlError5(true);
@@ -675,8 +588,8 @@ function App() {
         console.log(`Thread-VI || index: ${index} || result ${result}`);
         if (result === true) {
           index += 1;
-          setautoindex6(index)
-          setUrlError6(false)
+          setIndex6(index)
+          index % 10 == 0 || index == links6.length ? setautoindex6(index) : null; setUrlError6(false)
         } else {
           setUrlError6(true);
           console.log("An error occurred.");
@@ -689,7 +602,6 @@ function App() {
       }
     } setLoading6(false)
   };
-
   const autofetch7 = async () => {
     let index = index7;
     setLoading7(true);
@@ -705,7 +617,8 @@ function App() {
         console.log(`Thread-VII || index: ${index} || result ${result}`);
         if (result === true) {
           index += 1;
-          setautoindex7(index)
+          setIndex7(index)
+          index % 10 == 0 || index == links7.length ? setautoindex7(index) : null;
           setUrlError7(false)
         } else {
           setUrlError7(true);
@@ -719,7 +632,6 @@ function App() {
       }
     } setLoading7(false)
   };
-
   const autofetch8 = async () => {
     let index = index8;
     setLoading8(true);
@@ -734,7 +646,8 @@ function App() {
         console.log(`Thread-VIII || index: ${index} || result ${result}`);
         if (result === true) {
           index += 1;
-          setautoindex8(index)
+          setIndex8(index)
+          index % 10 == 0 || index == links8.length ? setautoindex8(index) : null;
           setUrlError8(false)
         } else {
           setUrlError8(true);
@@ -750,6 +663,7 @@ function App() {
   };
   const autofetcherror = async () => {
     let index = errorindex;
+    alert(errorlinks[index])
     seterrorLoading(true);
     startTimer();
     stopRef.current = false;
@@ -762,8 +676,12 @@ function App() {
         setSpeederror(timeTaken1.toFixed(1));
         console.log(`Thread-Error || error_index: ${errorindex} || result ${result}`);
         if (result === true) {
+          let rindex = errorlinks.indexOf(errorlinks[index]);
+          if (rindex !== -1) {
+            errorlinks.splice(rindex, 1);
+          }
           index += 1;
-          seterrorindex(index);
+          seterrorIndex(index)
           setErrurlerr(false)
         } else {
           setErrurlerr(true);
@@ -779,6 +697,15 @@ function App() {
     stopTimer();
   };
   const stopFetching = () => {
+    loading1 ? setautoindex1(index1 + 1) : null
+    loading2 ? setautoindex2(index2 + 1) : null
+    loading3 ? setautoindex3(index3 + 1) : null
+    loading4 ? setautoindex4(index4 + 1) : null
+    loading5 ? setautoindex5(index5 + 1) : null
+    loading6 ? setautoindex6(index6 + 1) : null
+    loading7 ? setautoindex7(index7 + 1) : null
+    loading8 ? setautoindex8(index8 + 1) : null
+    errorloading ? setautoerrorindex(errorindex+1):null
     stopRef.current = true; // Set stop condition
   };
 
@@ -875,7 +802,7 @@ function App() {
                   <div className="cus_row col-lg-3 col-md-6 col-sm-12 mt-2 mb-2">
                     <button className='startbtn me-3' onClick={autofetch}>Start-I</button>
                     <input className='inputbtn' type="number" placeholder={index1} onChange={(e) => setCustomIndex(e.target.value)} />
-                    <button className='startbtn ms-3' onClick={setindex} >
+                    <button className='startbtn ms-3' onClick={() => setautoindex1(customIndex)} >
                       Set Index
                     </button>
                   </div>
@@ -908,7 +835,7 @@ function App() {
                   <div className="cus_row col-lg-3 col-md-6 col-sm-12 mt-2 mb-2">
                     <button className='startbtn me-3' onClick={autofetch2}>Start-II</button>
                     <input className='inputbtn' type="number" placeholder={index2} onChange={(e) => setCustomIndex2(e.target.value)} />
-                    <button className='startbtn ms-3' onClick={setindex2} >
+                    <button className='startbtn ms-3' onClick={() => setautoindex2(customIndex2)} >
                       Set Index
                     </button>
                   </div>
@@ -941,7 +868,7 @@ function App() {
                   <div className="cus_row col-lg-3 col-md-6 col-sm-12 mt-2 mb-2">
                     <button className='startbtn me-3' onClick={autofetch3}>Start-III</button>
                     <input className='inputbtn' type="number" placeholder={index3} onChange={(e) => setCustomIndex3(e.target.value)} />
-                    <button className='startbtn ms-3' onClick={setindex3} >
+                    <button className='startbtn ms-3' onClick={() => setautoindex3(customIndex3)} >
                       Set Index
                     </button>
                   </div>
@@ -974,7 +901,7 @@ function App() {
                   <div className="cus_row col-lg-3 col-md-6 col-sm-12 mt-2 mb-2">
                     <button className='startbtn me-3' onClick={autofetch4}>Start-IV</button>
                     <input className='inputbtn' type="number" placeholder={index4} onChange={(e) => setCustomIndex4(e.target.value)} />
-                    <button className='startbtn ms-3' onClick={setindex4} >
+                    <button className='startbtn ms-3' onClick={() => setautoindex4(customIndex4)} >
                       Set Index
                     </button>
                   </div>
@@ -1007,7 +934,7 @@ function App() {
                   <div className="cus_row col-lg-3 col-md-6 col-sm-12 mt-2 mb-2">
                     <button className='startbtn me-3' onClick={autofetch5}>Start-V</button>
                     <input className='inputbtn' type="number" placeholder={index5} onChange={(e) => setCustomIndex5(e.target.value)} />
-                    <button className='startbtn ms-3' onClick={setindex5} >
+                    <button className='startbtn ms-3' onClick={() => setautoindex5(customIndex5)} >
                       Set Index
                     </button>
                   </div>
@@ -1040,7 +967,7 @@ function App() {
                   <div className="cus_row col-lg-3 col-md-6 col-sm-12 mt-2 mb-2">
                     <button className='startbtn me-3' onClick={autofetch6}>Start-VI</button>
                     <input className='inputbtn' type="number" placeholder={index6} onChange={(e) => setCustomIndex6(e.target.value)} />
-                    <button className='startbtn ms-3' onClick={setindex6} >
+                    <button className='startbtn ms-3' onClick={() => setautoindex6(customIndex6)} >
                       Set Index
                     </button>
                   </div>
@@ -1072,7 +999,7 @@ function App() {
                   <div className="cus_row col-lg-3 col-md-6 col-sm-12 mt-2 mb-2">
                     <button className='startbtn me-3' onClick={autofetch7}>Start-VII</button>
                     <input className='inputbtn' type="number" placeholder={index7} onChange={(e) => setCustomIndex7(e.target.value)} />
-                    <button className='startbtn ms-3' onClick={setindex7} >
+                    <button className='startbtn ms-3' onClick={() => setautoindex7(customIndex7)} >
                       Set Index
                     </button>
                   </div>
@@ -1104,7 +1031,7 @@ function App() {
                   <div className="cus_row col-lg-3 col-md-6 col-sm-12 mt-2 mb-2">
                     <button className='startbtn me-3' onClick={autofetch8}>Start-VIII</button>
                     <input className='inputbtn' type="number" placeholder={index8} onChange={(e) => setCustomIndex8(e.target.value)} />
-                    <button className='startbtn ms-3' onClick={setindex8} >
+                    <button className='startbtn ms-3' onClick={() => setautoindex8(customIndex8)} >
                       Set Index
                     </button>
                   </div>
@@ -1137,13 +1064,13 @@ function App() {
           <Accordion.Item eventKey="1">
             <Accordion.Header> <span style={{ color: 'red' }}>Number of url in which error occur: &nbsp; {errorlinks.length} </span> </Accordion.Header>
             <Accordion.Body>
-              <div className="thread mt-2 mb-4" style={{ backgroundColor: loading2 ? 'rgb(11 109 91 / 99%)' : 'red', boxShadow: loading2 ? '#000000 8px 3px 55px -17px' : '0' }}>
+              <div className="thread mt-2 mb-4" style={{ backgroundColor: errorloading ? 'rgb(11 109 91 / 99%)' : 'red', boxShadow: errorloading ? '#000000 8px 3px 55px -17px' : '0' }}>
                 <div className="container">
                   <div className="row">
                     <div className="cus_row col-lg-3 col-md-6 col-sm-12 mt-2 mb-2">
                       <button className='startbtn me-3' onClick={autofetcherror}>Start</button>
                       <input className='inputbtn' type="number" placeholder={errorindex} onChange={(e) => seterrorCustomIndex(e.target.value)} />
-                      <button className='startbtn ms-3' onClick={seterrorindex} >
+                      <button className='startbtn ms-3' onClick={()=>setautoerrorindex(errorcustomIndex)} >
                         Set Index
                       </button>
                     </div>
@@ -1162,7 +1089,7 @@ function App() {
                     </div>
 
                     <div className="cus_row col-lg-6 col-md-6 col-sm-12 mt-2 mb-2">
-                      {errurlerr && <p style={{ color: 'blue' }}>Error while fetching this url -</p>}
+                      {errurlerr && <p style={{ color: 'white' }}>Error while fetching this url -</p>}
                       <a href={errorlinks[errorindex]} target='_blank' style={{ color: errurlerr ? 'blue' : 'white' }}>{errorindex === errorlinks.length ? "Completed" : errorlinks[errorindex]}</a>
                     </div>
 
@@ -1172,7 +1099,7 @@ function App() {
               <h4>Error urls List</h4>
               <ol>
                 {
-                  errorlinks.map((el,index) => (
+                  errorlinks.map((el, index) => (
                     <li key={index}><a href={el} target='_blank'>{el}</a></li>
                   ))
                 }
