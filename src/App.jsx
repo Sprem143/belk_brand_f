@@ -52,7 +52,8 @@ function App() {
   const timerRef = useRef(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [linkid, setLinkid]= useState('');
-
+  const local= 'http://localhost:10000'
+  const api='https://brand-b-1.onrender.com'
   useEffect(() => {
     getinvurl();
     getupdatedproduct();
@@ -77,7 +78,7 @@ function App() {
 }
 const getinvurl = async () => {
   try {
-    let result = await fetch('https://brand-b-1.onrender.com/getinvurl', {
+    let result = await fetch(`${api}/getinvurl`, {
       method: "GET",
       headers: { 'Content-Type': 'application/json' }
     })
@@ -156,7 +157,7 @@ const getinvurl = async () => {
     const formData = new FormData();
     formData.append('file', invfile);
     try {
-      const response = await axios.post('https://brand-b-1.onrender.com/uploadinvfile', formData, {
+      const response = await axios.post(`${api}/uploadinvfile`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -177,7 +178,7 @@ const getinvurl = async () => {
     const formData = new FormData();
     formData.append('file', invfile);
     try {
-      const response = await axios.post('https://brand-b-1.onrender.com/uploadinvfile2', formData, {
+      const response = await axios.post(`${api}/uploadinvfile2`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -193,7 +194,7 @@ const getinvurl = async () => {
     }
   };
   const settime = (time) => {
-    fetch('https://brand-b-1.onrender.com/settime', {
+    fetch(`${api}/settime`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ time: time + elapsedTime })
@@ -201,7 +202,7 @@ const getinvurl = async () => {
   }
   const autofetchData = async (link,isfirst) => {
     try {
-      let result = await fetch('https://brand-b-1.onrender.com/autofetchdata', {
+      let result = await fetch(`${api}/autofetchdata`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
@@ -215,7 +216,7 @@ const getinvurl = async () => {
   };
   const autofetchData2 = async (link ,isfirst) => {
     try {
-      let result = await fetch('https://brand-b-1.onrender.com/inv/autofetchdata2', {
+      let result = await fetch(`${api}/inv/autofetchdata2`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
@@ -229,7 +230,7 @@ const getinvurl = async () => {
   };
   const autofetchData3 = async (link ,isfirst) => {
     try {
-      let result = await fetch('https://brand-b-1.onrender.com/inv/autofetchdata3', {
+      let result = await fetch(`${api}/inv/autofetchdata3`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
@@ -243,7 +244,7 @@ const getinvurl = async () => {
   };
   const autofetchData4 = async (link ,isfirst) => {
     try {
-      let result = await fetch('https://brand-b-1.onrender.com/inv/autofetchdata4', {
+      let result = await fetch(`${api}/inv/autofetchdata4`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
@@ -257,7 +258,7 @@ const getinvurl = async () => {
   };
   const autofetchData5 = async (link ,isfirst) => {
     try {
-      let result = await fetch('https://brand-b-1.onrender.com/inv/autofetchdata5', {
+      let result = await fetch(`${api}/inv/autofetchdata5`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
@@ -271,7 +272,7 @@ const getinvurl = async () => {
   };
   const autofetchData6 = async (link ,isfirst) => {
     try {
-      let result = await fetch('https://brand-b-1.onrender.com/inv/autofetchdata6', {
+      let result = await fetch(`${api}/inv/autofetchdata6`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
@@ -285,7 +286,7 @@ const getinvurl = async () => {
   };
   const autofetchData7 = async (link ,isfirst) => {
     try {
-      let result = await fetch('https://brand-b-1.onrender.com/inv/autofetchdata7', {
+      let result = await fetch(`${api}/inv/autofetchdata7`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
@@ -299,7 +300,7 @@ const getinvurl = async () => {
   };
   const autofetchData8 = async (link ,isfirst) => {
     try {
-      let result = await fetch('https://brand-b-1.onrender.com/inv/autofetchdata8', {
+      let result = await fetch(`${api}/inv/autofetchdata8`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
@@ -370,10 +371,10 @@ const getinvurl = async () => {
           index += 1;
           setIndex2(index)
         } else {
-          setUrlError1(true);
+          setUrlError2(true);
           await delay(3000);
           console.log("An error occurred.");
-          setUrlError1(false);      
+          setUrlError2(false);      
           index += 1;
           setIndex2(index)
         }
@@ -402,10 +403,10 @@ const getinvurl = async () => {
           index += 1;
           setIndex3(index)
         } else {
-          setUrlError1(true);
+          setUrlError3(true);
           await delay(3000);
           console.log("An error occurred.");
-          setUrlError1(false);
+          setUrlError3(false);
                     index += 1;
           setIndex3(index)
         }
@@ -434,10 +435,10 @@ const getinvurl = async () => {
           index += 1;
           setIndex4(index)
         } else {
-          setUrlError1(true);
+          setUrlError4(true);
           await delay(3000);
           console.log("An error occurred.");
-          setUrlError1(false);
+          setUrlError4(false);
                     index += 1;
           setIndex4(index)
         }
@@ -466,10 +467,10 @@ const getinvurl = async () => {
           index += 1;
           setIndex5(index)
         } else {
-          setUrlError1(true);
+          setUrlError5(true);
           await delay(3000);
           console.log("An error occurred.");
-          setUrlError1(false);
+          setUrlError5(false);
                     index += 1;
           setIndex5(index)
         }
@@ -499,10 +500,10 @@ const getinvurl = async () => {
           index += 1;
           setIndex6(index)
         } else {
-          setUrlError1(true);
+          setUrlError6(true);
           await delay(3000);
           console.log("An error occurred.");
-          setUrlError1(false);
+          setUrlError6(false);
                     index += 1;
           setIndex6(index)
         }
@@ -532,10 +533,10 @@ const getinvurl = async () => {
           index += 1;
           setIndex7(index)
         } else {
-          setUrlError1(true);
+          setUrlError7(true);
           await delay(3000);
           console.log("An error occurred.");
-          setUrlError1(false);
+          setUrlError7(false);
                     index += 1;
           setIndex7(index)
         }
@@ -564,10 +565,10 @@ const getinvurl = async () => {
           index += 1;
           setIndex8(index)
         } else {
-          setUrlError1(true);
+          setUrlError8(true);
           await delay(3000);
           console.log("An error occurred.");
-          setUrlError1(false);
+          setUrlError8(false);
                     index += 1;
           setIndex8(index)
         }
@@ -583,7 +584,7 @@ const getinvurl = async () => {
 
   const getupdatedproduct = async () => {
 
-    let result = await fetch('https://brand-b-1.onrender.com/getupdatedproduct', {
+    let result = await fetch(`${api}/getupdatedproduct`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     });
@@ -595,7 +596,7 @@ const getinvurl = async () => {
     try {
       setLoading(true)
       const response = await axios({
-        url: 'https://brand-b-1.onrender.com/download-inventory',
+        url: `${api}/download-inventory`,
         method: 'GET',
         responseType: 'blob',
       });
