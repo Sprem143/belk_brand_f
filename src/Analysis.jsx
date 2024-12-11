@@ -3,7 +3,7 @@ import Accordion from 'react-bootstrap/Accordion';
 import Table from 'react-bootstrap/Table';
 import { Spinner } from "react-bootstrap";
 import Pagination from 'react-bootstrap/Pagination';
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { LineChart, Line,  XAxis, YAxis, Tooltip } from 'recharts';
 
 export default function Analysis() {
   const [loading, setLoading]=useState(false)
@@ -18,6 +18,8 @@ export default function Analysis() {
 
   const [search, setSearch] = useState(null);
   const [result, setResult] = useState([{}]);
+  const local= 'http://localhost:10000'
+  const api='https://brand-b-1.onrender.com'
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -31,7 +33,7 @@ export default function Analysis() {
     setResult([{}])
     if (search !== null) {
       new Promise(resolve => setTimeout(resolve, 1000))
-      const sr = realData.filter((d) => d.ASIN.toLowerCase().includes(search.toLowerCase()))
+      const sr = realData.filter((d) => d.ASIN.toLowerCase().includes(search.toLowerCase()) || d.SKU.toLowerCase().includes(search.toLowerCase()) || d['Input UPC'].toLowerCase().includes(search.toLowerCase())  )
       setResult(sr);
     }
   }
@@ -62,7 +64,7 @@ export default function Analysis() {
 
   const getdata = async () => {
     setLoading(true)
-    let data = await fetch('https://brand-b-1.onrender.com/analysis/getdata', {
+    let data = await fetch(`${api}/analysis/getdata`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     })
@@ -137,7 +139,7 @@ export default function Analysis() {
              <button onClick={pricedecrease} className="text-white p-0 ms-4 me-4" style={{ backgroundColor: 'transparent', border:'none'}}>Price Decrease</button>
               <button onClick={outofstock} className="text-white p-0 ms-4 me-4" style={{ backgroundColor: 'transparent',border:'none' }}>Out of Stock </button> <input onChange={(e) => setNum(e.target.value)} style={{ width: '40px' }} type="number" placeholder={num} /> <span className="ms-2 me-4">Which quantity is less than {num}</span>
               <div>
-                <input type="text" value={search} style={{ width: '20vw' }} placeholder="Search Products by ASIN" onChange={(e) => { setSearch(e.target.value), searchproduct() }} />
+                <input type="text" value={search} style={{ width: '20vw' }} placeholder="Search Products by ASIN" onChange={(e) => { setSearch((e.target.value).trim()), searchproduct() }} onKeyDown={searchproduct} on />
                 <svg onClick={cancelsearch} xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="ms-2 mb-1 bi bi-x-circle-fill" viewBox="0 0 16 16">
                   <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
                 </svg>
@@ -240,16 +242,16 @@ export default function Analysis() {
 
       {/* Back Up Files Section */}
 <h3>Comparative Price Insights</h3>
-<div className="d-flex">
+<div className="d-flex mt-3">
   <div className="me-4">Current Price : <span className="text-danger">Red</span> <span style={{height:'15px', width:'20px', backgroundColor:'red'}}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> </div>
   <div className="me-4">Old Price : <span style={{color:'#1bb353'}}>Red</span> <span style={{height:'15px', backgroundColor:'#1bb353'}}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> </div>
   <p className="me-4">Price Increased : {iprice} 
     <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="red" className="ms-2 bi bi-graph-up-arrow" viewBox="0 0 16 16">
-  <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/>
+  <path fillRule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/>
 </svg></p>
   <p className="me-4">Price Decreased : {dprice}
      <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="#1bb353" className="ms-2 bi bi-graph-down-arrow" viewBox="0 0 16 16">
-  <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5"/>
+  <path fillRule="evenodd" d="M0 0h1v15h15v1H0zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5"/>
 </svg></p>
   <p className="me-4">Out of stock(less than 10) : {oos} 
     <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="currentColor" className="ms-2 bi bi-cart-x-fill" viewBox="0 0 16 16">
