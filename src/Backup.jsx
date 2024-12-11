@@ -17,7 +17,8 @@ export default function Backup() {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
+  const local= 'http://localhost:10000'
+  const api='https://brand-b-1.onrender.com'
   useEffect(() => {
     getbackup();
   }, [])
@@ -27,7 +28,7 @@ export default function Backup() {
     setResult([{}])
     if (search !== null) {
       new Promise(resolve => setTimeout(resolve, 1000))
-      const sr = data.filter((d) => d.ASIN.toLowerCase().includes(search.toLowerCase()) || d['Input UPC'].toLowerCase().includes(search.toLowerCase()))
+      const sr = data.filter((d) => d.ASIN.toLowerCase().includes(search.toLowerCase()) || d.SKU.toLowerCase().includes(search.toLowerCase()) || d['Input UPC'].toLowerCase().includes(search.toLowerCase())  )
       setResult(sr);
     }
   }
@@ -45,12 +46,14 @@ export default function Backup() {
   }
   
   const getbackup = async () => {
-    let backup = await fetch('https://brand-b-1.onrender.com/analysis/getbackup', {
+    setLoading(true)
+    let backup = await fetch(`${api}/analysis/getbackup`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     });
     backup = await backup.json();
-    setBackup(backup);
+    setLoading(false);
+    setBackup(backup)
     setData(backup[backup.length-1].data);
     setName(backup[backup.length-1].name)
   }
@@ -119,7 +122,7 @@ export default function Backup() {
   const deletebackup=async(name)=>{
 try{
   setLoading(true)
-let res= await fetch('https://brand-b-1.onrender.com/deletebackup',{
+let res= await fetch(`${api}/deletebackup`,{
     method:'DELETE',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({name})
@@ -151,7 +154,7 @@ if(res.status){
 
             <div className="d-flex mb-4  p-2 bg-primary text-white"> 
               <div>
-               Search Products :  <input type="text" value={search} style={{ width: '20vw' }} placeholder="Search Products by ASIN" onChange={(e) => { setSearch(e.target.value), searchproduct() }} />
+               Search Products :  <input type="text" value={search} style={{ width: '20vw' }} placeholder="Search Products by ASIN" onChange={(e) => { setSearch(e.target.value), searchproduct() }} onKeyDown={searchproduct}/>
                 <svg onClick={cancelsearch} xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="me-4 ms-2 mb-1 bi bi-x-circle-fill" viewBox="0 0 16 16">
                   <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
                 </svg>
@@ -254,7 +257,7 @@ if(res.status){
 
       {/* Back Up Files Section */}
       <h1 className="fw mb-4 mt-4">Back Up Files</h1>
-      <ul style={{ width: '49vw' }}>
+      <ul className="pb-4" style={{ width: '49vw' }}>
         {
           backup.map((b) => (
             <li key={b._id} style={{ color: 'white' }} className="m-2">{b.name} - ({b.data ? b.data.length : 0} Products)  
