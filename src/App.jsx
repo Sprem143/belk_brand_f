@@ -57,10 +57,6 @@ function App() {
   useEffect(() => {
     getinvurl();
     getupdatedproduct();
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
   }, []);
 
   function divideArrayIntoParts(array) {
@@ -90,37 +86,6 @@ function App() {
     } catch (err) {
       console.log(err)
     }
-  };
-
-  const categorizePriceRanges = (products) => {
-    const ranges = [
-      { range: "0-50", count: 0 },
-      { range: "51-100", count: 0 },
-      { range: "101-150", count: 0 },
-      { range: "151-200", count: 0 },
-      { range: "201+", count: 0 },
-    ];
-
-    products.forEach((product) => {
-      const price = product.price;
-      if (price <= 50) ranges[0].count += 1;
-      else if (price <= 100) ranges[1].count += 1;
-      else if (price <= 150) ranges[2].count += 1;
-      else if (price <= 200) ranges[3].count += 1;
-      else ranges[4].count += 1;
-    });
-
-    return ranges;
-  };
-
-  const showgraph = () => {
-    const gr = categorizePriceRanges();
-    setGraph(gr);
-  }
-
-  const handleBeforeUnload = (event) => {
-    event.preventDefault();
-    stopTimer();
   };
   const startTimer = () => {
     timerRef.current = setInterval(() => {
