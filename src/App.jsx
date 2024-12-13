@@ -18,7 +18,7 @@ function App() {
   const [loading6, setLoading6] = useState(false);
   const [loading7, setLoading7] = useState(false);
   const [loading8, setLoading8] = useState(false);
-  const [link,setLink]=useState([[],[],[],[],[],[],[],[]])
+  const [link, setLink] = useState([[], [], [], [], [], [], [], []])
 
   const [index1, setIndex1] = useState(0);
   const [index2, setIndex2] = useState(0);
@@ -51,9 +51,9 @@ function App() {
   const stopRef = useRef(false);
   const timerRef = useRef(null);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [linkid, setLinkid]= useState('');
-  const local= 'http://localhost:10000'
-  const api='https://brand-b-1.onrender.com'
+  const [linkid, setLinkid] = useState('');
+  const local = 'http://localhost:10000'
+  const api = 'https://brand-b-1.onrender.com'
   useEffect(() => {
     getinvurl();
     getupdatedproduct();
@@ -69,28 +69,28 @@ function App() {
     const result = [];
 
     for (let i = 0; i < totalParts; i++) {
-        const start = i * partSize;
-        const end = start + partSize;
-        result.push(array.slice(start, end)); // Slice array into parts
+      const start = i * partSize;
+      const end = start + partSize;
+      result.push(array.slice(start, end)); // Slice array into parts
     }
 
     return result;
-}
-const getinvurl = async () => {
-  try {
-    let result = await fetch(`${api}/getinvurl`, {
-      method: "GET",
-      headers: { 'Content-Type': 'application/json' }
-    })
-    result = await result.json();
-    setLinkid(result._id)
-    let dividedarr=divideArrayIntoParts(result.url);
-    setLink(dividedarr)
-    console.log(dividedarr);
-  } catch (err) {
-    console.log(err)
   }
-};
+  const getinvurl = async () => {
+    try {
+      let result = await fetch(`${api}/getinvurl`, {
+        method: "GET",
+        headers: { 'Content-Type': 'application/json' }
+      })
+      result = await result.json();
+      setLinkid(result._id)
+      let dividedarr = divideArrayIntoParts(result.url);
+      setLink(dividedarr)
+      console.log(dividedarr);
+    } catch (err) {
+      console.log(err)
+    }
+  };
 
   const categorizePriceRanges = (products) => {
     const ranges = [
@@ -142,14 +142,14 @@ const getinvurl = async () => {
     const seconds = (time % 60).toFixed(0);
     return `${minutes} m ${seconds} s`;
   };
- 
+
   const setInventoryfile = (e) => {
     setInvFile(e.target.files[0]);
   };
 
   const uploadinventoryfile = async () => {
     setLoading(true)
-    if(!invfile){
+    if (!invfile) {
       alert("Please select file first");
       setLoading(false)
       return;
@@ -200,12 +200,12 @@ const getinvurl = async () => {
       body: JSON.stringify({ time: time + elapsedTime })
     })
   }
-  const autofetchData = async (link,isfirst) => {
+  const autofetchData = async (link) => {
     try {
       let result = await fetch(`${api}/autofetchdata`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
+        body: JSON.stringify({ link: link, id: linkid })
       });
       result = await result.json();
       return result
@@ -214,12 +214,12 @@ const getinvurl = async () => {
       return false; // Return false in case of error to prevent further execution
     }
   };
-  const autofetchData2 = async (link ,isfirst) => {
+  const autofetchData2 = async (link) => {
     try {
       let result = await fetch(`${api}/inv/autofetchdata2`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
+        body: JSON.stringify({ link: link, id: linkid })
       });
       result = await result.json();
       return result
@@ -228,12 +228,12 @@ const getinvurl = async () => {
       return false; // Return false in case of error to prevent further execution
     }
   };
-  const autofetchData3 = async (link ,isfirst) => {
+  const autofetchData3 = async (link) => {
     try {
       let result = await fetch(`${api}/inv/autofetchdata3`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
+        body: JSON.stringify({ link: link, id: linkid })
       });
       result = await result.json();
       return result
@@ -242,12 +242,12 @@ const getinvurl = async () => {
       return false; // Return false in case of error to prevent further execution
     }
   };
-  const autofetchData4 = async (link ,isfirst) => {
+  const autofetchData4 = async (link) => {
     try {
       let result = await fetch(`${api}/inv/autofetchdata4`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
+        body: JSON.stringify({ link: link, id: linkid })
       });
       result = await result.json();
       return result
@@ -256,12 +256,12 @@ const getinvurl = async () => {
       return false; // Return false in case of error to prevent further execution
     }
   };
-  const autofetchData5 = async (link ,isfirst) => {
+  const autofetchData5 = async (link) => {
     try {
       let result = await fetch(`${api}/inv/autofetchdata5`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
+        body: JSON.stringify({ link: link, id: linkid })
       });
       result = await result.json();
       return result
@@ -270,12 +270,12 @@ const getinvurl = async () => {
       return false; // Return false in case of error to prevent further execution
     }
   };
-  const autofetchData6 = async (link ,isfirst) => {
+  const autofetchData6 = async (link) => {
     try {
       let result = await fetch(`${api}/inv/autofetchdata6`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
+        body: JSON.stringify({ link: link, id: linkid })
       });
       result = await result.json();
       return result
@@ -284,12 +284,12 @@ const getinvurl = async () => {
       return false; // Return false in case of error to prevent further execution
     }
   };
-  const autofetchData7 = async (link ,isfirst) => {
+  const autofetchData7 = async (link) => {
     try {
       let result = await fetch(`${api}/inv/autofetchdata7`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
+        body: JSON.stringify({ link: link, id: linkid })
       });
       result = await result.json();
       return result
@@ -298,12 +298,12 @@ const getinvurl = async () => {
       return false; // Return false in case of error to prevent further execution
     }
   };
-  const autofetchData8 = async (link ,isfirst) => {
+  const autofetchData8 = async (link) => {
     try {
       let result = await fetch(`${api}/inv/autofetchdata8`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: link,id:linkid, isfirst:isfirst })
+        body: JSON.stringify({ link: link, id: linkid })
       });
       result = await result.json();
       return result
@@ -322,12 +322,7 @@ const getinvurl = async () => {
     while (index < link[0].length && !stopRef.current) {
       try {
         const startTime = performance.now();
-        var result;
-      if(index==0){
-          result = await autofetchData(link[0][index],true);
-        }else{
-          result = await autofetchData(link[0][index],false);
-        }
+        var result = await autofetchData(link[0][index]);
         const endTime = performance.now();
         const timeTaken1 = (endTime - startTime) / 1000;
         setSpeed1(timeTaken1.toFixed(1));
@@ -356,14 +351,9 @@ const getinvurl = async () => {
     stopRef.current = false;
     while (index < link[1].length && !stopRef.current) {
       try {
-        const startTime = performance.now(); // Start the timer
-        var result;
-        if(index==0){
-            result = await autofetchData2(link[1][index],true);
-          }else{
-            result = await autofetchData2(link[1][index],false);
-          }
-         const endTime = performance.now(); // End the timer
+        const startTime = performance.now();
+        var result = await autofetchData2(link[1][index]);
+        const endTime = performance.now();
         const timeTaken1 = (endTime - startTime) / 1000;
         setSpeed2(timeTaken1.toFixed(1));
         console.log(`Thread-II || index: ${index} || result ${result}`);
@@ -374,7 +364,7 @@ const getinvurl = async () => {
           setUrlError2(true);
           await delay(3000);
           console.log("An error occurred.");
-          setUrlError2(false);      
+          setUrlError2(false);
           index += 1;
           setIndex2(index)
         }
@@ -389,13 +379,9 @@ const getinvurl = async () => {
     stopRef.current = false;
     while (index < link[2].length && !stopRef.current) {
       try {
-        const startTime = performance.now(); // Start the timer
-        var result;
-        if(index==0){
-            result = await autofetchData3(link[2][index],true);
-          }else{
-            result = await autofetchData3(link[2][index],false);
-          }        const endTime = performance.now(); // End the timer
+        const startTime = performance.now();
+        var result = await autofetchData3(link[2][index])
+        const endTime = performance.now();
         const timeTaken1 = (endTime - startTime) / 1000;
         setSpeed3(timeTaken1.toFixed(1));
         console.log(`Thread-III || index: ${index} || result ${result}`);
@@ -407,7 +393,7 @@ const getinvurl = async () => {
           await delay(3000);
           console.log("An error occurred.");
           setUrlError3(false);
-                    index += 1;
+          index += 1;
           setIndex3(index)
         }
       } catch (err) {
@@ -421,13 +407,9 @@ const getinvurl = async () => {
     stopRef.current = false;
     while (index < link[3].length && !stopRef.current) {
       try {
-        const startTime = performance.now(); // Start the timer
-        var result;
-        if(index==0){
-            result = await autofetchData4(link[3][index],true);
-          }else{
-            result = await autofetchData4(link[3][index],false);
-          }        const endTime = performance.now(); // End the timer
+        const startTime = performance.now();
+        var result = await autofetchData4(link[3][index])
+        const endTime = performance.now();
         const timeTaken1 = (endTime - startTime) / 1000;
         setSpeed4(timeTaken1.toFixed(1));
         console.log(`Thread-IV || index: ${index} || result ${result}`);
@@ -439,7 +421,7 @@ const getinvurl = async () => {
           await delay(3000);
           console.log("An error occurred.");
           setUrlError4(false);
-                    index += 1;
+          index += 1;
           setIndex4(index)
         }
       } catch (err) {
@@ -453,13 +435,9 @@ const getinvurl = async () => {
     stopRef.current = false;
     while (index < link[4].length && !stopRef.current) {
       try {
-        const startTime = performance.now(); // Start the timer
-        var result;
-        if(index==0){
-            result = await autofetchData5(link[4][index],true);
-          }else{
-            result = await autofetchData5(link[4][index],false);
-          }        const endTime = performance.now(); // End the timer
+        const startTime = performance.now();
+        var result = await autofetchData5(link[4][index])
+        const endTime = performance.now();
         const timeTaken1 = (endTime - startTime) / 1000;
         setSpeed5(timeTaken1.toFixed(1));
         console.log(`Thread-V || index: ${index} || result ${result}`);
@@ -471,7 +449,7 @@ const getinvurl = async () => {
           await delay(3000);
           console.log("An error occurred.");
           setUrlError5(false);
-                    index += 1;
+          index += 1;
           setIndex5(index)
         }
       } catch (err) {
@@ -486,13 +464,9 @@ const getinvurl = async () => {
     stopRef.current = false;
     while (index < link[5].length && !stopRef.current) {
       try {
-        const startTime = performance.now(); // Start the timer
-        var result;
-        if(index==0){
-            result = await autofetchData6(link[5][index],true);
-          }else{
-            result = await autofetchData6(link[5][index],false);
-          }         const endTime = performance.now(); // End the timer
+        const startTime = performance.now();
+        var result = await autofetchData6(link[5][index])
+        const endTime = performance.now();
         const timeTaken1 = (endTime - startTime) / 1000;
         setSpeed6(timeTaken1.toFixed(1));
         console.log(`Thread-VI || index: ${index} || result ${result}`);
@@ -504,7 +478,7 @@ const getinvurl = async () => {
           await delay(3000);
           console.log("An error occurred.");
           setUrlError6(false);
-                    index += 1;
+          index += 1;
           setIndex6(index)
         }
       } catch (err) {
@@ -520,12 +494,8 @@ const getinvurl = async () => {
     while (index < link[6].length && !stopRef.current) {
       try {
         const startTime = performance.now();
-        var result;
-        if(index==0){
-            result = await autofetchData7(link[6][index],true);
-          }else{
-            result = await autofetchData7(link[6][index],false);
-          }         const endTime = performance.now();
+        var result = await autofetchData7(link[6][index])
+        const endTime = performance.now();
         const timeTaken1 = (endTime - startTime) / 1000;
         setSpeed7(timeTaken1.toFixed(1));
         console.log(`Thread-VII || index: ${index} || result ${result}`);
@@ -537,7 +507,7 @@ const getinvurl = async () => {
           await delay(3000);
           console.log("An error occurred.");
           setUrlError7(false);
-                    index += 1;
+          index += 1;
           setIndex7(index)
         }
       } catch (err) {
@@ -552,12 +522,8 @@ const getinvurl = async () => {
     while (index < link[7].length && !stopRef.current) {
       try {
         const startTime = performance.now(); // Start the timer
-        var result;
-        if(index==0){
-            result = await autofetchData8(link[7][index],true);
-          }else{
-            result = await autofetchData8(link[7][index],false);
-          }         const endTime = performance.now(); // End the timer
+        var result = await autofetchData8(link[7][index])
+        const endTime = performance.now(); // End the timer
         const timeTaken1 = (endTime - startTime) / 1000;
         setSpeed8(timeTaken1.toFixed(1));
         console.log(`Thread-VIII || index: ${index} || result ${result}`);
@@ -569,7 +535,7 @@ const getinvurl = async () => {
           await delay(3000);
           console.log("An error occurred.");
           setUrlError8(false);
-                    index += 1;
+          index += 1;
           setIndex8(index)
         }
       } catch (err) {
@@ -641,7 +607,7 @@ const getinvurl = async () => {
         <h2>Inventory Updation</h2>
         {/* -----Manual inventory updatiuon----------- */}
 
-        <div className='pb-2 mt-4' style={{ border:'1px solid black'}}>
+        <div className='pb-2 mt-4' style={{ border: '1px solid black' }}>
           <h4>Upload direct source file</h4>
           <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
           <button onClick={uploadinventoryfile2} >Upload</button>
@@ -658,7 +624,6 @@ const getinvurl = async () => {
             Download Result
           </button>
           <Link className='ms-4' to='analysis'>Analysis Data</Link>
-
         </div>
       </div>
       <div className="timer_container mt-4">
@@ -700,12 +665,12 @@ const getinvurl = async () => {
 
                   <div className="cus_row col-lg-6 col-md-6 col-sm-12 mt-2 mb-2">
                     {urlError1 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
-                    <a href={link[0][index1]} target='_blank' style={{ color: urlError1 ? 'red' : 'white' }}>{index1 === link[0].length ? 
-                    (
-                      <>
-                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{transform: 'rotate(70deg)'}} />
-                      </>
-                    ) : link[0][index1]}</a>
+                    <a href={link[0][index1]} target='_blank' style={{ color: urlError1 ? 'red' : 'white' }}>{index1 === link[0].length ?
+                      (
+                        <>
+                          Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{ transform: 'rotate(70deg)' }} />
+                        </>
+                      ) : link[0][index1]}</a>
                   </div>
 
                 </div>
@@ -735,9 +700,9 @@ const getinvurl = async () => {
 
                   <div className="cus_row col-lg-6 col-md-6 col-sm-12 mt-2 mb-2">
                     {urlError2 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
-                    <a href={link[1][index2]} target='_blank' style={{ color: urlError2 ? 'red' : 'white' }}>{index2 === link[1].length ?  (
+                    <a href={link[1][index2]} target='_blank' style={{ color: urlError2 ? 'red' : 'white' }}>{index2 === link[1].length ? (
                       <>
-                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{transform: 'rotate(70deg)'}} />
+                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{ transform: 'rotate(70deg)' }} />
                       </>
                     ) : link[1][index2]}</a>
                   </div>
@@ -769,9 +734,9 @@ const getinvurl = async () => {
 
                   <div className="cus_row col-lg-6 col-md-6 col-sm-12 mt-2 mb-2">
                     {urlError3 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
-                    <a href={link[2][index3]} target='_blank' style={{ color: urlError3 ? 'red' : 'white' }}>{index3 === link[2].length ?  (
+                    <a href={link[2][index3]} target='_blank' style={{ color: urlError3 ? 'red' : 'white' }}>{index3 === link[2].length ? (
                       <>
-                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{transform: 'rotate(70deg)'}} />
+                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{ transform: 'rotate(70deg)' }} />
                       </>
                     ) : link[2][index3]}</a>
                   </div>
@@ -803,9 +768,9 @@ const getinvurl = async () => {
 
                   <div className="cus_row col-lg-6 col-md-6 col-sm-12 mt-2 mb-2">
                     {urlError4 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
-                    <a href={link[3][index4]} target='_blank' style={{ color: urlError4 ? 'red' : 'white' }}>{index4 === link[3].length ?  (
+                    <a href={link[3][index4]} target='_blank' style={{ color: urlError4 ? 'red' : 'white' }}>{index4 === link[3].length ? (
                       <>
-                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{transform: 'rotate(70deg)'}} />
+                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{ transform: 'rotate(70deg)' }} />
                       </>
                     ) : link[3][index4]}</a>
                   </div>
@@ -837,9 +802,9 @@ const getinvurl = async () => {
 
                   <div className="cus_row col-lg-6 col-md-6 col-sm-12 mt-2 mb-2">
                     {urlError5 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
-                    <a href={link[4][index5]} target='_blank' style={{ color: urlError5 ? 'red' : 'white' }}>{index5 === link[4].length ?  (
+                    <a href={link[4][index5]} target='_blank' style={{ color: urlError5 ? 'red' : 'white' }}>{index5 === link[4].length ? (
                       <>
-                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{transform: 'rotate(70deg)'}} />
+                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{ transform: 'rotate(70deg)' }} />
                       </>
                     ) : link[4][index5]}</a>
                   </div>
@@ -871,9 +836,9 @@ const getinvurl = async () => {
 
                   <div className="cus_row col-lg-6 col-md-6 col-sm-12 mt-2 mb-2">
                     {urlError6 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
-                    <a href={link[5][index6]} target='_blank' style={{ color: urlError6 ? 'red' : 'white' }}>{index6 === link[5].length ?  (
+                    <a href={link[5][index6]} target='_blank' style={{ color: urlError6 ? 'red' : 'white' }}>{index6 === link[5].length ? (
                       <>
-                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{transform: 'rotate(70deg)'}} />
+                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{ transform: 'rotate(70deg)' }} />
                       </>
                     ) : link[5][index6]}</a>
                   </div>
@@ -904,9 +869,9 @@ const getinvurl = async () => {
 
                   <div className="cus_row col-lg-6 col-md-6 col-sm-12 mt-2 mb-2">
                     {urlError7 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
-                    <a href={link[6][index7]} target='_blank' style={{ color: urlError7 ? 'red' : 'white' }}>{index7 === link[6].length ?  (
+                    <a href={link[6][index7]} target='_blank' style={{ color: urlError7 ? 'red' : 'white' }}>{index7 === link[6].length ? (
                       <>
-                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{transform: 'rotate(70deg)'}} />
+                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{ transform: 'rotate(70deg)' }} />
                       </>
                     ) : link[6][index7]}</a>
                   </div>
@@ -937,9 +902,9 @@ const getinvurl = async () => {
 
                   <div className="cus_row col-lg-6 col-md-6 col-sm-12 mt-2 mb-2">
                     {urlError8 && link[7].length < index8 && <p style={{ color: 'red' }}>Error while fetching this url -</p>}
-                    <a href={link[7][index8]} target='_blank' style={{ color: (urlError8 && link[7].length < index8) ? 'red' : 'white' }}>{index8 === link[7].length ?  (
+                    <a href={link[7][index8]} target='_blank' style={{ color: (urlError8 && link[7].length < index8) ? 'red' : 'white' }}>{index8 === link[7].length ? (
                       <>
-                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{transform: 'rotate(70deg)'}} />
+                        Completed <img className='ms-3' src="/static/celebr.png" alt="Completed" height='40' style={{ transform: 'rotate(70deg)' }} />
                       </>
                     ) : link[7][index8]}</a>
                   </div>
