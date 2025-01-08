@@ -46,14 +46,15 @@ export default function Brand() {
 
   const getupdatedproduct = async () => {
     try {
-      let res = await fetch(`${api}/totalproducts`, {
+      let res = await fetch(`${local}/totalproducts`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       })
       res = await res.json();
+      console.log(res)
       if (res.status) {
         setTotalProduct(res.num);
-        setUrlLen(res.num2.length)
+       Array.isArray(res.num2)? setUrlLen(res.num2.length): null
         setUrl(res.num2);
       }
     } catch (err) {
@@ -62,7 +63,7 @@ export default function Brand() {
     }
   }
   const getproductslink = async () => {
-    let data = await fetch(`${api}/getproducturl`, {
+    let data = await fetch(`${local}/getproducturl`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     });
@@ -70,7 +71,10 @@ export default function Brand() {
     setProductUrl(data.url);
     console.log(data)
     setArrayid(data.id)
-    let dividedarr = divideArrayIntoParts(data.url);
+    var dividedarr
+    if(Array.isArray(data.url)){
+      dividedarr = divideArrayIntoParts(data.url);
+    }
     setLink(dividedarr);
     console.log(dividedarr)
     setUpc(data.upc);
@@ -82,7 +86,7 @@ export default function Brand() {
     if (resp) {
       if (num > 0) {
         setLoading(true)
-        let result = await fetch(`${api}/fetchbrand`, {
+        let result = await fetch(`${local}/fetchbrand`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url, num })
@@ -122,7 +126,7 @@ export default function Brand() {
     try {
       setLoading(true)
       const response = await axios({
-        url: `${api}/download-excel`, // Replace with your backend URL
+        url: `${local}/download-excel`, // Replace with your backend URL
         method: 'GET',
         responseType: 'blob', // Important to get the response as a blob (binary data)
       });
@@ -151,7 +155,7 @@ export default function Brand() {
     const formData = new FormData();
     formData.append('file', file);
     try {
-      const response = await axios.post(`${api}/upload`, formData, {
+      const response = await axios.post(`${local}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -168,7 +172,7 @@ export default function Brand() {
     try {
       setLoading(true);
       const response = await axios({
-        url: `${api}/downloadfinalSheet`, // Replace with your backend URL
+        url: `${local}/downloadfinalSheet`, // Replace with your backend URL
         method: 'GET',
         responseType: 'blob',
       });
@@ -192,7 +196,7 @@ export default function Brand() {
     let index = 0;
     while (index < urls.length) {
       let url = urls[index]
-      let res = await fetch(`${api}/thread1`, {
+      let res = await fetch(`${local}/thread1`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, arrayid })
@@ -212,7 +216,7 @@ export default function Brand() {
     let index = 0;
     while (index < urls.length) {
       let url = urls[index]
-      let res = await fetch(`${api}/thread2`, {
+      let res = await fetch(`${local}/thread2`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, arrayid })
@@ -232,7 +236,7 @@ export default function Brand() {
     let index = 0;
     while (index < urls.length) {
       let url = urls[index]
-      let res = await fetch(`${api}/thread3`, {
+      let res = await fetch(`${local}/thread3`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, arrayid })
@@ -252,7 +256,7 @@ export default function Brand() {
     let index = 0;
     while (index < urls.length) {
       let url = urls[index]
-      let res = await fetch(`${api}/thread4`, {
+      let res = await fetch(`${local}/thread4`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, arrayid })
@@ -272,7 +276,7 @@ export default function Brand() {
     let index = 0;
     while (index < urls.length) {
       let url = urls[index]
-      let res = await fetch(`${api}/thread5`, {
+      let res = await fetch(`${local}/thread5`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, arrayid })
@@ -292,7 +296,7 @@ export default function Brand() {
     let index = 0;
     while (index < urls.length) {
       let url = urls[index]
-      let res = await fetch(`${api}/thread6`, {
+      let res = await fetch(`${local}/thread6`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, arrayid })
@@ -312,7 +316,7 @@ export default function Brand() {
     let index = 0;
     while (index < urls.length) {
       let url = urls[index]
-      let res = await fetch(`${api}/thread7`, {
+      let res = await fetch(`${local}/thread7`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, arrayid })
@@ -332,7 +336,7 @@ export default function Brand() {
     let index = 0;
     while (index < urls.length) {
       let url = urls[index]
-      let res = await fetch(`${api}/thread8`, {
+      let res = await fetch(`${local}/thread8`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, arrayid })
