@@ -1,0 +1,143 @@
+.nav-links{
+    text-decoration: none;
+}
+.nav-links:hover{
+    font-weight: bold;
+    text-decoration: underline;
+}
+.menu{
+    visibility: hidden;
+    position: fixed;
+}
+.nav_link{
+    width: inherit;
+}
+.offcanvas.offcanvas-end{
+    width: 15rem !important;
+    background-color: rgb(13, 13, 60);
+    color: white;
+    a{
+       border-top: 1px solid rgba(148, 148, 148, 0.645);
+       border-bottom: 1px solid rgba(148, 148, 148, 0.645);
+    //    margin: 2px;
+    }
+    a:hover{
+        border-top: 2px solid rgb(255, 255, 255);
+        border-bottom: 2px solid rgb(255, 255, 255);
+        font-weight: bold;
+    }
+    button{
+        margin-top: 10px;
+    }
+}
+.btn-close{
+    background-color: rgb(255, 255, 255) !important;
+    margin-bottom: 10px !important;
+    margin-right: 5px !important;
+}
+.dropdown-menu{
+    background-color: rgb(246, 0, 213) !important;
+    --bs-dropdown-min-width: 8.5rem !important;
+    a{
+        color: white;
+        text-decoration: none;
+        border: none !important;
+    }
+    a:hover{
+        background-color: blue !important;
+        border: none !important;
+    }  
+}
+
+.moving{
+    position: absolute;
+    animation: move 12s linear infinite alternate;
+    z-index: 5!important;
+    img{
+        opacity: 0.7;
+        box-shadow: 0 0 2px 2px white;
+        border-radius: 50%;
+    }
+}
+
+@keyframes move {
+    0%{
+        margin-left: 0%;
+        transform: rotateY(0deg);
+    }
+    50%{
+        margin-left:98%;
+        transform: rotateY(180deg);
+
+    }
+
+}
+.navbar{
+    padding-right: 2.5rem!important;
+}
+
+//  for 768px width---------
+@media screen and (max-width:768px) {
+    .hd{
+        visibility: hidden;
+        position: fixed;
+        width: 0!important;
+    }
+    .menu{
+        visibility: visible;
+        position: relative;
+    }
+    .name{
+    margin-left: 15vw !important;
+    }
+}
+
+.content h2 {
+	color: #fff;
+	font-size: 3em;
+    margin-left: 5vw;
+	position: absolute;
+	transform: translate(-50%, -50%);
+}
+
+.content h2:nth-child(1) {
+	color: white;
+    // background-color: white;
+	// -webkit-text-stroke: 1px white;
+}
+
+.content h2:nth-child(2) {
+	color: rgb(3 130 186);
+	animation: animate 4s ease-in-out infinite;
+}
+
+@keyframes animate {
+	0%,
+	100% {
+		clip-path: polygon(
+			0% 45%,
+			16% 44%,
+			33% 50%,
+			54% 60%,
+			70% 61%,
+			84% 59%,
+			100% 52%,
+			100% 100%,
+			0% 100%
+		);
+	}
+
+	50% {
+		clip-path: polygon(
+			0% 60%,
+			15% 65%,
+			34% 66%,
+			51% 62%,
+			67% 50%,
+			84% 45%,
+			100% 46%,
+			100% 100%,
+			0% 100%
+		);
+	}
+}

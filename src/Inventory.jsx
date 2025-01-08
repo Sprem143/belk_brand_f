@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react'
-import './App.css';
+import './App.scss';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Table from 'react-bootstrap/Table';

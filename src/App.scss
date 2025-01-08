@@ -1,0 +1,264 @@
+#root {
+    max-width: 100vw;
+    margin: 0 auto;
+    /* padding: 0 2rem; */
+    text-align: center;
+}
+button{
+    border: 2px solid black;
+    border-radius: 7px !important;
+}
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6{
+    margin-bottom: 0 !important;
+}
+.thread{
+    min-height: 50px;
+    display: flex;
+    width: 100%;
+    border-radius: 30px;
+    border: 2px solid white;
+    background-color: rgb(29, 29, 53);
+    color: white !important;
+    /* padding: 2px; */
+    align-items: center;
+    justify-content: center;
+}
+.CircularProgressbar-text {
+    fill: yellow !important;
+  }
+  .CircularProgressbar-path {
+    stroke: green;
+  }
+  .CircularProgressbar-trail {
+    stroke: white !important;
+  }
+.startbtn{
+    width: 120px;
+    border-radius: 30px !important;
+    background-color: transparent !important;
+    border:2px solid  rgb(255, 255, 255) !important;
+    color: white;
+}
+.inputbtn{
+    height: 50px;
+    /* border-radius: 30px; */
+    width: 50px;
+}
+.cus_row{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.recharts-wrapper{
+    background-color: #ffe6e6;
+}
+.logo {
+    height: 6em;
+    padding: 1.5em;
+    will-change: filter;
+    transition: filter 300ms;
+}
+.modal-dialog{
+    max-width: 90% !important;
+}
+.result{
+    width: 80vw;
+    /* min-height: 20px; */
+    border: 1px solid black;;
+    background-color: rgb(255, 255, 255);
+    position: absolute;
+    margin-top: 45px;
+    box-shadow: 0 0 10px gray;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: baseline;
+    padding: 0.3vw;
+    z-index: 10000;
+}
+.timer_container {
+    width: 100%;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+}
+.container{
+    max-width: 100% !important;
+}
+.timer {
+    height: 35px;
+    width: 300px;
+    background-color: black;
+    color: white;
+    border: 2px solid white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.fw {
+    color: white !important;
+}
+
+.logo:hover {
+    filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+    filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    a:nth-of-type(2) .logo {
+        animation: logo-spin infinite 20s linear;
+    }
+}
+
+.card {
+    padding: 2em;
+}
+
+.read-the-docs {
+    color: #888;
+}
+
+/* ----------------------- */
+#root {
+    max-width:100%;
+    margin: 0 auto;
+  }
+  .result{
+    width: 90%;
+  overflow-x: scroll;
+    border: 1px solid black;;
+    background-color: rgb(255, 255, 255);
+    position: absolute;
+    margin-top: 45px;
+    box-shadow: 0 0 10px gray;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: baseline;
+    padding: 0.3vw;
+    z-index: 10000;
+  }
+  .search_box{
+    margin-left: 2vw;
+    border-radius: 19px;
+    padding: 3px 3px 3px 10px;
+    min-width: 30vw;
+    height: 40px !important;
+  }
+  
+  .card{
+    padding:5px 10px 5px 10px;
+    box-shadow: 0 0 5px gray;
+  }
+  
+  .btn_icon{
+    border: 2px solid #007bff;
+    background-color: #007bff !important;
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+  }
+  .btn_icon:hover{
+    background-color: #ffffff !important;
+  }
+  
+  .btn_icon:hover svg{
+   fill: #007bff;
+  }
+  .btn_text{
+    border: 1px solid #007bff;
+    margin-left: -20px;
+    border-left: none !important;
+    padding-left:30px ;
+    padding-right: 15px;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+  }
+  .select_btn{
+    box-shadow: 0 0 10px gray;
+    border-radius: 18px;
+    background-color: #0050a5;
+  }
+  // .nav-item>a{
+  //   color: rgb(154, 139, 255) !important;
+  // }
+  
+  .accordion-body{
+    overflow-x: scroll !important;
+  }
+  .card:hover{
+    box-shadow: 0 0 10px rgb(40, 55, 255);
+  }
+  .modal-dialog{
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    max-width: 90vw !important;
+  }
+  .details{
+    position:absolute;
+    color: white;
+    z-index: 1000000;
+    transition: 0.5s;
+    margin-left: -8px;
+    margin-top:18px;
+   display: none;
+    p{
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
+  #form_container{
+    padding: 2vw;
+    border: 1px solid rgb(0, 81, 255) ;
+    border-radius: 10px;
+    box-shadow: 0 0 3px gray;
+  }
+  .details2{
+    position:absolute;
+    color: white;
+    z-index: 1000000;
+    transition: 0.5s;
+    margin-top:5px;
+    border-radius: 25px;
+    margin-left: -8px;
+    display: none;
+    padding: 5px 10px 5px 10px;
+  }
+  
+  .products:hover .details{
+    display: block;
+   color: rgb(0, 81, 255) !important;
+  }
+  .products:hover .details2{
+    display: block;
+    background-color: rgb(255, 255, 255);
+   color: black !important;
+   box-shadow: 0 0 10px gray;
+  }
+  .spinner{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.8); // Optional: semi-transparent background
+    z-index: 9999; // Ensure it stays above other elements
+  }

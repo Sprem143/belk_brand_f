@@ -1,0 +1,111 @@
+
+
+
+  
+.form-container {
+    width: 360px;
+    background-color: white;
+    margin: auto;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+    padding: 10px;
+  }
+  
+  .register-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 10px;
+  }
+  a{
+    text-decoration: none !important;
+  }
+  .success-message {
+    font-family: "Roboto", sans-serif;
+    background-color: #0082bc;
+    padding: 15px;
+    color: white;
+    text-align: center;
+  }
+  
+  .form-field {
+    margin: 10px 0 10px 0;
+    padding: 15px;
+    font-size: 16px;
+    border: 0;
+    font-family: "Roboto", sans-serif;
+  }
+  
+  span {
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+    color: red;
+    margin-bottom: 15px;
+  }
+  
+  input {
+    background: #f2f2f2;
+  }
+  span{
+    margin-bottom: 0 !important;
+  }
+  .accordion-button{
+    padding: 8px !important;
+    margin: 2px !important;
+  }
+  .error {
+    border-style: solid;
+    border: 2px solid #ffa4a4;
+  }
+  .order{
+    box-shadow: 0 0 10px gray;
+    padding:3vw ;
+    border-radius: 5px;
+  }
+  button {
+    background: #0082bc;
+    color: white;
+    cursor: pointer;
+  }
+  
+  button:disabled {
+    cursor: default;
+  }
+
+  .container{
+    display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      width:100%;
+  }
+    .form-box{
+      display: none;
+        width:380px;
+        height:auto;
+        background-color:rgba(0, 0, 0, 0.922);
+        padding:20px;
+        box-shadow: 0 0 10px rgb(0, 116, 241);
+        border-radius:2%;
+        transition: 0.5s;
+    }
+    h1,h2,h3,h4,h5,a{
+      color:#0082bc !important;
+    }
+    button{
+      background-color: #0082bc;
+    }
+    .form-box:hover{
+      box-shadow: 0 0 20px rgb(208, 0, 255);
+    }
+  .header-form{
+    margin-bottom:15px;
+  }
+  button{
+    margin-top:40px;
+    margin-bottom:10px;
+  }
+  .message{
+    display:flex;
+    justify-content:space-between
+  }
+  

@@ -1,9 +1,6 @@
-import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { Link, Outlet } from 'react-router-dom';
 function Header() {
@@ -29,7 +26,6 @@ function Header() {
                   <Nav.Link href="/analysis" style={{ color: 'white' }} className='fs-6'>Analysis</Nav.Link>
                   <Nav.Link href="/rowdata" style={{ color: 'white' }} className='fs-6'>Uploaded-Data</Nav.Link>
                   <Nav.Link href="/calculation" style={{ color: 'white' }} className='fs-6'>Calculation</Nav.Link>
-                  <Nav.Link href="/inventory" style={{ color: 'white' }} className='fs-6'>Manual update</Nav.Link>
                   <Nav.Link href="brand" style={{ color: 'white' }} className='fs-6'>Brand Scrapping</Nav.Link>
                   <Nav.Link href="/backup" style={{ color: 'white' }} className='fs-6'>Backup</Nav.Link>
                 </Nav>
