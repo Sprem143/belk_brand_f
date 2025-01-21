@@ -54,7 +54,6 @@ export default function Brand() {
       res = await res.json();
       if (res.status) {
         setTotalProduct(res.num);
-        setUrlLen(res.num2.length)
         setUrl(res.num2);
       }
     } catch (err) {
