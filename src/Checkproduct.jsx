@@ -7,6 +7,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import './App.css'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import axios from 'axios'
 
 export default function Checkproduct() {
 
@@ -21,6 +22,7 @@ export default function Checkproduct() {
 
     const [data, setData] = useState([{}])
     const [loading, setLoading] = useState(false)
+    const [file, setFile] = useState('');
 
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
@@ -58,6 +60,30 @@ export default function Checkproduct() {
     useEffect(() => {
         getdata();
     }, [])
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+          const response = await axios.post(`${api}/uploadforcheck`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+          setLoading(false);
+          alert("Sheet Uploaded successfully");
+          window.location.reload()
+        } catch (error) {
+          console.error('Error uploading file:', error);
+          alert('Failed to upload file');
+        }
+      };
+      const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+      };
+
 
     const getdata = async () => {
         setLoading(true);
@@ -156,7 +182,7 @@ export default function Checkproduct() {
     
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = 'backup.xlsx'; // Set the file name
+        link.download = 'Final_Product_list.xlsx'; // Set the file name
         link.click(); // Trigger the download
    }
     return (
@@ -185,7 +211,10 @@ export default function Checkproduct() {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <h1 className="fw mb-4">Welcome to analysis page</h1>
+            <form className="mt-4 mb-4" onSubmit={handleSubmit}>
+          <input type="file" onChange={handleFileChange} accept=".xlsx, .xls" />
+          <button className='me-4' type="submit">Upload Custom Sheet</button>
+        </form>
             <Accordion className="mb-4" defaultActiveKey={'0'}>
                 <Accordion.Item eventKey="0">
                     <Accordion.Header>Total Number of Product in &nbsp; <span style={{ fontWeight: 'bolder' }}> {name} </span> &nbsp;: &nbsp;&nbsp; <span style={{ color: 'blue' }}>{data.length > 1 ? data.length : 0} </span></Accordion.Header>
