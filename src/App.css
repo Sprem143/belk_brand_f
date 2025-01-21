@@ -100,7 +100,11 @@ button{
 .fw {
     color: white !important;
 }
-
+.nobtn{
+    border: none !important;
+    padding:  0 !important;
+    margin-left: 15px;
+}
 .logo:hover {
     filter: drop-shadow(0 0 2em #646cffaa);
 }
@@ -149,4 +153,9 @@ button{
 
 .read-the-docs {
     color: #888;
+}
+
+#nav_dropdown{
+--bs-btn-bg::transparent !important;
+border: none !important;
 }
