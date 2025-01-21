@@ -61,7 +61,7 @@ export default function Checkproduct() {
 
     const getdata = async () => {
         setLoading(true);
-        let res = await fetch(`${local}/downloadfinalSheet`, {
+        let res = await fetch(`${api}/downloadfinalSheet`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         })
@@ -69,7 +69,6 @@ export default function Checkproduct() {
         setLoading(false)
         if (res.status) {
             setData(res.data);
-            console.log(res.data)
         } else {
             setLoading(false)
             alert('Error while fetching data')
@@ -82,7 +81,7 @@ export default function Checkproduct() {
     }
 
     const deleteproduct = async (id) => {
-        let res = await fetch(`${local}/deleteproduct`, {
+        let res = await fetch(`${api}/deleteproduct`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id })
@@ -96,7 +95,7 @@ export default function Checkproduct() {
     }
 
     const editsku = async () => {
-        let res = await fetch(`${local}/editsku`, {
+        let res = await fetch(`${api}/editsku`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id: edititem._id, newsku: newSku })
@@ -167,7 +166,7 @@ export default function Checkproduct() {
                     <Spinner animation="border" variant="primary" /> {/* Spinner from Bootstrap */}
                 </div>
             )}
-
+ <h1 className="text-center">Match Product Details</h1>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Modal heading</Modal.Title>
@@ -192,50 +191,7 @@ export default function Checkproduct() {
                     <Accordion.Header>Total Number of Product in &nbsp; <span style={{ fontWeight: 'bolder' }}> {name} </span> &nbsp;: &nbsp;&nbsp; <span style={{ color: 'blue' }}>{data.length > 1 ? data.length : 0} </span></Accordion.Header>
                     <Accordion.Body>
 
-                        {/* <div className="d-flex mb-4  p-2 bg-primary text-white">
-                            <div>
-                                Search Products :  <input type="text" value={search} style={{ width: '20vw' }} placeholder="Search Products by ASIN" onChange={(e) => { setSearch(e.target.value), searchproduct() }} onKeyDown={searchproduct} />
-                                <svg onClick={cancelsearch} xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="me-4 ms-2 mb-1 bi bi-x-circle-fill" viewBox="0 0 16 16">
-                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
-                                </svg>
-                                ( Press space key after paste word)
-                            </div>
-                            {
-                                result.length > 0 && result[0].ASIN !== undefined &&
-                                <div className="result">
-                                    <Table striped bordered hover className="bg-dark">
-                                        <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>Image</th>
-                                                <th>Input UPC</th>
-                                                <th>ASIN</th>
-                                                <th>SKU</th>
-                                                <th>Old Price</th>
-                                                <th>Current Price</th>
-                                                <th>Quantity</th>
-                                                <th>Product URL</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {result.length > 0 && result.map((detailArray, i) => (
-                                                <tr key={i}>
-                                                    <td>{indexOfFirstItem + i + 1}</td>
-                                                    <td><img src={detailArray['Image link']} alt="img" height='40px' /></td>
-                                                    <td>{detailArray['Input UPC']}</td>
-                                                    <td>{detailArray['ASIN']}</td>
-                                                    <td>{detailArray['SKU']}</td>
-                                                    <td>{detailArray['Product price']}</td>
-                                                    <td>{detailArray['Current Price']}</td>
-                                                    <td>{detailArray['Current Quantity']}</td>
-                                                    <td><a href={detailArray['Product link']} target='_blank'>Click to see details</a></td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </Table>
-                                </div>
-                            }
-                        </div> */}
+                      
 
 
                         <Table striped bordered hover className="bg-dark">
