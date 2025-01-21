@@ -7,6 +7,8 @@ import Accordion from 'react-bootstrap/Accordion';
 import Table from 'react-bootstrap/Table';
 import 'react-circular-progressbar/dist/styles.css';
 import { CircularProgressbar } from 'react-circular-progressbar';
+import * as XLSX from 'xlsx';
+import { Link, Outlet } from 'react-router-dom';
 
 
 export default function Brand() {
@@ -21,8 +23,8 @@ export default function Brand() {
   const [link, setLink] = useState([[], [], [], [], [], [], [], []]);
   const [arrayid, setArrayid] = useState('');
   const [index, setIndex] = useState({ index1: 0, index2: 0, index3: 0, index4: 0, index5: 0, index6: 0, index7: 0, index8: 0 });
-  const [l,setL]= useState({l1:false,l2:false,l3:false,l4:false,l5:false,l6:false,l7:false,l8:false,})
-
+  const [l, setL] = useState({ l1: false, l2: false, l3: false, l4: false, l5: false, l6: false, l7: false, l8: false })
+  const [purl, setPurl] = useState('')
   const local = 'http://localhost:10000'
   const api = 'https://brand-b-1.onrender.com'
   useEffect(() => {
@@ -40,7 +42,6 @@ export default function Brand() {
       const end = start + partSize;
       result.push(array.slice(start, end)); // Slice array into parts
     }
-
     return result;
   }
 
@@ -51,10 +52,9 @@ export default function Brand() {
         headers: { 'Content-Type': 'application/json' }
       })
       res = await res.json();
-      console.log(res)
       if (res.status) {
         setTotalProduct(res.num);
-       Array.isArray(res.num2)? setUrlLen(res.num2.length): null
+        setUrlLen(res.num2.length)
         setUrl(res.num2);
       }
     } catch (err) {
@@ -69,20 +69,14 @@ export default function Brand() {
     });
     data = await data.json();
     setProductUrl(data.url);
-    console.log(data)
     setArrayid(data.id)
-    var dividedarr
-    if(Array.isArray(data.url)){
-      dividedarr = divideArrayIntoParts(data.url);
-    }
+    let dividedarr = divideArrayIntoParts(data.url);
     setLink(dividedarr);
-    console.log(dividedarr)
     setUpc(data.upc);
   }
 
   const fetchbrand = async () => {
     let resp = confirm('All Previous data will be deleted.Are you sure?');
-    console.log(resp)
     if (resp) {
       if (num > 0) {
         setLoading(true)
@@ -92,6 +86,9 @@ export default function Brand() {
           body: JSON.stringify({ url, num })
         })
         result = await result.json();
+        if (result.status) {
+          scrapproduct()
+        }
         setLoading(false)
         getupdatedproduct()
       } else {
@@ -126,9 +123,9 @@ export default function Brand() {
     try {
       setLoading(true)
       const response = await axios({
-        url: `${api}/download-excel`, // Replace with your backend URL
+        url: `${api}/download-excel`,
         method: 'GET',
-        responseType: 'blob', // Important to get the response as a blob (binary data)
+        responseType: 'blob',
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -168,30 +165,71 @@ export default function Brand() {
     }
   };
 
-  const downloadFinalSheet = async () => {
-    try {
-      setLoading(true);
-      const response = await axios({
-        url: `${api}/downloadfinalSheet`, // Replace with your backend URL
-        method: 'GET',
-        responseType: 'blob',
-      });
+  // const downloadFinalSheet = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await axios({
+  //       url: `${api}/downloadfinalSheet`, 
+  //       method: 'GET',
+  //       responseType: 'blob',
+  //     });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'comparison_sheet.xlsx'); // File name
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      setLoading(false)
-    } catch (error) {
-      console.error('Error downloading the file:', error);
-      setLoading(false)
-    }
+  //     const url = window.URL.createObjectURL(new Blob([response.data]));
+  //     const link = document.createElement('a');
+  //     link.href = url;
+  //     link.setAttribute('download', 'comparison_sheet.xlsx'); // File name
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     link.remove();
+  //     setLoading(false)
+  //   } catch (error) {
+  //     console.error('Error downloading the file:', error);
+  //     setLoading(false)
+  //   }
+  // }
+
+  const exp = async () => {
+    console.log("Exp function")
+    let res = await fetch(`${api}/exp`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    res = await res.json();
+    console.log(res.length)
+    console.log(res)
   }
 
+  const downloadpartialExcel = async () => {
+    let res = await fetch(`${api}/downloadpartiallist`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    res = await res.json();
+    if (Array.isArray(res.upc)) {
+      const jsondata = res.upc.map((item) => {
+        return {
+          upc: item,
+        }
+      });
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(jsondata);
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+      const excelFile = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([excelFile], { type: 'application/octet-stream' });
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'Partiallist.xlsx'; // Set the file name
+      link.click(); // Trigger the download
+    } else {
+      alert('Error while fetching upc list')
+    }
+  };
+
   const thread1 = async () => {
+    setL((prev) => (
+      { ...prev, l1: true }
+    ))
     let urls = link[0];
     let index = 0;
     while (index < urls.length) {
@@ -209,9 +247,15 @@ export default function Brand() {
         index1: index
       }));
     }
+    setL((prev) => (
+      { ...prev, l1: false }
+    ))
   }
 
   const thread2 = async () => {
+    setL((prev) => (
+      { ...prev, l2: true }
+    ))
     let urls = link[1];
     let index = 0;
     while (index < urls.length) {
@@ -229,9 +273,15 @@ export default function Brand() {
         index2: index
       }));
     }
+    setL((prev) => (
+      { ...prev, l2: false }
+    ))
   }
 
   const thread3 = async () => {
+    setL((prev) => (
+      { ...prev, l3: true }
+    ))
     let urls = link[2];
     let index = 0;
     while (index < urls.length) {
@@ -249,9 +299,15 @@ export default function Brand() {
         index3: index
       }));
     }
+    setL((prev) => (
+      { ...prev, l3: false }
+    ))
   }
 
   const thread4 = async () => {
+    setL((prev) => (
+      { ...prev, l4: true }
+    ))
     let urls = link[3];
     let index = 0;
     while (index < urls.length) {
@@ -269,9 +325,15 @@ export default function Brand() {
         index4: index
       }));
     }
+    setL((prev) => (
+      { ...prev, l4: false }
+    ))
   }
 
   const thread5 = async () => {
+    setL((prev) => (
+      { ...prev, l5: true }
+    ))
     let urls = link[4];
     let index = 0;
     while (index < urls.length) {
@@ -289,9 +351,15 @@ export default function Brand() {
         index5: index
       }));
     }
+    setL((prev) => (
+      { ...prev, l5: false }
+    ))
   }
 
   const thread6 = async () => {
+    setL((prev) => (
+      { ...prev, l6: true }
+    ))
     let urls = link[5];
     let index = 0;
     while (index < urls.length) {
@@ -309,9 +377,15 @@ export default function Brand() {
         index6: index
       }));
     }
+    setL((prev) => (
+      { ...prev, l6: false }
+    ))
   }
 
   const thread7 = async () => {
+    setL((prev) => (
+      { ...prev, l7: true }
+    ))
     let urls = link[6];
     let index = 0;
     while (index < urls.length) {
@@ -329,9 +403,15 @@ export default function Brand() {
         index7: index
       }));
     }
+    setL((prev) => (
+      { ...prev, l7: false }
+    ))
   }
 
   const thread8 = async () => {
+    setL((prev) => (
+      { ...prev, l8: true }
+    ))
     let urls = link[7];
     let index = 0;
     while (index < urls.length) {
@@ -349,8 +429,20 @@ export default function Brand() {
         index8: index
       }));
     }
+    setL((prev) => (
+      { ...prev, l8: false }
+    ))
   }
 
+  const pratical = async () => {
+
+    let res = await fetch(`${api}/pratical`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: purl })
+    })
+    res = await res.json()
+  }
   return (
     <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
       {loading && ( // Show spinner while loading is true
@@ -358,10 +450,13 @@ export default function Brand() {
           <Spinner animation="border" variant="primary" /> {/* Spinner from Bootstrap */}
         </div>
       )}
-
+      <h1 className="text-center bg-dark text-white p-2 mb-3 mt-0">Brand Scrapping</h1>
+      {/* <button onClick={exp}>Exp data</button>
+      <input type="text" onChange={(e) => setPurl(e.target.value)} />
+      <button onClick={pratical}>Pratical</button> */}
       <p>Brand URL</p>
-      <input type="text" onChange={(e) => setUrl(e.target.value)} placeholder='Brand URL' />
-      <input type="text" className='ms-3' onChange={(e) => setNum(e.target.value)} placeholder='Number of products' />
+      <input type="text" onChange={(e) => setUrl(e.target.value)} placeholder='Brand URL' className='w-25 p-2'  />
+      <input type="text" className='ms-3 p-2' onChange={(e) => setNum(e.target.value)} placeholder='Number of products' />
 
       <button className='ms-4' onClick={fetchbrand}>Fetch All product URLs</button>
       <br />
@@ -376,16 +471,22 @@ export default function Brand() {
           </svg></span>
         </div>
       </div>
-      <button className='ms-4' onClick={scrapproduct}>Start Scraping UPCs</button>
-      <button className='ms-4 mt-4' variant="secondary" onClick={downloadExcel}>
-        Download UPC List
-      </button>
+      <button className='ms-4 mt-3' onClick={scrapproduct}>Start Scraping UPCs</button>
+
+
+
+      {/* <div className="container mt-4">
+        <div className="row">
+
+        </div>
+       </div> */}
+
       <div className="container mt-4">
         <div className="row">
 
 
-          <div className="col-lg-3 col-md-4 col-sm-6">
-            <div className="threadbox m-2 p-2">
+          <div className="col-lg-3 col-md-4 col-sm-6" >
+            <div className="threadbox m-2 p-2" style={{ backgroundColor: l.l1 ? 'rgb(108 11 109 / 99%)' : 'black', boxShadow: l.l1 ? '#000000 8px 3px 55px -17px' : '0' }}>
               <h5>Thread - I &nbsp;|| &nbsp;Total urls- {link[0].length} </h5>
               <div className='mt-2 mb-2' style={{ height: 60, width: 60 }}>
                 <CircularProgressbar
@@ -398,7 +499,7 @@ export default function Brand() {
           </div>
 
           <div className="col-lg-3 col-md-4 col-sm-6">
-            <div className="threadbox m-2 p-2">
+            <div className="threadbox m-2 p-2" style={{ backgroundColor: l.l2 ? 'rgb(108 11 109 / 99%)' : 'black', boxShadow: l.l2 ? '#000000 8px 3px 55px -17px' : '0' }}>
               <h5>Thread - II  &nbsp;|| &nbsp;Total urls- {link[1].length} </h5>
               <div className='mt-2 mb-2' style={{ height: 60, width: 60 }}>
                 <CircularProgressbar
@@ -411,7 +512,7 @@ export default function Brand() {
           </div>
 
           <div className="col-lg-3 col-md-4 col-sm-6">
-            <div className="threadbox m-2 p-2">
+            <div className="threadbox m-2 p-2" style={{ backgroundColor: l.l3 ? 'rgb(108 11 109 / 99%)' : 'black', boxShadow: l.l3 ? '#000000 8px 3px 55px -17px' : '0' }}>
               <h5>Thread - III  &nbsp;|| &nbsp;Total urls- {link[2].length}  </h5>
               <div className='mt-2 mb-2' style={{ height: 60, width: 60 }}>
                 <CircularProgressbar
@@ -424,7 +525,7 @@ export default function Brand() {
           </div>
 
           <div className="col-lg-3 col-md-4 col-sm-6">
-            <div className="threadbox m-2 p-2">
+            <div className="threadbox m-2 p-2" style={{ backgroundColor: l.l4 ? 'rgb(108 11 109 / 99%)' : 'black', boxShadow: l.l4 ? '#000000 8px 3px 55px -17px' : '0' }}>
               <h5>Thread - IV  &nbsp;|| &nbsp;Total urls- {link[3].length}  </h5>
               <div className='mt-2 mb-2' style={{ height: 60, width: 60 }}>
                 <CircularProgressbar
@@ -437,7 +538,7 @@ export default function Brand() {
           </div>
 
           <div className="col-lg-3 col-md-4 col-sm-6">
-            <div className="threadbox m-2 p-2">
+            <div className="threadbox m-2 p-2" style={{ backgroundColor: l.l5 ? 'rgb(108 11 109 / 99%)' : 'black', boxShadow: l.l5 ? '#000000 8px 3px 55px -17px' : '0' }}>
               <h5>Thread - V  &nbsp;|| &nbsp;Total urls- {link[4].length} </h5>
               <div className='mt-2 mb-2' style={{ height: 60, width: 60 }}>
                 <CircularProgressbar
@@ -450,7 +551,7 @@ export default function Brand() {
           </div>
 
           <div className="col-lg-3 col-md-4 col-sm-6">
-            <div className="threadbox m-2 p-2">
+            <div className="threadbox m-2 p-2" style={{ backgroundColor: l.l6 ? 'rgb(108 11 109 / 99%)' : 'black', boxShadow: l.l6 ? '#000000 8px 3px 55px -17px' : '0' }}>
               <h5>Thread - VI  &nbsp;|| &nbsp;Total urls- {link[5].length}  </h5>
               <div className='mt-2 mb-2' style={{ height: 60, width: 60 }}>
                 <CircularProgressbar
@@ -463,7 +564,7 @@ export default function Brand() {
           </div>
 
           <div className="col-lg-3 col-md-4 col-sm-6">
-            <div className="threadbox m-2 p-2">
+            <div className="threadbox m-2 p-2" style={{ backgroundColor: l.l7 ? 'rgb(108 11 109 / 99%)' : 'black', boxShadow: l.l7 ? '#000000 8px 3px 55px -17px' : '0' }}>
               <h5>Thread - VII  &nbsp;|| &nbsp;Total urls- {link[6].length} </h5>
               <div className='mt-2 mb-2' style={{ height: 60, width: 60 }}>
                 <CircularProgressbar
@@ -476,7 +577,7 @@ export default function Brand() {
           </div>
 
           <div className="col-lg-3 col-md-4 col-sm-6">
-            <div className="threadbox m-2 p-2">
+            <div className="threadbox m-2 p-2" style={{ backgroundColor: l.l8 ? 'rgb(108 11 109 / 99%)' : 'black', boxShadow: l.l8 ? '#000000 8px 3px 55px -17px' : '0' }}>
               <h5>Thread - VIII  &nbsp;|| &nbsp;Total urls- {link[7].length} </h5>
               <div className='mt-2 mb-2' style={{ height: 60, width: 60 }}>
                 <CircularProgressbar
@@ -491,15 +592,24 @@ export default function Brand() {
       </div>
       <p className='fs-4'> <span className='text-danger fw-bolder'>Note :</span> Please refresh page once all thread completed. In case of error in any url, that will be visible after refresh. If there is remaining url, then start scrapping again.</p>
 
+      {/* <button className='me-4 mt-4' variant="secondary" onClick={downloadpartialExcel}>
+        Download Test UPC List
+      </button> */}
+      {/* <input type="file" onChange={handleFileChange} accept=".xlsx, .xls" />
+          <button onClick={handleSubmit}>Upload</button> */}
+      <button className='ms-4 mt-4' variant="secondary" onClick={downloadExcel}>
+        Download UPC List
+      </button>
+
       <div className='d-flex mt-4'>
 
-        <h2 className='me-4'>Upload UPC List</h2>
+        <h2 className='me-4'>Upload ASIN-SCOPE SHEET</h2>
         <form onSubmit={handleSubmit}>
           <input type="file" onChange={handleFileChange} accept=".xlsx, .xls" />
           <button className='me-4' type="submit">Upload</button>
         </form>
-        <button onClick={downloadFinalSheet}>Download Comparison Sheet</button>
-
+        <Link to='/checkproduct'>Check Final Data</Link>
+        {/* <button onClick={downloadFinalSheet}>Download Comparison Sheet</button> */}
       </div>
       <Accordion className='mt-4'>
         <Accordion.Item eventKey="0">
@@ -526,14 +636,12 @@ export default function Brand() {
           </Accordion.Body>
         </Accordion.Item>
 
-
         <Accordion.Item eventKey="1">
           <Accordion.Header>TOtal UPCs list: {upc.length}</Accordion.Header>
           <Accordion.Body>
             <Table striped bordered hover>
               <thead>
                 <tr>
-
                   <th>S.No</th>
                   <th>Product URL</th>
                 </tr>
@@ -562,6 +670,7 @@ export default function Brand() {
         </Accordion.Item>
       </Accordion>
       <hr />
+      <Outlet />
     </div >
   )
 }
