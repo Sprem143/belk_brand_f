@@ -101,22 +101,22 @@ export default function Brand() {
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   const scrapproduct = async () => {
-    // thread1();
-    // await delay(1000)
-    // thread2();
-    // await delay(1000)
-    // thread3();
-    // await delay(1000)
-    // thread4();
-    // await delay(1000)
-    // thread5();
-    // await delay(1000)
-    // thread6();
-    // await delay(1000)
-    // thread7();
-    // await delay(1000)
-    // thread8();
-    // await delay(1000)
+    thread1();
+    await delay(1000)
+    thread2();
+    await delay(1000)
+    thread3();
+    await delay(1000)
+    thread4();
+    await delay(1000)
+    thread5();
+    await delay(1000)
+    thread6();
+    await delay(1000)
+    thread7();
+    await delay(1000)
+    thread8();
+    await delay(1000)
 
   }
 
