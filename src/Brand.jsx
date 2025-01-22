@@ -9,9 +9,10 @@ import 'react-circular-progressbar/dist/styles.css';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import * as XLSX from 'xlsx';
 import { Link, Outlet } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
 
 export default function Brand() {
+  const navigate= useNavigate()
   const [upc, setUpc] = useState([{}]);
   const [productUrl, setProductUrl] = useState([]);
   const [url, setUrl] = useState('');
@@ -68,7 +69,8 @@ export default function Brand() {
     });
     data = await data.json();
     setProductUrl(data.url);
-    setArrayid(data.id)
+    setArrayid(data.id);
+    setUrlLen(data.url.length)
     let dividedarr = divideArrayIntoParts(data.url);
     setLink(dividedarr);
     setUpc(data.upc);
@@ -99,22 +101,22 @@ export default function Brand() {
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   const scrapproduct = async () => {
-    thread1();
-    await delay(1000)
-    thread2();
-    await delay(1000)
-    thread3();
-    await delay(1000)
-    thread4();
-    await delay(1000)
-    thread5();
-    await delay(1000)
-    thread6();
-    await delay(1000)
-    thread7();
-    await delay(1000)
-    thread8();
-    await delay(1000)
+    // thread1();
+    // await delay(1000)
+    // thread2();
+    // await delay(1000)
+    // thread3();
+    // await delay(1000)
+    // thread4();
+    // await delay(1000)
+    // thread5();
+    // await delay(1000)
+    // thread6();
+    // await delay(1000)
+    // thread7();
+    // await delay(1000)
+    // thread8();
+    // await delay(1000)
 
   }
 
@@ -145,6 +147,9 @@ export default function Brand() {
     setFile(e.target.files[0]);
   };
 
+  const handleFileChange2 = (e) => {
+    setFile(e.target.files[0]);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -157,35 +162,34 @@ export default function Brand() {
         }
       });
       setLoading(false)
-      alert(response.data);
+      navigate('/checkproduct')
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('Failed to upload file');
     }
   };
 
-  // const downloadFinalSheet = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await axios({
-  //       url: `${api}/downloadfinalSheet`, 
-  //       method: 'GET',
-  //       responseType: 'blob',
-  //     });
-
-  //     const url = window.URL.createObjectURL(new Blob([response.data]));
-  //     const link = document.createElement('a');
-  //     link.href = url;
-  //     link.setAttribute('download', 'comparison_sheet.xlsx'); // File name
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     link.remove();
-  //     setLoading(false)
-  //   } catch (error) {
-  //     console.error('Error downloading the file:', error);
-  //     setLoading(false)
-  //   }
-  // }
+  const removeexistingurl=async(e)=>{
+    e.preventDefault();
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+     let res=  await axios.post(`${api}/removeexistingurl`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      setLoading(false)
+     if(res.data.status){
+      alert(`Total ${res.data.count} urls removed from ${urlLen} urls`);
+      window.location.reload()
+     }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      alert('Failed to upload file');
+    }
+  }
 
   const exp = async () => {
     console.log("Exp function")
@@ -198,32 +202,32 @@ export default function Brand() {
     console.log(res)
   }
 
-  const downloadpartialExcel = async () => {
-    let res = await fetch(`${api}/downloadpartiallist`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    })
-    res = await res.json();
-    if (Array.isArray(res.upc)) {
-      const jsondata = res.upc.map((item) => {
-        return {
-          upc: item,
-        }
-      });
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.json_to_sheet(jsondata);
-      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-      const excelFile = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-      const blob = new Blob([excelFile], { type: 'application/octet-stream' });
+  // const downloadpartialExcel = async () => {
+  //   let res = await fetch(`${api}/downloadpartiallist`, {
+  //     method: 'GET',
+  //     headers: { 'Content-Type': 'application/json' }
+  //   })
+  //   res = await res.json();
+  //   if (Array.isArray(res.upc)) {
+  //     const jsondata = res.upc.map((item) => {
+  //       return {
+  //         upc: item,
+  //       }
+  //     });
+  //     const wb = XLSX.utils.book_new();
+  //     const ws = XLSX.utils.json_to_sheet(jsondata);
+  //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+  //     const excelFile = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  //     const blob = new Blob([excelFile], { type: 'application/octet-stream' });
 
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'Partiallist.xlsx'; // Set the file name
-      link.click(); // Trigger the download
-    } else {
-      alert('Error while fetching upc list')
-    }
-  };
+  //     const link = document.createElement('a');
+  //     link.href = URL.createObjectURL(blob);
+  //     link.download = 'Partiallist.xlsx'; // Set the file name
+  //     link.click(); // Trigger the download
+  //   } else {
+  //     alert('Error while fetching upc list')
+  //   }
+  // };
 
   const thread1 = async () => {
     setL((prev) => (
@@ -608,6 +612,11 @@ export default function Brand() {
           <button className='me-4' type="submit">Upload</button>
         </form>
         <Link to='/checkproduct'>Check Final Data</Link>
+        <br />
+        <form onSubmit={removeexistingurl}>
+          <input type="file" onChange={handleFileChange2} accept=".xlsx, .xls" />
+          <button className='me-4' type="submit">Upload For remove existing url</button>
+        </form>
         {/* <button onClick={downloadFinalSheet}>Download Comparison Sheet</button> */}
       </div>
       <Accordion className='mt-4'>
