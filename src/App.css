@@ -101,14 +101,21 @@ button{
     color: white !important;
 }
 .nobtn{
-    border: none !important;
+    border:0px solid black !important;
     padding:  0 !important;
     margin-left: 15px;
+    background-color: transparent !important;
 }
 .logo:hover {
     filter: drop-shadow(0 0 2em #646cffaa);
 }
-
+.tableheader{
+    height: 70px;
+    width: 100%;
+    background-color: rgb(15, 80, 221);
+    display: flex;
+    align-items: center;
+}
 .logo.react:hover {
     filter: drop-shadow(0 0 2em #61dafbaa);
 }
