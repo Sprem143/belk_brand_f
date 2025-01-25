@@ -82,8 +82,13 @@ export default function Checkproduct() {
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-
+    const setcurrentpage = async (n) => {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        n > 0 ? setCurrentPage(n) : setCurrentPage(1)
+        setLoading(false)
+    }
     const getdata = async () => {
         setLoading(true);
         let res = await fetch(`${api}/downloadfinalSheet`, {
@@ -94,10 +99,11 @@ export default function Checkproduct() {
         setLoading(false)
         if (res.status) {
             console.log(res.data[0])
-            setData(res.data);
+
             setRealData(res.data);
             let unchecked = res.data.filter((d) => !d.isCheked)
             setUnCheck(unchecked)
+            setData(unchecked);
             setCheck(res.data.length - unchecked.length);
         } else {
             setLoading(false)
@@ -111,6 +117,8 @@ export default function Checkproduct() {
     }
 
     const deleteproduct = async (id) => {
+       let ans= confirm('Are you sure, You want to delete?')
+       if(ans){
         let res = await fetch(`${api}/deleteproduct`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
@@ -118,10 +126,10 @@ export default function Checkproduct() {
         })
         res = await res.json();
         if (res.status) {
-            window.location.reload();
         } else {
             alert('Error while deleting product')
         }
+       }
     }
 
     const editsku = async () => {
@@ -133,7 +141,6 @@ export default function Checkproduct() {
         res = await res.json();
         if (res.status) {
             setShow(false);
-            window.location.reload()
         }
         else {
             alert('Error, plz retry')
@@ -196,20 +203,23 @@ export default function Checkproduct() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id })
             });
-            setCheck((prev)=> prev+1)
+            setCheck((prev) => prev + 1)
         }
     }
 
     const setUncheckproduct = () => {
         setData(uncheck)
     }
-    const setcheckproduct=()=>{
-       let d= realdata.filter((r)=> r.isCheked)
+    const setcheckproduct = () => {
+        let d = realdata.filter((r) => r.isCheked)
         console.log(d)
         setData(d)
     }
     const all = () => {
         setData(realdata)
+    }
+    const refresh = () => {
+        window.location.reload()
     }
     return (
         <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
@@ -246,8 +256,16 @@ export default function Checkproduct() {
                 <div className="tableheader row">
                     <div className="col-md-2"> <button className="nobtn p-2 text-white" onClick={all}><h5>Total Products : {realdata.length}</h5></button></div>
                     <div className="col-md-2"> <button onClick={setcheckproduct} className="nobtn p-2 text-white"><h5>Checked Products : {check}</h5></button></div>
-                    <div className="col-md-3"> <button onClick={setUncheckproduct} className="nobtn p-2 text-white"><h5>Unchecked Products : {realdata.length-check}</h5></button></div>
+                    <div className="col-md-3"> <button onClick={setUncheckproduct} className="nobtn p-2 text-white"><h5>Unchecked Products : {realdata.length - check}</h5></button></div>
+                    <div className="col-md-2"> <button onClick={refresh} className="nobtn p-2 text-white"><h5> Refresh <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="ms-2 mb-1 bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
+                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
+                    </svg></h5></button></div>
+                    <div className="col-md-3">
+                        <h5 className="text-white">Go to Page  <input type="text" className="w-25 ms-4 p-1" onChange={(e) => setcurrentpage(e.target.value)} /></h5>
+                    </div>
                 </div>
+
                 <Table striped bordered hover className="bg-dark">
                     <thead>
                         <tr>
@@ -260,8 +278,9 @@ export default function Checkproduct() {
                             <th>Price</th>
                             <th>Quantity</th>
                             <th>Open Link</th>
-                            <th>Delete</th>
+                           
                             <th>Is Checked</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -285,20 +304,23 @@ export default function Checkproduct() {
                                         <td>{detailArray['SKU'].length}</td>
                                     </>
                                 }
-                                <td>{detailArray['Product price']}</td>
+                                <td>{detailArray['Product price'] && detailArray['Product price'].toFixed(2)}</td>
                                 <td>{detailArray['Available Quantity']}</td>
                                 <td><button className='pt-1 pb-1 ps-2 pe-2' onClick={() => openlink(detailArray['Amazon link'], detailArray['Belk link'])}>Check links</button></td>
-                                <td><button className='pt-1 pb-1 ps-2 pe-2' onClick={() => deleteproduct(detailArray._id)}>Delete</button></td>
                                 <td><button className='pt-1 pb-1 ps-2 pe-2 nobtn' onClick={() => setChecked(detailArray._id, detailArray.isCheked)}>
                                     {
                                         detailArray.isCheked ?
                                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="green" class="bi bi-patch-check-fill" viewBox="0 0 16 16">
                                                 <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01zm.287 5.984-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708" />
                                             </svg> :
-                                            <button className="nobtn ms-0" style={{ border: '0px !important' }} >Confirm</button>
+                                            <button className="pt-1 pb-1 ps-2 pe-2" style={{ border: '0px !important' }} >Confirm</button>
                                     }
                                 </button></td>
-
+                                <td><button className='pt-1 pb-1 ps-2 pe-2' onClick={() => deleteproduct(detailArray._id)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="red" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+  <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
+</svg>
+                                    </button></td>
                             </tr>
                         ))}
                     </tbody>
