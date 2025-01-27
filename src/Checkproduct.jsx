@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react"
-import Accordion from 'react-bootstrap/Accordion';
 import Table from 'react-bootstrap/Table';
 import Pagination from 'react-bootstrap/Pagination';
 import * as XLSX from 'xlsx';
@@ -270,7 +269,8 @@ export default function Checkproduct() {
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Image</th>
+                            <th>Blk Img</th>
+                            <th>Amz Img</th>
                             <th>UPC</th>
                             <th>ASIN</th>
                             <th>SKU</th>
@@ -288,6 +288,7 @@ export default function Checkproduct() {
                             <tr key={i}>
                                 <td>{indexOfFirstItem + i + 1}</td>
                                 <td className="p-0"><img src={detailArray['Img link']} alt="img" height='50px' className="brand_img" /></td>
+                                <td className="p-0"><img src={detailArray['Image link']} alt="img" height='50px' className="brand_img" /></td>
                                 <td>{detailArray['UPC']}</td>
                                 <td>{detailArray['ASIN']}</td>
                                 {
