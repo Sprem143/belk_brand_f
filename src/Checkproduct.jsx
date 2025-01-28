@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect,useRef } from "react"
 import Table from 'react-bootstrap/Table';
 import Pagination from 'react-bootstrap/Pagination';
 import * as XLSX from 'xlsx';
@@ -25,6 +25,8 @@ export default function Checkproduct() {
     const [uncheck, setUnCheck] = useState([{}]);
     const [check, setCheck] = useState(0)
     const [currentPage, setCurrentPage] = useState(1);
+    const [value, setValue]=useState('')
+    const [id,setId]=useState('')
     const itemsPerPage = 10;
     // Pagination calculation for displaying the current page's data
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -65,13 +67,14 @@ export default function Checkproduct() {
         const formData = new FormData();
         formData.append('file', file);
         try {
-            const response = await axios.post(`${api}/uploadforcheck`, formData, {
+            await axios.post(`${api}/uploadforcheck`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
             setLoading(false);
             alert("Sheet Uploaded successfully");
+            handleShowAlert()
             window.location.reload()
         } catch (error) {
             console.error('Error uploading file:', error);
@@ -97,8 +100,6 @@ export default function Checkproduct() {
         res = await res.json();
         setLoading(false)
         if (res.status) {
-            console.log(res.data[0])
-
             setRealData(res.data);
             let unchecked = res.data.filter((d) => !d.isCheked)
             setUnCheck(unchecked)
@@ -125,6 +126,7 @@ export default function Checkproduct() {
         })
         res = await res.json();
         if (res.status) {
+            handleShowAlert()
         } else {
             alert('Error while deleting product')
         }
@@ -140,6 +142,7 @@ export default function Checkproduct() {
         res = await res.json();
         if (res.status) {
             setShow(false);
+                handleShowAlert()
         }
         else {
             alert('Error, plz retry')
@@ -150,15 +153,19 @@ export default function Checkproduct() {
         let jsondata = data.map((d) => {
             return {
                 'Input EAN': d['Input EAN'],
+                'UPC': d.UPC,
                 'SKU': d.SKU,
                 'ASIN': d.ASIN,
-                'Amazon link': d['Amazon link'],
                 'Belk link': d['Belk link'],
+                'Amz Title': d.Title,
+                'BLK Title': d['Product name'],
+                'Fulfillment Shipping':d['Fulfillment Shipping'],
+                'Product price': d['Product price'],
+                'Available Quantity': d['Available Quantity'],
+                'Brand': d.Brand,
                 'EAN List': d['EAN List'],
                 'MPN': d.MPN,
-                'ISBN': d.ISBN,
-                'Title': d.Title,
-                'Brand': d.Brand,
+                'ISBN': d.ISBN,      
                 'Dimensions (in)': d['Dimensions (in)'],
                 'Weight (lb)': d['Weight (lb)'],
                 'Image link': d['Image link'],
@@ -170,12 +177,10 @@ export default function Checkproduct() {
                 'FBA Fees': d['FBA Fees'],
                 'Fees Breakdown': d['Fees Breakdown'],
                 'Product id': d['Product id'],
-                'UPC': d.UPC,
-                'Available Quantity': d['Available Quantity'],
-                'Product name': d['Product name'],
+                'Amazon link': d['Amazon link'],
                 'Img link': d['Img link'],
                 'Product Currency': d['Product Currency'],
-                'Product price': d['Product price'],
+                
                 'Category': d['Category'],
                 'Soldby': d['Soldby'],
                 'Size': d['Size'],
@@ -211,7 +216,6 @@ export default function Checkproduct() {
     }
     const setcheckproduct = () => {
         let d = realdata.filter((r) => r.isCheked)
-        console.log(d)
         setData(d)
     }
     const all = () => {
@@ -220,6 +224,46 @@ export default function Checkproduct() {
     const refresh = () => {
         window.location.reload()
     }
+    const editshippingcost=(value,id)=>{
+        setValue(value)
+        setId(id)
+    }
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleOutsideClick);
+    
+        return () => {
+          document.removeEventListener('mousedown', handleOutsideClick);
+        };
+      }, [value]);
+      const inputRef = useRef(null);
+
+      const handleOutsideClick = async(event) => {
+        if (inputRef.current && !inputRef.current.contains(event.target)) {
+         if(value){
+           let res= await fetch(`${api}/editshippingcost`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({id,value})
+           })
+           res= await res.json();
+          if(res.status){
+            handleShowAlert()
+          }
+          setValue('')
+          setId('')
+         }
+        }
+      };
+
+      const [showAlert, setShowAlert] = useState(false);
+
+      const handleShowAlert = () => {
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 2000); // Alert disappears after 2 seconds
+      };
     return (
         <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
             {loading && ( // Show spinner while loading is true
@@ -227,6 +271,16 @@ export default function Checkproduct() {
                     <Spinner animation="border" variant="primary" /> {/* Spinner from Bootstrap */}
                 </div>
             )}
+             {showAlert && (
+       <div className="d-flex justify-content-end">
+         <h5
+          className="fixed top-2 bg-success text-white w-20 px-4 py-3 shadow-lg"
+          style={{ zIndex: 1000, position:'fixed' }}
+        >
+         Successfully Updated
+        </h5>
+       </div>
+      )}
             <h1 className="text-center">Match Product Details</h1>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
@@ -277,6 +331,7 @@ export default function Checkproduct() {
                             <th>SKU len.</th>
                             <th>Price</th>
                             <th>Quantity</th>
+                            <th>Shp. Cost</th>
                             <th>Open Link</th>
                            
                             <th>Is Checked</th>
@@ -307,6 +362,7 @@ export default function Checkproduct() {
                                 }
                                 <td>{detailArray['Product price'] && detailArray['Product price'].toFixed(2)}</td>
                                 <td>{detailArray['Available Quantity']}</td>
+                                <td> <input style={{width:'60px'}} ref={inputRef} type="text" onChange={(e)=>editshippingcost(e.target.value,detailArray._id)} on placeholder={detailArray['Fulfillment Shipping']}/></td>
                                 <td><button className='pt-1 pb-1 ps-2 pe-2' onClick={() => openlink(detailArray['Amazon link'], detailArray['Belk link'])}>Check links</button></td>
                                 <td><button className='pt-1 pb-1 ps-2 pe-2 nobtn' onClick={() => setChecked(detailArray._id, detailArray.isCheked)}>
                                     {
