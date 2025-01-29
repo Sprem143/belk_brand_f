@@ -264,6 +264,20 @@ export default function Checkproduct() {
           setShowAlert(false);
         }, 2000); // Alert disappears after 2 seconds
       };
+
+      const deletedata=async()=>{
+        let res= await fetch(`${api}/deletedata`,{
+            method:'DELETE',
+            headers:{'Content-Type':'application/json'}
+
+        })
+        res=await res.json();
+        if(res.status){
+            window.location.reload()
+        }else{
+            console.log(err)
+        }
+      }
     return (
         <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
             {loading && ( // Show spinner while loading is true
@@ -405,6 +419,7 @@ export default function Checkproduct() {
             </div>
             <h1>
                 <Button className="btn btn-primary mb-4" onClick={downloadfinalexcel}>Download Final Sheet</Button>
+                <Button className="btn btn-primary mb-4 ms-4" onClick={deletedata}>Delete Data</Button>
             </h1>
         </div>
     )
