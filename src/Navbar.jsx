@@ -24,17 +24,12 @@ function Header() {
               </Offcanvas.Header>
               <Offcanvas.Body>
                 <Nav className="justify-content-end flex-grow-1 pe-3">
-                  {/* <Nav.Link href="/" style={{ color: 'white' }} className='fs-6'>Inventory update</Nav.Link> */}
-                  <DropdownButton  title="Inventory Update" id='nav_dropdown' style={{}}>
-      <Dropdown.Item href="/">Bulk</Dropdown.Item>
-      <Dropdown.Item href="/boscos">Boscos</Dropdown.Item>
-      {/* <Dropdown.Item href="#/action-3"></Dropdown.Item> */}
-    </DropdownButton>
+                  <Nav.Link href="/" style={{ color: 'white' }} className='fs-6'>Inventory update</Nav.Link>
                   <Nav.Link href="/analysis" style={{ color: 'white' }} className='fs-6'>Analysis</Nav.Link>
                   <Nav.Link href="/rowdata" style={{ color: 'white' }} className='fs-6'>Uploaded-Data</Nav.Link>
                   <Nav.Link href="/calculation" style={{ color: 'white' }} className='fs-6'>Calculation</Nav.Link>
                   <Nav.Link href="brand" style={{ color: 'white' }} className='fs-6'>Brand Scrapping</Nav.Link>
-                  <Nav.Link href="/checkproduct" style={{ color: 'white' }} className='fs-6'>Check Products</Nav.Link>
+{/*                   <Nav.Link href="/checkproduct" style={{ color: 'white' }} className='fs-6'>Check Products</Nav.Link> */}
                   <Nav.Link href="/backup" style={{ color: 'white' }} className='fs-6'>Backup</Nav.Link>
                 </Nav>
 
