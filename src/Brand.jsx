@@ -162,7 +162,7 @@ export default function Brand() {
         }
       });
       setLoading(false)
-      navigate('/checkproduct')
+      // navigate('/checkproduct')
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('Failed to upload file');
@@ -611,7 +611,7 @@ export default function Brand() {
           <input type="file" onChange={handleFileChange} accept=".xlsx, .xls" />
           <button className='me-4' type="submit">Upload</button>
         </form>
-        <Link to='/checkproduct'>Check Final Data</Link>
+{/*         <Link to='/checkproduct'>Check Final Data</Link> */}
         <br />
         <form onSubmit={removeexistingurl}>
           <input type="file" onChange={handleFileChange2} accept=".xlsx, .xls" />
