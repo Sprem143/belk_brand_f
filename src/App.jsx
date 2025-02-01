@@ -536,6 +536,8 @@ if(result.data.length>0){
       if (Array.isArray(resp.url.url) && resp.url.url.length > 0) {
         let res = confirm(`${resp.url.url.length} urls are still pending. Are you sure you want to download incomplete sheet`)
         return res
+      }else{
+        return true
       }
     }
     console.log(resp)
