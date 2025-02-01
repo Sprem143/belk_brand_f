@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom';
 import './App.css'
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -7,7 +8,11 @@ import Accordion from 'react-bootstrap/Accordion';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { Link, Outlet } from 'react-router-dom';
+import Table from 'react-bootstrap/Table';
+import Pagination from 'react-bootstrap/Pagination';
+import * as XLSX from 'xlsx';
 function App() {
+  const navigate= useNavigate()
   const [invfile, setInvFile] = useState('');
   const [loading, setLoading] = useState(false);
   const [loading1, setLoading1] = useState(false);
@@ -79,10 +84,16 @@ function App() {
         headers: { 'Content-Type': 'application/json' }
       })
       result = await result.json();
-      setLinkid(result._id)
-      let dividedarr = divideArrayIntoParts(result.url);
+      console.log(result)
+      setLinkid(result.url._id)
+      let dividedarr = divideArrayIntoParts(result.url.url);
       setLink(dividedarr)
-      console.log(dividedarr);
+if(result.data.length>0){
+  setData(result.data)
+
+}
+    
+     
     } catch (err) {
       console.log(err)
     }
@@ -93,7 +104,6 @@ function App() {
     }, 1000); // Increment every second
   };
   const stopTimer = async () => {
-    settime(timerRef.current)
     clearInterval(timerRef.current);
     timerRef.current = null;
   };
@@ -158,13 +168,6 @@ function App() {
       alert(error);
     }
   };
-  const settime = (time) => {
-    fetch(`${api}/settime`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ time: time + elapsedTime })
-    })
-  }
   const autofetchData = async (link) => {
     try {
       let result = await fetch(`${api}/autofetchdata`, {
@@ -510,11 +513,10 @@ function App() {
   };
 
   const stopFetching = () => {
-    stopRef.current = true; // Set stop condition
+    stopRef.current = true;
   };
 
   const getupdatedproduct = async () => {
-
     let result = await fetch(`${api}/getupdatedproduct`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
@@ -522,26 +524,45 @@ function App() {
     result = await result.json();
     setTotalProduct(result.num);
   }
+
+
+  const checkremainingdata = async () => {
+    let resp = await fetch(`${api}/inv/checkremainingdata`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    })
+    resp = await resp.json();
+    if (resp.status) {
+      if (Array.isArray(resp.url.url) && resp.url.url.length > 0) {
+        let res = confirm(`${resp.url.url.length} urls are still pending. Are you sure you want to download incomplete sheet`)
+        return res
+      }
+    }
+    console.log(resp)
+  }
   const downloadInvontory = async (e) => {
     e.preventDefault();
-    try {
-      setLoading(true)
-      const response = await axios({
-        url: `${api}/download-inventory`,
-        method: 'GET',
-        responseType: 'blob',
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'Updated_inventory.xlsx'); // File name
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      setLoading(false)
-    } catch (error) {
-      console.error('Error downloading the file:', error);
-      setLoading(false)
+    let response = await checkremainingdata()
+    if (response) {
+      try {
+        setLoading(true)
+        const response = await axios({
+          url: `${api}/download-inventory`,
+          method: 'GET',
+          responseType: 'blob',
+        });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'Updated_inventory.xlsx');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setLoading(false)
+      } catch (error) {
+        console.error('Error downloading the file:', error);
+        setLoading(false)
+      }
     }
   }
   const startall = async () => {
@@ -550,27 +571,78 @@ function App() {
     autofetch2();
     await delay(1000)
     autofetch3();
-    await delay(2000)
+    await delay(1000)
     autofetch4();
-    await delay(2000)
+    await delay(1000)
     autofetch5();
-    await delay(2000)
+    await delay(1000)
     autofetch6();
-    await delay(2000)
+    await delay(1000)
     autofetch7();
-    await delay(2000)
+    await delay(1000)
     autofetch8();
+  }
+
+  const [data, setData] = useState([])
+  const pricerangeproduct = async () => {
+    let resp = await fetch(`${api}/inv/pricerangeproduct`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    })
+    resp = await resp.json();
+    setData(resp.data)
+    navigate('#pricerange')
+  }
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  // Pagination calculation for displaying the current page's data
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const handlePaginationClick = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const paginationRange = () => {
+    const range = [];
+    const maxPageNumbers = 5;
+    let startPage = Math.max(currentPage - Math.floor(maxPageNumbers / 2), 1);
+    let endPage = startPage + maxPageNumbers - 1;
+
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(endPage - maxPageNumbers + 1, 1);
+    }
+    for (let i = startPage; i <= endPage; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  const changeprice = async (price, id) => {
+    let res = await fetch(`${api}/inv/changeprice`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, price })
+    })
+    res = await res.json();
+    if(res.status){
+      alert(`${res.num} products' price of same varient has been changed`);
+       setData(res.data);
+       navigate('#pricerange')
+    }
   }
   return (
     <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
-      {loading && ( // Show spinner while loading is true
+      {loading && (
         <div className="loading-overlay">
-          <Spinner animation="border" variant="primary" /> {/* Spinner from Bootstrap */}
+          <Spinner animation="border" variant="primary" />
         </div>
       )}
       <div>
         <h2>Inventory Updation</h2>
-        {/* -----Manual inventory updatiuon----------- */}
 
         <div className='pb-2 mt-4' style={{ border: '1px solid black' }}>
           <h4>Upload direct source file</h4>
@@ -585,6 +657,11 @@ function App() {
           <button onClick={stopFetching} className='ms-4' disabled={!loading1}>
             Pause
           </button>
+          <a href="#productrange" className='text-dark' style={{ textDecoration: 'none' }}>
+            <button onClick={pricerangeproduct} className='ms-4 text-black'>
+              Fix Product Range
+            </button>
+          </a>
           <button className='ms-4 mt-4' variant="secondary" onClick={downloadInvontory}>
             Download Result
           </button>
@@ -881,6 +958,77 @@ function App() {
         </Accordion.Item>
       </Accordion>
       <hr />
+
+      {data.length > 0 &&
+        <div id='productrange' className="container d-flex justify-content-center align-items-center flex-column">
+          <div className="tableheader row">
+            {/* <div className="col-md-2"> <button className="nobtn p-2 text-white" onClick={all}><h5>Total Products : {realdata.length}</h5></button></div> */}
+            <div className="col-md-2"> <button className="nobtn p-2 text-white"><h5>Total Products : {data.length}</h5></button></div>
+          </div>
+
+          <Table striped bordered hover className="bg-dark">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>UPC</th>
+                <th>ASIN</th>
+                <th>SKU</th>
+                <th>Current Price</th>
+                <th>Price Range</th>
+                <th>Quantity</th>
+                <th>URL</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentItems.length > 0 && currentItems.map((detailArray, i) => (
+                <tr key={i}>
+                  <td>{indexOfFirstItem + i + 1}</td>
+                  <td>{detailArray['Input UPC']}</td>
+                  <td>{detailArray['ASIN']}</td>
+                  <td>{detailArray['SKU']}</td>
+                  <td>{detailArray['Current Price'] && detailArray['Current Price'].toFixed(2)}</td>
+                  <td>{
+                    detailArray['PriceRange'].length > 0 &&
+                    detailArray['PriceRange'].map((d) => (
+                      <button onClick={() => changeprice(d, detailArray._id)}>{d}</button>
+                    ))
+                  }</td>
+                  <td>{detailArray['Current Quantity']}</td>
+                  <td><a href={detailArray['Product link']} target='_blank'>Link</a></td>
+                  <td><button className='pt-1 pb-1 ps-2 pe-2' onClick={() => deleteproduct(detailArray._id)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="red" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                      <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
+                    </svg>
+                  </button></td>
+
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          <Pagination>
+            <Pagination.Prev onClick={() => handlePaginationClick(currentPage - 1)} disabled={currentPage === 1} />
+
+            {/* Display page numbers with ellipses if needed */}
+            {currentPage > 1 && <Pagination.Item onClick={() => handlePaginationClick(1)}>1</Pagination.Item>}
+            {currentPage > 3 && <Pagination.Ellipsis />}
+            {paginationRange().map((page) => (
+              <Pagination.Item
+                key={page}
+                active={page === currentPage}
+                onClick={() => handlePaginationClick(page)}
+              >
+                {page}
+              </Pagination.Item>
+            ))}
+            {currentPage < totalPages - 2 && <Pagination.Ellipsis />}
+            {currentPage < totalPages && <Pagination.Item onClick={() => handlePaginationClick(totalPages)}>{totalPages}</Pagination.Item>}
+
+            <Pagination.Next onClick={() => handlePaginationClick(currentPage + 1)} disabled={currentPage === totalPages} />
+          </Pagination>
+        </div>
+
+      }
       <Outlet />
     </div>
   )
