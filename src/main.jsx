@@ -23,7 +23,7 @@ createRoot(document.getElementById('root')).render(
         {/* <Route path='/boscos' element={<Boscos />} /> */}
         <Route path='/analysis' element={<Analysis/>} />
         <Route path='/rowdata' element={<Rowdata/>} />
-        <Route path='/backup' element={<Backup/>} />
+        <Route path='/backup1456' element={<Backup/>} />
         <Route path='/calculation' element={<Calculation/>} />
         <Route path='/checkproduct' element={<Checkproduct/>} />
       </Routes>
