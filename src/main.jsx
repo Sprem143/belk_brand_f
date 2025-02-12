@@ -25,7 +25,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='/rowdata' element={<Rowdata/>} />
         <Route path='/backup1456' element={<Backup/>} />
         <Route path='/calculation' element={<Calculation/>} />
-        <Route path='/checkproduct' element={<Checkproduct321/>} />
+        <Route path='/checkproduct' element={<Checkproduct/>} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
