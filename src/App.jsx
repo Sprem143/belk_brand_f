@@ -12,7 +12,7 @@ import Table from 'react-bootstrap/Table';
 import Pagination from 'react-bootstrap/Pagination';
 import * as XLSX from 'xlsx';
 function App() {
-  const navigate= useNavigate()
+  const navigate = useNavigate()
   const [invfile, setInvFile] = useState('');
   const [loading, setLoading] = useState(false);
   const [loading1, setLoading1] = useState(false);
@@ -88,12 +88,12 @@ function App() {
       setLinkid(result.url._id)
       let dividedarr = divideArrayIntoParts(result.url.url);
       setLink(dividedarr)
-if(result.data.length>0){
-  setData(result.data)
+      if (result.data.length > 0) {
+        setData(result.data)
 
-}
-    
-     
+      }
+
+
     } catch (err) {
       console.log(err)
     }
@@ -154,6 +154,27 @@ if(result.data.length>0){
     formData.append('file', invfile);
     try {
       const response = await axios.post(`${api}/uploadinvfile2`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      alert(response.data.msg);
+      window.location.reload();
+      setLoading(false)
+
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setLoading(false)
+      alert(error);
+    }
+  };
+
+  const uploadinventoryfile3 = async () => {
+    setLoading(true)
+    const formData = new FormData();
+    formData.append('file', invfile);
+    try {
+      const response = await axios.post(`${api}/uploadinvfile3`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -536,7 +557,7 @@ if(result.data.length>0){
       if (Array.isArray(resp.url.url) && resp.url.url.length > 0) {
         let res = confirm(`${resp.url.url.length} urls are still pending. Are you sure you want to download incomplete sheet`)
         return res
-      }else{
+      } else {
         return true
       }
     }
@@ -630,10 +651,10 @@ if(result.data.length>0){
       body: JSON.stringify({ id, price })
     })
     res = await res.json();
-    if(res.status){
+    if (res.status) {
       alert(`${res.num} products' price of same varient has been changed`);
-       setData(res.data);
-       navigate('#pricerange')
+      setData(res.data);
+      navigate('#pricerange')
     }
   }
   return (
@@ -646,10 +667,23 @@ if(result.data.length>0){
       <div>
         <h2>Inventory Updation</h2>
 
-        <div className='pb-2 mt-4' style={{ border: '1px solid black' }}>
-          <h4>Upload direct source file</h4>
-          <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
-          <button onClick={uploadinventoryfile2} >Upload</button>
+        <div className='p-2 mt-4' style={{ border: '1px solid black' }}>
+          <div className="container">
+            <div className="row">
+              <div className="col-md-6">
+                <h4>Upload direct Belk source file</h4>
+                <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
+                <button onClick={uploadinventoryfile2} >Upload</button>
+              </div>
+              <div className="col-md-6" style={{borderLeft:'2px solid black'}}>
+                <h4>Upload direct Boscov source file</h4>
+                <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
+                <button onClick={uploadinventoryfile3} >Upload</button>
+              </div>
+
+            </div>
+          </div>
+
         </div>
         {/* --------Inventory updation */}
         <div>
