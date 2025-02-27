@@ -7,12 +7,12 @@ import Accordion from 'react-bootstrap/Accordion';
 import Table from 'react-bootstrap/Table';
 import 'react-circular-progressbar/dist/styles.css';
 import { CircularProgressbar } from 'react-circular-progressbar';
-import * as XLSX from 'xlsx';
 import { Link, Outlet } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx'
 
 export default function Brand() {
-  const navigate= useNavigate()
+  const navigate = useNavigate()
   const [upc, setUpc] = useState([{}]);
   const [productUrl, setProductUrl] = useState([]);
   const [url, setUrl] = useState('');
@@ -116,8 +116,6 @@ export default function Brand() {
     thread7();
     await delay(1000)
     thread8();
-    await delay(1000)
-
   }
 
   const downloadExcel = async () => {
@@ -143,6 +141,45 @@ export default function Brand() {
     }
   };
 
+  const downloadProductExcel = async () => {
+    let res = await fetch(`${api}/downloadProductExcel`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res = await res.json();
+    if (res.status && res.data.length > 0) {
+      let products= res.data.filter((d)=> d.quantity>2)
+      let jsondata = products.map((d) => {
+        return {
+          'UPC': 'UPC' + d.upc,
+          'upc2':d.upc,
+          'upc3':d.upc,
+          'SKU': d.sku,
+          'Size': d.size,
+          'Color': d.color,
+          'Product price': d.price,
+          'Price Range': d.pricerange,
+          'Quantity': d.quantity,
+          'Belk link': d.url,
+          'Image link':d.imgurl
+        }
+      })
+      jsondata=Array.from(jsondata.reduce((map, item) => map.set(item.UPC, item), new Map()).values());
+      const wb= XLSX.utils.book_new()
+      const ws= XLSX.utils.json_to_sheet(jsondata);
+       XLSX.utils.book_append_sheet(wb,ws, 'Sheet1')
+       const sheet= XLSX.write(wb, {bookType:'xlsx',type:'array'})
+       const blob= new Blob([sheet], {type:'application/octet-stream'})
+
+       const link= document.createElement('a');
+       link.href= URL.createObjectURL(blob);
+       link.download='Row_product_list.xlsx';
+       link.click();
+    } else {
+      alert('No data found');
+      console.log(res.msg)
+    }
+  }
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -162,45 +199,45 @@ export default function Brand() {
         }
       });
       setLoading(false)
-      // navigate('/checkproduct')
+      navigate('/checkproduct')
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('Failed to upload file');
     }
   };
 
-  const removeexistingurl=async(e)=>{
+  const removeexistingurl = async (e) => {
     e.preventDefault();
     setLoading(true);
     const formData = new FormData();
     formData.append('file', file);
     try {
-     let res=  await axios.post(`${api}/removeexistingurl`, formData, {
+      let res = await axios.post(`${api}/removeexistingurl`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
       setLoading(false)
-     if(res.data.status){
-      alert(`Total ${res.data.count} urls removed from ${urlLen} urls`);
-      window.location.reload()
-     }
+      if (res.data.status) {
+        alert(`Total ${res.data.count} urls removed from ${urlLen} urls`);
+        window.location.reload()
+      }
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('Failed to upload file');
     }
   }
 
-  const exp = async () => {
-    console.log("Exp function")
-    let res = await fetch(`${api}/exp`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    })
-    res = await res.json();
-    console.log(res.length)
-    console.log(res)
-  }
+  // const exp = async () => {
+  //   console.log("Exp function")
+  //   let res = await fetch(`${api}/exp`, {
+  //     method: 'GET',
+  //     headers: { 'Content-Type': 'application/json' }
+  //   })
+  //   res = await res.json();
+  //   console.log(res.length)
+  //   console.log(res)
+  // }
 
   // const downloadpartialExcel = async () => {
   //   let res = await fetch(`${api}/downloadpartiallist`, {
@@ -446,6 +483,9 @@ export default function Brand() {
     })
     res = await res.json()
   }
+  const deleteproduct = (url) => {
+    alert(url)
+  }
   return (
     <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
       {loading && ( // Show spinner while loading is true
@@ -458,7 +498,7 @@ export default function Brand() {
       <input type="text" onChange={(e) => setPurl(e.target.value)} />
       <button onClick={pratical}>Pratical</button> */}
       <p>Brand URL</p>
-      <input type="text" onChange={(e) => setUrl(e.target.value)} placeholder='Brand URL' className='w-25 p-2'  />
+      <input type="text" onChange={(e) => setUrl(e.target.value)} placeholder='Brand URL' className='w-25 p-2' />
       <input type="text" className='ms-3 p-2' onChange={(e) => setNum(e.target.value)} placeholder='Number of products' />
 
       <button className='ms-4' onClick={fetchbrand}>Fetch All product URLs</button>
@@ -474,9 +514,13 @@ export default function Brand() {
           </svg></span>
         </div>
       </div>
+
       <button className='ms-4 mt-3' onClick={scrapproduct}>Start Scraping UPCs</button>
 
-
+      {/* <form onSubmit={removeexistingurl} className='mt-4'>
+          <input type="file" onChange={handleFileChange2} accept=".xlsx, .xls" />
+          <button className='me-4' type="submit">Upload Current Inventory file For remove existing url</button>
+        </form> */}
 
       {/* <div className="container mt-4">
         <div className="row">
@@ -604,6 +648,10 @@ export default function Brand() {
         Download UPC List
       </button>
 
+      <button className='ms-4 mt-4' variant="secondary" onClick={downloadProductExcel}>
+        Download Products List
+      </button>
+
       <div className='d-flex mt-4'>
 
         <h2 className='me-4'>Upload ASIN-SCOPE SHEET</h2>
@@ -611,12 +659,9 @@ export default function Brand() {
           <input type="file" onChange={handleFileChange} accept=".xlsx, .xls" />
           <button className='me-4' type="submit">Upload</button>
         </form>
-{/*         <Link to='/checkproduct'>Check Final Data</Link> */}
-        <br />
-        <form onSubmit={removeexistingurl}>
-          <input type="file" onChange={handleFileChange2} accept=".xlsx, .xls" />
-          <button className='me-4' type="submit">Upload For remove existing url</button>
-        </form>
+        <Link to='/checkproduct'>Check Final Data</Link>
+
+
         {/* <button onClick={downloadFinalSheet}>Download Comparison Sheet</button> */}
       </div>
       <Accordion className='mt-4'>
@@ -628,6 +673,7 @@ export default function Brand() {
                 <tr>
                   <th>S.No</th>
                   <th>Products' url</th>
+                  <th>Delete</th>
                 </tr>
               </thead>
               {productUrl.length > 0 && productUrl.map((p, i) => (
@@ -636,7 +682,14 @@ export default function Brand() {
                     <td style={{ padding: '0 !important' }}>
                       {i + 1}
                     </td>
-                    <a style={{ background: 'white !important' }} href={p}>{p}</a>
+                    <td> <a style={{ background: 'white !important' }} href={p}>{p}</a></td>
+                    <td>
+                      <button className='pt-1 pb-1 ps-2 pe-2' onClick={() => deleteproduct(p)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="red" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                          <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
+                        </svg>
+                      </button>
+                    </td>
                   </tr>
                 </tbody>
               ))}
