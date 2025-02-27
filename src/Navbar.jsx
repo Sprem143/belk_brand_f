@@ -29,7 +29,7 @@ function Header() {
                   <Nav.Link href="/rowdata" style={{ color: 'white' }} className='fs-6'>Uploaded-Data</Nav.Link>
                   <Nav.Link href="/calculation" style={{ color: 'white' }} className='fs-6'>Calculation</Nav.Link>
                   <Nav.Link href="brand" style={{ color: 'white' }} className='fs-6'>Brand Scrapping</Nav.Link>
-{/*                   <Nav.Link href="/checkproduct" style={{ color: 'white' }} className='fs-6'>Check Products</Nav.Link> */}
+                <Nav.Link href="/checkproduct" style={{ color: 'white' }} className='fs-6'>Check Products</Nav.Link>
 {/*                   <Nav.Link href="/backup" style={{ color: 'white' }} className='fs-6'>Backup</Nav.Link> */}
                 </Nav>
 
