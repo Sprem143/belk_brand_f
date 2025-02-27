@@ -46,6 +46,43 @@ export default function Brand() {
     return result;
   }
 
+ const filterdata = (event) => {
+
+        const file = event.target.files[0]; // Get the uploaded file
+        if (!file) {
+            console.log("no data");
+            return; // Stop execution if no file is uploaded
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            const exData = new Uint8Array(e.target.result); // Convert file to byte array
+            const workbook = XLSX.read(exData, { type: "array" }); // Read the Excel file
+
+            const sheetName = workbook.SheetNames[0]; // Get the first sheet name
+            const sheet = workbook.Sheets[sheetName]; // Get the sheet
+            const parsedData = XLSX.utils.sheet_to_json(sheet); // Convert sheet to array of objects
+
+            let result = parsedData.filter((r) => r.Title)
+            result = Array.from(result.reduce((map, item) => map.set(item.UPC, item), new Map()).values());
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(result);
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+            const excelFile = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([excelFile], { type: 'application/octet-stream' });
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Final_Product_list.xlsx'; // Set the file name
+            link.click(); // Trigger the download
+
+        };
+
+        reader.readAsArrayBuffer(file); // Read file as ArrayBuffer
+    };
+
   const getupdatedproduct = async () => {
     try {
       let res = await fetch(`${api}/totalproducts`, {
@@ -651,6 +688,9 @@ export default function Brand() {
       <button className='ms-4 mt-4' variant="secondary" onClick={downloadProductExcel}>
         Download Products List
       </button>
+      <br />
+      <h4>Filter Product list</h4>
+      <input type="file" onChange={(e) => filterdata(e)} />
 
       <div className='d-flex mt-4'>
 
