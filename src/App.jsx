@@ -137,7 +137,7 @@ function App() {
           'Content-Type': 'multipart/form-data'
         }
       });
-      alert(response.data.msg);
+
       window.location.reload();
       setLoading(false)
 
@@ -158,28 +158,6 @@ function App() {
           'Content-Type': 'multipart/form-data'
         }
       });
-      alert(response.data.msg);
-      window.location.reload();
-      setLoading(false)
-
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      setLoading(false)
-      alert(error);
-    }
-  };
-
-  const uploadinventoryfile3 = async () => {
-    setLoading(true)
-    const formData = new FormData();
-    formData.append('file', invfile);
-    try {
-      const response = await axios.post(`${api}/uploadinvfile3`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      alert(response.data.msg);
       window.location.reload();
       setLoading(false)
 
@@ -588,7 +566,38 @@ function App() {
       }
     }
   }
+  const uploadinventoryfile3 = async () => {
+    setLoading(true)
+    const formData = new FormData();
+    formData.append('file', invfile);
+    try {
+      const response = await axios.post(`${api}/uploadinvfile3`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      window.location.reload();
+      setLoading(false)
+
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      setLoading(false)
+      alert(error);
+    }
+  };
+  const removeoutofstock = async () => {
+    let res = await fetch(`${api}/inv/removeoutofstock`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    res = await res.json();
+   if(res.status){
+    return res.count
+   }
+  }
+
   const startall = async () => {
+   await removeoutofstock()
     autofetch();
     await delay(1000)
     autofetch2();
@@ -675,7 +684,7 @@ function App() {
                 <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
                 <button onClick={uploadinventoryfile2} >Upload</button>
               </div>
-              <div className="col-md-6" style={{borderLeft:'2px solid black'}}>
+              <div className="col-md-6" style={{ borderLeft: '2px solid black' }}>
                 <h4>Upload direct Boscov source file</h4>
                 <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
                 <button onClick={uploadinventoryfile3} >Upload</button>
@@ -683,9 +692,8 @@ function App() {
 
             </div>
           </div>
-
         </div>
-        {/* --------Inventory updation */}
+
         <div>
           <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
           <button onClick={uploadinventoryfile} >Upload</button>
@@ -734,7 +742,7 @@ function App() {
                       <CircularProgressbar
                         value={(index1 / link[0].length * 100)}
                         text={`${(index1 / link[0].length * 100).toFixed(0)}%`}
-                      />;
+                      />
                     </div>
                     <h4>
                       {speed1} s / URL
@@ -769,7 +777,7 @@ function App() {
                       <CircularProgressbar
                         value={(index2 / link[1].length * 100)}
                         text={`${(index2 / link[1].length * 100).toFixed(0)}%`}
-                      />;
+                      />
                     </div>
                     <h4>
                       {speed2} s / URL
@@ -803,7 +811,7 @@ function App() {
                       <CircularProgressbar
                         value={(index3 / link[2].length * 100)}
                         text={`${(index3 / link[2].length * 100).toFixed(0)}%`}
-                      />;
+                      />
                     </div>
                     <h4>
                       {speed3} s / URL
@@ -837,7 +845,7 @@ function App() {
                       <CircularProgressbar
                         value={(index4 / link[3].length * 100)}
                         text={`${(index4 / link[3].length * 100).toFixed(0)}%`}
-                      />;
+                      />
                     </div>
                     <h4>
                       {speed4} s / URL
@@ -871,7 +879,7 @@ function App() {
                       <CircularProgressbar
                         value={(index5 / link[4].length * 100)}
                         text={`${(index5 / link[4].length * 100).toFixed(0)}%`}
-                      />;
+                      />
                     </div>
                     <h4>
                       {speed5} s / URL
@@ -905,7 +913,7 @@ function App() {
                       <CircularProgressbar
                         value={(index6 / link[5].length * 100)}
                         text={`${(index6 / link[5].length * 100).toFixed(0)}%`}
-                      />;
+                      />
                     </div>
                     <h4>
                       {speed6} s / URL
@@ -938,7 +946,7 @@ function App() {
                       <CircularProgressbar
                         value={(index7 / link[6].length * 100)}
                         text={`${(index7 / link[6].length * 100).toFixed(0)}%`}
-                      />;
+                      />
                     </div>
                     <h4>
                       {speed7} s / URL
@@ -971,7 +979,7 @@ function App() {
                       <CircularProgressbar
                         value={(index8 / link[7].length * 100)}
                         text={`${(index8 / link[7].length * 100).toFixed(0)}%`}
-                      />;
+                      />
                     </div>
                     <h4>
                       {speed8} s / URL
