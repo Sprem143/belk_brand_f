@@ -209,7 +209,7 @@ export default function Checkproduct() {
         link.download = 'Final_Product_list.xlsx'; // Set the file name
         link.click(); // Trigger the download
     }
-  
+
 
     const setChecked = async (id, bool) => {
         if (!bool) {
@@ -269,6 +269,7 @@ export default function Checkproduct() {
 
     const [showAlert, setShowAlert] = useState(false);
     const [showAlert1, setShowAlert1] = useState(false);
+    const [showAlert2, setShowAlert2] = useState(false);
 
     const handleShowAlert = () => {
         setShowAlert(true);
@@ -281,8 +282,15 @@ export default function Checkproduct() {
         setShowAlert1(true);
         setTimeout(() => {
             setShowAlert1(false);
-        }, 1500); 
+        }, 1500);
     };
+    const handleShowAlert2 = () => {
+        setShowAlert2(true);
+        setTimeout(() => {
+            setShowAlert2(false);
+        }, 1500);
+    };
+
 
     const deletedata = async () => {
         let res = await fetch(`${api}/deletedata`, {
@@ -309,7 +317,7 @@ export default function Checkproduct() {
         });
         console.log(idarr)
     };
-    const [deletecount, setDeletecount]=useState(0)
+    const [deletecount, setDeletecount] = useState(0)
     const deletemanyproduct = async () => {
         let res = await fetch(`${api}/deletemanyproduct`, {
             method: 'DELETE',
@@ -322,11 +330,28 @@ export default function Checkproduct() {
         } else {
             setDeletecount(res.count)
             handleShowAlert1()
-            
+
             setIdarr([])
         }
     }
 
+    // ----------set shipping  cost in bulk------------
+    const [shippingcount, setShippingcount]=useState(0)
+    const [shippingcost,setshippingcost]= useState('')
+    const setbulkshippingcost = async() =>{
+        let res= await fetch(`${api}/setbulkshippingcost`,{
+            method:'PUT',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({idarr,shippingcost})
+        })
+        res= await res.json();
+       if(res.status){
+        
+        setShippingcount(res.count)
+        setIdarr([])
+        handleShowAlert2()
+       }
+    }
     return (
         <div className="d-flex flex-column align-items-center" style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
             {loading && ( // Show spinner while loading is true
@@ -346,12 +371,23 @@ export default function Checkproduct() {
             )}
 
             {showAlert1 && (
-                <div className="d-flex justify-content-end" style={{position:'fixed', right:'40%', bottom:'10%'}}>
+                <div className="d-flex justify-content-end" style={{ position: 'fixed', right: '40%', bottom: '10%' }}>
                     <h5
                         className=" bg-success text-white w-20 px-4 py-3 shadow-lg"
                         style={{ zIndex: 1000, position: 'fixed' }}
                     >
-                       {deletecount} products deleted
+                        {deletecount} products deleted
+                    </h5>
+                </div>
+            )}
+
+{showAlert2 && (
+                <div className="d-flex justify-content-end" style={{ position: 'fixed', right: '40%', bottom: '10%' }}>
+                    <h5
+                        className=" bg-success text-white w-20 px-4 py-3 shadow-lg"
+                        style={{ zIndex: 1000, position: 'fixed' }}
+                    >
+                        {shippingcount} products updated
                     </h5>
                 </div>
             )}
@@ -492,11 +528,16 @@ export default function Checkproduct() {
                 idarr.length > 0 &&
                 <div className="bulk">
                     <div className="upclist">{idarr.join(", ")}</div>
-                    <div className="action mt-3"><button className='pt-1 pb-1 ps-2 pe-2' onClick={deletemanyproduct}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="red" class="bi bi-trash3-fill" viewBox="0 0 16 16">
-                            <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
-                        </svg>
-                    </button> </div>
+                    <div className="action mt-3">
+                        <button className='pt-1 pb-1 ps-2 pe-2 me-3' onClick={deletemanyproduct}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="red" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                                <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
+                            </svg>
+                        </button>
+
+                        <input type="text" className="w-25 rounded-pill p-2 me-2 border-opacity-10" placeholder="Shipping" onChange={(e)=> setshippingcost(e.target.value)} />
+                        <button onClick={setbulkshippingcost}>Set</button>
+                    </div>
                 </div>
             }
         </div>
