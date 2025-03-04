@@ -10,8 +10,9 @@ import Rowdata from './Rowdata.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Backup from './Backup.jsx';
 import Calculation from './Calculation.jsx';
-// import Boscos from './Boscos.jsx';
+import Boscos from './Boscos.jsx';
 import Checkproduct from './Checkproduct.jsx';
+import Label from './Label.jsx';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
    
@@ -20,12 +21,13 @@ createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path='/' element={<App />} />
         <Route path='/brand' element={<Brand />} />
-        {/* <Route path='/boscos' element={<Boscos />} /> */}
+        <Route path='/boscos' element={<Boscos />} />
         <Route path='/analysis' element={<Analysis/>} />
         <Route path='/rowdata' element={<Rowdata/>} />
         <Route path='/backup1456' element={<Backup/>} />
         <Route path='/calculation' element={<Calculation/>} />
         <Route path='/checkproduct' element={<Checkproduct/>} />
+        <Route path='/label' element={<Label/>} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
