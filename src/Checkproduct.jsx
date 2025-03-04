@@ -330,27 +330,26 @@ export default function Checkproduct() {
         } else {
             setDeletecount(res.count)
             handleShowAlert1()
-
             setIdarr([])
+            window.location.reload();
         }
     }
 
     // ----------set shipping  cost in bulk------------
-    const [shippingcount, setShippingcount]=useState(0)
-    const [shippingcost,setshippingcost]= useState('')
-    const setbulkshippingcost = async() =>{
-        let res= await fetch(`${api}/setbulkshippingcost`,{
-            method:'PUT',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({idarr,shippingcost})
+    const [shippingcount, setShippingcount] = useState(0)
+    const [shippingcost, setshippingcost] = useState('')
+    const setbulkshippingcost = async () => {
+        let res = await fetch(`${api}/setbulkshippingcost`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idarr, shippingcost })
         })
-        res= await res.json();
-       if(res.status){
-        
-        setShippingcount(res.count)
-        setIdarr([])
-        handleShowAlert2()
-       }
+        res = await res.json();
+        if (res.status) {
+            setShippingcount(res.count)
+            setIdarr([])
+            handleShowAlert2()
+        }
     }
     return (
         <div className="d-flex flex-column align-items-center" style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
@@ -381,7 +380,7 @@ export default function Checkproduct() {
                 </div>
             )}
 
-{showAlert2 && (
+            {showAlert2 && (
                 <div className="d-flex justify-content-end" style={{ position: 'fixed', right: '40%', bottom: '10%' }}>
                     <h5
                         className=" bg-success text-white w-20 px-4 py-3 shadow-lg"
@@ -535,7 +534,7 @@ export default function Checkproduct() {
                             </svg>
                         </button>
 
-                        <input type="text" className="w-25 rounded-pill p-2 me-2 border-opacity-10" placeholder="Shipping" onChange={(e)=> setshippingcost(e.target.value)} />
+                        <input type="text" className="w-25 rounded-pill p-2 me-2 border-opacity-10" placeholder="Shipping" onChange={(e) => setshippingcost(e.target.value)} />
                         <button onClick={setbulkshippingcost}>Set</button>
                     </div>
                 </div>
