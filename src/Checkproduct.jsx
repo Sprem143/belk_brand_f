@@ -1,4 +1,4 @@
-import { useState, useEffect,useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import Table from 'react-bootstrap/Table';
 import Pagination from 'react-bootstrap/Pagination';
 import * as XLSX from 'xlsx';
@@ -25,9 +25,9 @@ export default function Checkproduct() {
     const [uncheck, setUnCheck] = useState([{}]);
     const [check, setCheck] = useState(0)
     const [currentPage, setCurrentPage] = useState(1);
-    const [value, setValue]=useState('')
-    const [id,setId]=useState('')
-    const itemsPerPage = 10;
+    const [value, setValue] = useState('')
+    const [id, setId] = useState('')
+    const itemsPerPage = 20;
     // Pagination calculation for displaying the current page's data
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -101,6 +101,7 @@ export default function Checkproduct() {
         setLoading(false)
         if (res.status) {
             setRealData(res.data);
+            console.log(res.data[0])
             let unchecked = res.data.filter((d) => !d.isCheked)
             setUnCheck(unchecked)
             setData(unchecked);
@@ -117,20 +118,20 @@ export default function Checkproduct() {
     }
 
     const deleteproduct = async (id) => {
-       let ans= confirm('Are you sure, You want to delete?')
-       if(ans){
-        let res = await fetch(`${api}/deleteproduct`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
-        })
-        res = await res.json();
-        if (res.status) {
-            handleShowAlert()
-        } else {
-            alert('Error while deleting product')
+        let ans = confirm('Are you sure, You want to delete?')
+        if (ans) {
+            let res = await fetch(`${api}/deleteproduct`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            })
+            res = await res.json();
+            if (res.status) {
+                handleShowAlert()
+            } else {
+                alert('Error while deleting product')
+            }
         }
-       }
     }
 
     const editsku = async () => {
@@ -142,7 +143,7 @@ export default function Checkproduct() {
         res = await res.json();
         if (res.status) {
             setShow(false);
-                handleShowAlert()
+            handleShowAlert()
         }
         else {
             alert('Error, plz retry')
@@ -150,42 +151,43 @@ export default function Checkproduct() {
     }
 
     const downloadfinalexcel = () => {
+        let Brand = prompt('Enter Brand Name')
+
         let jsondata = data.map((d) => {
             return {
-                'Input EAN': d['Input EAN'],
-                'UPC': d.UPC,
+                'Date': new Date().toDateString().slice(4).replaceAll(" ", '-'),
                 'SKU': d.SKU,
-                'ASIN': d.ASIN,
-                'Belk link': d['Belk link'],
+                'Vendor': 'BELK',
+                'SKU length': d.SKU.length,
                 'Amz Title': d.Title,
-                'BLK Title': d['Product name'],
-                'Fulfillment Shipping':d['Fulfillment Shipping'],
+                'Belk link': d['Belk link'],
+                'Brand': Brand,
+                'upc': "'" + d.UPC.slice(3),
+                'UPC': d.UPC,
+                'ASIN': d.ASIN,
+                'gap1': '',
+                'gap2': '',
+                'gap3': '',
+                'size': d.Size,
+                'sku2': d.SKU,
                 'Product price': d['Product price'],
-                'Available Quantity': d['Available Quantity'],
-                'Brand': d.Brand,
-                'EAN List': d['EAN List'],
-                'MPN': d.MPN,
-                'ISBN': d.ISBN,      
-                'Dimensions (in)': d['Dimensions (in)'],
-                'Weight (lb)': d['Weight (lb)'],
-                'Image link': d['Image link'],
-                'Lowest Price (USD)': d['Lowest Price (USD)'],
-                'Number of Sellers': d['Number of Sellers'],
-                'BSR': d.BSR,
-                'Product Category': d['Product Category'],
-                'Buy Box Price (USD)': d['Buy Box Price (USD)'],
-                'FBA Fees': d['FBA Fees'],
-                'Fees Breakdown': d['Fees Breakdown'],
-                'Product id': d['Product id'],
-                'Amazon link': d['Amazon link'],
-                'Img link': d['Img link'],
-                'Product Currency': d['Product Currency'],
-                
-                'Category': d['Category'],
-                'Soldby': d['Soldby'],
-                'Size': d['Size'],
-                'Color': d['Color'],
-                'Any other variations': d['Any other variations'],
+                'Vendor Shipping': '0.00',
+                'Fulfillment Shipping': d['Fulfillment Shipping'],
+
+
+                // 'BLK Title': d['Product name'],
+
+
+                // 'Available Quantity': d['Available Quantity'],
+
+                // 'EAN List': d['EAN List'],
+                // 'MPN': d.MPN,
+                // 'ISBN': d.ISBN,
+                // 'Amazon link': d['Amazon link'],
+                // 'Img link': d['Img link'],
+
+                // 'Color': d['Color'],
+                // 'Any other variations': d['Any other variations'],
             };
         })
         const wb = XLSX.utils.book_new();
@@ -199,6 +201,50 @@ export default function Checkproduct() {
         link.download = 'Final_Product_list.xlsx'; // Set the file name
         link.click(); // Trigger the download
     }
+    const settitle = (event) => {
+
+        const file = event.target.files[0]; // Get the uploaded file
+        if (!file) {
+            console.log("no data");
+            return; // Stop execution if no file is uploaded
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            const exData = new Uint8Array(e.target.result); // Convert file to byte array
+            const workbook = XLSX.read(exData, { type: "array" }); // Read the Excel file
+
+            const sheetName = workbook.SheetNames[0]; // Get the first sheet name
+            const sheet = workbook.Sheets[sheetName]; // Get the sheet
+            const parsedData = XLSX.utils.sheet_to_json(sheet); // Convert sheet to array of objects
+
+            // console.log(data[0]);
+            // console.log(exData[0]);
+
+            // console.log("Result data");
+
+
+            // // Mapping over parsedData instead of data
+            // let result = data.map((d) => {
+            //     let item = parsedData.find((item) => item.ASIN === d.ASIN);
+            //     if (item) {
+            //         return {
+            //             ...d,
+            //             Title: item.Title,
+            //         };
+            //     }
+            // });
+            let result = parsedData.filter((r) => r.ASIN !== "-" || '' || undefined || null)
+            console.log(result.length)
+            result = Array.from(result.reduce((map, item) => map.set(item.UPC, item), new Map()).values());
+            console.log(result.length)
+
+            setData(result)
+        };
+
+        reader.readAsArrayBuffer(file); // Read file as ArrayBuffer
+    };
 
     const setChecked = async (id, bool) => {
         if (!bool) {
@@ -224,77 +270,104 @@ export default function Checkproduct() {
     const refresh = () => {
         window.location.reload()
     }
-    const editshippingcost=(value,id)=>{
+    const editshippingcost = (value, id) => {
         setValue(value)
         setId(id)
     }
 
     useEffect(() => {
         document.addEventListener('mousedown', handleOutsideClick);
-    
+
         return () => {
-          document.removeEventListener('mousedown', handleOutsideClick);
+            document.removeEventListener('mousedown', handleOutsideClick);
         };
-      }, [value]);
-      const inputRef = useRef(null);
+    }, [value]);
+    const inputRef = useRef(null);
 
-      const handleOutsideClick = async(event) => {
+    const handleOutsideClick = async (event) => {
         if (inputRef.current && !inputRef.current.contains(event.target)) {
-         if(value){
-           let res= await fetch(`${api}/editshippingcost`,{
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({id,value})
-           })
-           res= await res.json();
-          if(res.status){
-            handleShowAlert()
-          }
-          setValue('')
-          setId('')
-         }
+            if (value) {
+                let res = await fetch(`${api}/editshippingcost`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, value })
+                })
+                res = await res.json();
+                if (res.status) {
+                    handleShowAlert()
+                }
+                setValue('')
+                setId('')
+            }
         }
-      };
+    };
 
-      const [showAlert, setShowAlert] = useState(false);
+    const [showAlert, setShowAlert] = useState(false);
 
-      const handleShowAlert = () => {
+    const handleShowAlert = () => {
         setShowAlert(true);
         setTimeout(() => {
-          setShowAlert(false);
+            setShowAlert(false);
         }, 2000); // Alert disappears after 2 seconds
-      };
+    };
 
-      const deletedata=async()=>{
-        let res= await fetch(`${api}/deletedata`,{
-            method:'DELETE',
-            headers:{'Content-Type':'application/json'}
+    const deletedata = async () => {
+        let res = await fetch(`${api}/deletedata`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
 
         })
-        res=await res.json();
-        if(res.status){
+        res = await res.json();
+        if (res.status) {
             window.location.reload()
-        }else{
+        } else {
             console.log(err)
         }
-      }
+    }
+    // ---------check box
+    const [idarr, setIdarr] = useState([])
+    const handleCheckboxChange = (id) => {
+        setIdarr((prevIdArr) => {
+            if (prevIdArr.includes(id)) {
+                return prevIdArr.filter((item) => item !== id); // Remove id if it exists
+            } else {
+                return [...prevIdArr, id]; // Add id if not exists
+            }
+        });
+        console.log(idarr)
+    };
+
+    const deletemanyproduct= async()=>{
+    let res= await fetch(`${api}/deletemanyproduct`,{
+        method:'DELETE',
+        body:JSON.stringify({arr:idarr}),
+        headers:{'Content-Type':'application/json'}
+    })
+    res= await res.json()
+    if(!res.status){
+        alert('Error while deleting')
+    }else{
+        console.log('Deleted')
+    }
+    }
+
     return (
-        <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
+        <div className="d-flex flex-column align-items-center" style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
             {loading && ( // Show spinner while loading is true
                 <div className="loading-overlay">
                     <Spinner animation="border" variant="primary" /> {/* Spinner from Bootstrap */}
                 </div>
             )}
-             {showAlert && (
-       <div className="d-flex justify-content-end">
-         <h5
-          className="fixed top-2 bg-success text-white w-20 px-4 py-3 shadow-lg"
-          style={{ zIndex: 1000, position:'fixed' }}
-        >
-         Successfully Updated
-        </h5>
-       </div>
-      )}
+            {showAlert && (
+                <div className="d-flex justify-content-end">
+                    <h5
+                        className="fixed top-2 bg-success text-white w-20 px-4 py-3 shadow-lg"
+                        style={{ zIndex: 1000, position: 'fixed' }}
+                    >
+                        Successfully Updated
+                    </h5>
+                </div>
+            )}
             <h1 className="text-center">Match Product Details</h1>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
@@ -337,7 +410,7 @@ export default function Checkproduct() {
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Blk Img</th>
+                            <th>Select</th>
                             <th>Amz Img</th>
                             <th>UPC</th>
                             <th>ASIN</th>
@@ -347,7 +420,7 @@ export default function Checkproduct() {
                             <th>Quantity</th>
                             <th>Shp. Cost</th>
                             <th>Open Link</th>
-                           
+
                             <th>Is Checked</th>
                             <th>Delete</th>
                         </tr>
@@ -356,7 +429,13 @@ export default function Checkproduct() {
                         {currentItems.length > 0 && currentItems.map((detailArray, i) => (
                             <tr key={i}>
                                 <td>{indexOfFirstItem + i + 1}</td>
-                                <td className="p-0"><img src={detailArray['Img link']} alt="img" height='50px' className="brand_img" /></td>
+                                <td className="p-0" style={{ placeContent: 'center' }}>
+                                    <input
+                                        type="checkbox"
+                                        onChange={() => handleCheckboxChange(detailArray.ASIN)}
+                                        className="hidden inptbox"
+                                    />
+                                </td>
                                 <td className="p-0"><img src={detailArray['Image link']} alt="img" height='50px' className="brand_img" /></td>
                                 <td>{detailArray['UPC']}</td>
                                 <td>{detailArray['ASIN']}</td>
@@ -376,7 +455,7 @@ export default function Checkproduct() {
                                 }
                                 <td>{detailArray['Product price'] && detailArray['Product price'].toFixed(2)}</td>
                                 <td>{detailArray['Available Quantity']}</td>
-                                <td> <input style={{width:'60px'}} ref={inputRef} type="text" onChange={(e)=>editshippingcost(e.target.value,detailArray._id)} on placeholder={detailArray['Fulfillment Shipping']}/></td>
+                                <td> <input style={{ width: '60px' }} ref={inputRef} type="text" onChange={(e) => editshippingcost(e.target.value, detailArray._id)} on placeholder={detailArray['Fulfillment Shipping']} /></td>
                                 <td><button className='pt-1 pb-1 ps-2 pe-2' onClick={() => openlink(detailArray['Amazon link'], detailArray['Belk link'])}>Check links</button></td>
                                 <td><button className='pt-1 pb-1 ps-2 pe-2 nobtn' onClick={() => setChecked(detailArray._id, detailArray.isCheked)}>
                                     {
@@ -388,10 +467,10 @@ export default function Checkproduct() {
                                     }
                                 </button></td>
                                 <td><button className='pt-1 pb-1 ps-2 pe-2' onClick={() => deleteproduct(detailArray._id)}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="red" class="bi bi-trash3-fill" viewBox="0 0 16 16">
-  <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
-</svg>
-                                    </button></td>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="red" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                                        <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
+                                    </svg>
+                                </button></td>
                             </tr>
                         ))}
                     </tbody>
@@ -420,7 +499,20 @@ export default function Checkproduct() {
             <h1>
                 <Button className="btn btn-primary mb-4" onClick={downloadfinalexcel}>Download Final Sheet</Button>
                 <Button className="btn btn-primary mb-4 ms-4" onClick={deletedata}>Delete Data</Button>
+                <input type="file" onChange={(e) => settitle(e)} />
             </h1>
+
+            {
+                idarr.length > 0 &&
+                <div className="bulk">
+                    <div className="upclist">{idarr.join(", ")}</div>
+                    <div className="action mt-3"><button className='pt-1 pb-1 ps-2 pe-2' onClick={deletemanyproduct}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="red" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                            <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
+                        </svg>
+                    </button> </div>
+                </div>
+            }
         </div>
     )
 }
