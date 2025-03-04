@@ -9,6 +9,7 @@ import Modal from 'react-bootstrap/Modal';
 import axios from 'axios'
 export default function Checkproduct() {
 
+    const [currentPage, setCurrentPage] = useState(localStorage.getItem('gstarpage'));
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const [edititem, setEdititem] = useState({})
@@ -17,17 +18,24 @@ export default function Checkproduct() {
         setEdititem(obj)
         setShow(true)
     };
+    useEffect(() => {
+        let pagenumber = localStorage.getItem('gstarpage');
+        setCurrentPage(pagenumber)
+    }, [])
 
+    useEffect(() => {
+        localStorage.setItem('gstarpage', currentPage)
+    }, [currentPage])
     const [data, setData] = useState([{}])
     const [realdata, setRealData] = useState([{}])
     const [loading, setLoading] = useState(false)
-    const [file, setFile] = useState('');
+    const [file, setFile] = useState(1);
     const [uncheck, setUnCheck] = useState([{}]);
     const [check, setCheck] = useState(0)
-    const [currentPage, setCurrentPage] = useState(1);
+
     const [value, setValue] = useState('')
     const [id, setId] = useState('')
-    const itemsPerPage = 20;
+    const itemsPerPage = 50;
     // Pagination calculation for displaying the current page's data
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -201,50 +209,7 @@ export default function Checkproduct() {
         link.download = 'Final_Product_list.xlsx'; // Set the file name
         link.click(); // Trigger the download
     }
-    const settitle = (event) => {
-
-        const file = event.target.files[0]; // Get the uploaded file
-        if (!file) {
-            console.log("no data");
-            return; // Stop execution if no file is uploaded
-        }
-
-        const reader = new FileReader();
-
-        reader.onload = (e) => {
-            const exData = new Uint8Array(e.target.result); // Convert file to byte array
-            const workbook = XLSX.read(exData, { type: "array" }); // Read the Excel file
-
-            const sheetName = workbook.SheetNames[0]; // Get the first sheet name
-            const sheet = workbook.Sheets[sheetName]; // Get the sheet
-            const parsedData = XLSX.utils.sheet_to_json(sheet); // Convert sheet to array of objects
-
-            // console.log(data[0]);
-            // console.log(exData[0]);
-
-            // console.log("Result data");
-
-
-            // // Mapping over parsedData instead of data
-            // let result = data.map((d) => {
-            //     let item = parsedData.find((item) => item.ASIN === d.ASIN);
-            //     if (item) {
-            //         return {
-            //             ...d,
-            //             Title: item.Title,
-            //         };
-            //     }
-            // });
-            let result = parsedData.filter((r) => r.ASIN !== "-" || '' || undefined || null)
-            console.log(result.length)
-            result = Array.from(result.reduce((map, item) => map.set(item.UPC, item), new Map()).values());
-            console.log(result.length)
-
-            setData(result)
-        };
-
-        reader.readAsArrayBuffer(file); // Read file as ArrayBuffer
-    };
+  
 
     const setChecked = async (id, bool) => {
         if (!bool) {
@@ -303,12 +268,20 @@ export default function Checkproduct() {
     };
 
     const [showAlert, setShowAlert] = useState(false);
+    const [showAlert1, setShowAlert1] = useState(false);
 
     const handleShowAlert = () => {
         setShowAlert(true);
         setTimeout(() => {
             setShowAlert(false);
         }, 2000); // Alert disappears after 2 seconds
+    };
+
+    const handleShowAlert1 = () => {
+        setShowAlert1(true);
+        setTimeout(() => {
+            setShowAlert1(false);
+        }, 1500); 
     };
 
     const deletedata = async () => {
@@ -336,19 +309,22 @@ export default function Checkproduct() {
         });
         console.log(idarr)
     };
-
-    const deletemanyproduct= async()=>{
-    let res= await fetch(`${api}/deletemanyproduct`,{
-        method:'DELETE',
-        body:JSON.stringify({arr:idarr}),
-        headers:{'Content-Type':'application/json'}
-    })
-    res= await res.json()
-    if(!res.status){
-        alert('Error while deleting')
-    }else{
-        console.log('Deleted')
-    }
+    const [deletecount, setDeletecount]=useState(0)
+    const deletemanyproduct = async () => {
+        let res = await fetch(`${api}/deletemanyproduct`, {
+            method: 'DELETE',
+            body: JSON.stringify({ arr: idarr }),
+            headers: { 'Content-Type': 'application/json' }
+        })
+        res = await res.json()
+        if (!res.status) {
+            alert('Error while deleting')
+        } else {
+            setDeletecount(res.count)
+            handleShowAlert1()
+            
+            setIdarr([])
+        }
     }
 
     return (
@@ -365,6 +341,17 @@ export default function Checkproduct() {
                         style={{ zIndex: 1000, position: 'fixed' }}
                     >
                         Successfully Updated
+                    </h5>
+                </div>
+            )}
+
+            {showAlert1 && (
+                <div className="d-flex justify-content-end" style={{position:'fixed', right:'40%', bottom:'10%'}}>
+                    <h5
+                        className=" bg-success text-white w-20 px-4 py-3 shadow-lg"
+                        style={{ zIndex: 1000, position: 'fixed' }}
+                    >
+                       {deletecount} products deleted
                     </h5>
                 </div>
             )}
@@ -395,12 +382,12 @@ export default function Checkproduct() {
             <div className="container d-flex justify-content-center align-items-center flex-column">
                 <div className="tableheader row">
                     <div className="col-md-2"> <button className="nobtn p-2 text-white" onClick={all}><h5>Total Products : {realdata.length}</h5></button></div>
-                    <div className="col-md-2"> <button onClick={setcheckproduct} className="nobtn p-2 text-white"><h5>Checked Products : {check}</h5></button></div>
                     <div className="col-md-3"> <button onClick={setUncheckproduct} className="nobtn p-2 text-white"><h5>Unchecked Products : {realdata.length - check}</h5></button></div>
                     <div className="col-md-2"> <button onClick={refresh} className="nobtn p-2 text-white"><h5> Refresh <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="ms-2 mb-1 bi bi-arrow-clockwise" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
                         <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
                     </svg></h5></button></div>
+                    <div className="col-md-2"> <h5 className="text-white">Current Page {currentPage}</h5></div>
                     <div className="col-md-3">
                         <h5 className="text-white">Go to Page  <input type="text" className="w-25 ms-4 p-1" onChange={(e) => setcurrentpage(e.target.value)} /></h5>
                     </div>
@@ -499,7 +486,6 @@ export default function Checkproduct() {
             <h1>
                 <Button className="btn btn-primary mb-4" onClick={downloadfinalexcel}>Download Final Sheet</Button>
                 <Button className="btn btn-primary mb-4 ms-4" onClick={deletedata}>Delete Data</Button>
-                <input type="file" onChange={(e) => settitle(e)} />
             </h1>
 
             {
