@@ -116,10 +116,26 @@ button{
     display: flex;
     align-items: center;
 }
+.inptbox{
+    transform: scale(2);
+}
 .logo.react:hover {
     filter: drop-shadow(0 0 2em #61dafbaa);
 }
-
+.bulk{
+    position: fixed;
+    bottom: 0;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color:rgb(15, 80, 221) ;
+    box-shadow: 0 0 10px 5px gray;
+    z-index: 10000;
+    border-radius: 10px;
+    padding: 1vw 3vw;
+    margin: 1vw;
+}
 .threadbox{
     border: 1px solid black;
     border-radius: 9px;
