@@ -68,7 +68,7 @@ export default function Outofstock() {
     }
     const getdata = async () => {
         setLoading(true);
-        let res = await fetch(`${local}/inv/getoutofstock`, {
+        let res = await fetch(`${api}/inv/getoutofstock`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         })
