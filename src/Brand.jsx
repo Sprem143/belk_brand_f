@@ -46,42 +46,42 @@ export default function Brand() {
     return result;
   }
 
- const filterdata = (event) => {
+  const filterdata = (event) => {
 
-        const file = event.target.files[0]; // Get the uploaded file
-        if (!file) {
-            console.log("no data");
-            return; // Stop execution if no file is uploaded
-        }
+    const file = event.target.files[0]; // Get the uploaded file
+    if (!file) {
+      console.log("no data");
+      return; // Stop execution if no file is uploaded
+    }
 
-        const reader = new FileReader();
+    const reader = new FileReader();
 
-        reader.onload = (e) => {
-            const exData = new Uint8Array(e.target.result); // Convert file to byte array
-            const workbook = XLSX.read(exData, { type: "array" }); // Read the Excel file
+    reader.onload = (e) => {
+      const exData = new Uint8Array(e.target.result); // Convert file to byte array
+      const workbook = XLSX.read(exData, { type: "array" }); // Read the Excel file
 
-            const sheetName = workbook.SheetNames[0]; // Get the first sheet name
-            const sheet = workbook.Sheets[sheetName]; // Get the sheet
-            const parsedData = XLSX.utils.sheet_to_json(sheet); // Convert sheet to array of objects
+      const sheetName = workbook.SheetNames[0]; // Get the first sheet name
+      const sheet = workbook.Sheets[sheetName]; // Get the sheet
+      const parsedData = XLSX.utils.sheet_to_json(sheet); // Convert sheet to array of objects
 
-            let result = parsedData.filter((r) => r.Title)
-            result = Array.from(result.reduce((map, item) => map.set(item.UPC, item), new Map()).values());
+      let result = parsedData.filter((r) => r.Title)
+      result = Array.from(result.reduce((map, item) => map.set(item.UPC, item), new Map()).values());
 
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(result);
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-            const excelFile = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            const blob = new Blob([excelFile], { type: 'application/octet-stream' });
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(result);
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+      const excelFile = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([excelFile], { type: 'application/octet-stream' });
 
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'Final_Product_list.xlsx'; // Set the file name
-            link.click(); // Trigger the download
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'Final_Product_list.xlsx'; // Set the file name
+      link.click(); // Trigger the download
 
-        };
-
-        reader.readAsArrayBuffer(file); // Read file as ArrayBuffer
     };
+
+    reader.readAsArrayBuffer(file); // Read file as ArrayBuffer
+  };
 
   const getupdatedproduct = async () => {
     try {
@@ -125,7 +125,7 @@ export default function Brand() {
         })
         result = await result.json();
         if (result.status) {
-          scrapproduct()
+        window.location.reload()
         }
         setLoading(false)
         getupdatedproduct()
@@ -178,6 +178,7 @@ export default function Brand() {
     }
   };
 
+
   const downloadProductExcel = async () => {
     let res = await fetch(`${api}/downloadProductExcel`, {
       method: 'GET',
@@ -185,12 +186,13 @@ export default function Brand() {
     });
     res = await res.json();
     if (res.status && res.data.length > 0) {
-      let products= res.data.filter((d)=> d.quantity>2)
+      alert(`${res.count} already listed so these products will be deleted from sheet`)
+      let products = res.data.filter((d) => d.quantity > 2)
       let jsondata = products.map((d) => {
         return {
           'UPC': 'UPC' + d.upc,
-          'upc2':d.upc,
-          'upc3':d.upc,
+          'upc2': d.upc,
+          'upc3': d.upc,
           'SKU': d.sku,
           'Size': d.size,
           'Color': d.color,
@@ -198,20 +200,22 @@ export default function Brand() {
           'Price Range': d.pricerange,
           'Quantity': d.quantity,
           'Belk link': d.url,
-          'Image link':d.imgurl
+          'Image link': d.imgurl,
+          'ASIN':'',
+          'Title':''
         }
       })
-      jsondata=Array.from(jsondata.reduce((map, item) => map.set(item.UPC, item), new Map()).values());
-      const wb= XLSX.utils.book_new()
-      const ws= XLSX.utils.json_to_sheet(jsondata);
-       XLSX.utils.book_append_sheet(wb,ws, 'Sheet1')
-       const sheet= XLSX.write(wb, {bookType:'xlsx',type:'array'})
-       const blob= new Blob([sheet], {type:'application/octet-stream'})
+      jsondata = Array.from(jsondata.reduce((map, item) => map.set(item.UPC, item), new Map()).values());
+      const wb = XLSX.utils.book_new()
+      const ws = XLSX.utils.json_to_sheet(jsondata);
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
+      const sheet = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
+      const blob = new Blob([sheet], { type: 'application/octet-stream' })
 
-       const link= document.createElement('a');
-       link.href= URL.createObjectURL(blob);
-       link.download='Row_product_list.xlsx';
-       link.click();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'Row_product_list.xlsx';
+      link.click();
     } else {
       alert('No data found');
       console.log(res.msg)
@@ -554,16 +558,7 @@ export default function Brand() {
 
       <button className='ms-4 mt-3' onClick={scrapproduct}>Start Scraping UPCs</button>
 
-      {/* <form onSubmit={removeexistingurl} className='mt-4'>
-          <input type="file" onChange={handleFileChange2} accept=".xlsx, .xls" />
-          <button className='me-4' type="submit">Upload Current Inventory file For remove existing url</button>
-        </form> */}
-
-      {/* <div className="container mt-4">
-        <div className="row">
-
-        </div>
-       </div> */}
+    
 
       <div className="container mt-4">
         <div className="row">
@@ -681,24 +676,24 @@ export default function Brand() {
       </button> */}
       {/* <input type="file" onChange={handleFileChange} accept=".xlsx, .xls" />
           <button onClick={handleSubmit}>Upload</button> */}
-      <button className='ms-4 mt-4' variant="secondary" onClick={downloadExcel}>
+      {/* <button className='ms-4 mt-4' variant="secondary" onClick={downloadExcel}>
         Download UPC List
-      </button>
+      </button> */}
 
       <button className='ms-4 mt-4' variant="secondary" onClick={downloadProductExcel}>
         Download Products List
       </button>
       <br />
-      <h4>Filter Product list</h4>
+      <h4 className='mt-3'>Upload Sheet after Filling ASIN & Title</h4>
       <input type="file" onChange={(e) => filterdata(e)} />
 
       <div className='d-flex mt-4'>
 
-        <h2 className='me-4'>Upload ASIN-SCOPE SHEET</h2>
+        {/* <h2 className='me-4'>Upload ASIN-SCOPE SHEET</h2>
         <form onSubmit={handleSubmit}>
           <input type="file" onChange={handleFileChange} accept=".xlsx, .xls" />
           <button className='me-4' type="submit">Upload</button>
-        </form>
+        </form> */}
         <Link to='/checkproduct'>Check Final Data</Link>
 
 
