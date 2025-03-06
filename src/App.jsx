@@ -543,6 +543,8 @@ function App() {
   }
   const downloadInvontory = async (e) => {
     e.preventDefault();
+    let pass= prompt('Enter Password')
+   if(pass == new Date().toLocaleDateString('en-GB')){
     let response = await checkremainingdata()
     if (response) {
       try {
@@ -565,6 +567,9 @@ function App() {
         setLoading(false)
       }
     }
+   }else{
+    alert("Wrong Password")
+   }
   }
   const uploadinventoryfile3 = async () => {
     setLoading(true)
