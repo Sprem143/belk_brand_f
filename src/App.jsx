@@ -601,9 +601,16 @@ function App() {
     return res.count
    }
   }
-
+const savemasterdata = async()=>{
+  let res= await fetch(`${api}/inv/savemasterdata`,{
+    method:'GET',
+    headers:{'Content-Type':'application/json'}
+  })
+  res= await res.json();
+  console.log(res.size)
+}
   const startall = async () => {
-   await removeoutofstock()
+   await removeoutofstock();
     autofetch();
     await delay(1000)
     autofetch2();
@@ -619,6 +626,8 @@ function App() {
     autofetch7();
     await delay(1000)
     autofetch8();
+    await delay(1000)
+    savemasterdata();
   }
 
   const [data, setData] = useState([])
