@@ -14,6 +14,8 @@ import Boscos from './Boscos.jsx';
 import Checkproduct from './Checkproduct.jsx';
 import Label from './Label.jsx';
 import Outofstock from './Outofstock.jsx';
+import Mastersheet from './Mastersheet.jsx';
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
    
@@ -30,6 +32,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='/checkproduct' element={<Checkproduct/>} />
         <Route path='/label' element={<Label/>} />
         <Route path='/outofstock' element={<Outofstock/>} />
+        <Route path='/mastersheet' element={<Mastersheet/>} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
