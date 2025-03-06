@@ -544,7 +544,8 @@ function App() {
   const downloadInvontory = async (e) => {
     e.preventDefault();
     let pass= prompt('Enter Password')
-   if(pass == new Date().toLocaleDateString('en-GB')){
+    let [a,b,c]= new Date().toLocaleDateString('en-GB').split('/')
+   if(pass == a+b+c){
     let response = await checkremainingdata()
     if (response) {
       try {
