@@ -71,7 +71,7 @@ export default function Mastersheet() {
 
     const getdata = async () => {
         setLoading(true);
-        let res = await fetch(`${local}/inv/mastersheet`, {
+        let res = await fetch(`${api}/inv/mastersheet`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         })
@@ -151,6 +151,14 @@ export default function Mastersheet() {
 function showdata(ac){
     setData(ac)
 }
+
+async function cleardata(){
+    let res= await fetch(`${api}/inv/cleardata`,{
+        method:'DELETE',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({})
+    })
+}
     return (
         <div className="d-flex flex-column align-items-center" style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
             {loading && ( // Show spinner while loading is true
@@ -224,6 +232,7 @@ function showdata(ac){
             </div>
             <h1>
                 <Button className="btn btn-primary mb-4" onClick={downloadfinalexcel}>Download Final Sheet</Button>
+                <button onClick={cleardata}>Clear Data</button>
             </h1>
 
            
