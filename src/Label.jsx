@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import * as XLSX from 'xlsx';
+import './App.css'
 
 export default function Label() {
     const [data, setData] = useState([]);
-    const [copied, setCopied]= useState(false)
-
+    const [copied, setCopied] = useState(false)
+    const local = 'http://localhost:10000'
+    const api = 'https://brand-b-1.onrender.com'
     useEffect(() => {
         settext()
+        saveorder()
     }, [data])
 
     const handleFileUpload = (event) => {
@@ -53,7 +56,7 @@ export default function Label() {
     }
 
     const settext = () => {
-        
+
         const msg = `Hello Sandy/Christie,\nPlease ship the following orders. Please remove all the vendor-related evidence from the package before sending them to customers. \n \n`
         const msg1 = `AZ id: ${data[0] && data[0]['AZ id']}\nProduct: ${data[0] && data[0]['Product']}\nTracking id: ${data[0] && data[0]['Tracking id'] || "Will update soon"}\nQty: ${data[0] && data[0]['Qty']}\nASIN: ${data[0] && data[0]['ASIN']}\nRow No: ${data[0] && data[0]['Row No']}\nVendor name: ${data[0] && data[0]['Vendor name']}\n\n`
 
@@ -109,9 +112,9 @@ export default function Label() {
 
         const message = msg + (msg1.length < 140 ? '' : msg1) + (msg2.length < 140 ? '' : msg2) + (msg3.length < 140 ? '' : msg3) + (msg4.length < 140 ? '' : msg4) + (msg5.length < 140 ? '' : msg5) + (msg6.length < 140 ? '' : msg6) + (msg7.length < 140 ? '' : msg7) + (msg8.length < 140 ? '' : msg8) + (msg9.length < 140 ? '' : msg9) + (msg10.length < 140 ? '' : msg10) + (msg11.length < 140 ? '' : msg11) + (msg12.length < 140 ? '' : msg12) + (msg13.length < 140 ? '' : msg13) + (msg14.length < 140 ? '' : msg14) + (msg15.length < 140 ? '' : msg15) + (msg16.length < 140 ? '' : msg16) + (msg17.length < 140 ? '' : msg17) + (msg18.length < 140 ? '' : msg18) + (msg19.length < 140 ? '' : msg19) + (msg20.length < 140 ? '' : msg20) + (msg21.length < 140 ? '' : msg21) + (msg22.length < 140 ? '' : msg22) + (msg23.length < 140 ? '' : msg23) + (msg24.length < 140 ? '' : msg24) + (msg25.length < 140 ? '' : msg25)
 
-       if(data.length>0){
-         document.getElementById('txtarea').style.display='block'
-       }
+        if (data.length > 0) {
+            document.getElementById('txtarea').style.display = 'block'
+        }
 
         document.getElementById("myTextarea").value = message;
     }
@@ -126,7 +129,39 @@ export default function Label() {
                 console.error("Failed to copy: ", err);
             });
     }
+    const [clicked, setClicked] = useState(null);
 
+    const handleClick = (id) => {
+        setClicked(id);
+        getpdf(id);
+    };
+    const getpdf = (id) => {
+        let link = `https://sellercentral.amazon.com/orders-v3/order/${id}`
+        navigator.clipboard.writeText(id);
+        window.open(link, "_blank");
+    }
+
+    const saveorder = async()=>{
+      if(data.length>0){
+        let orders= data.map((d)=> 
+            {
+                const newObj = { ...d }; 
+                delete newObj['Row No']; 
+                delete newObj['Date']; 
+                delete newObj['Vendor ID']; 
+                delete newObj['ASIN']; 
+                delete newObj['Qty']; 
+                delete newObj['Tracking id']; 
+                return newObj;
+              }
+        )
+            let res= await fetch(`${api}/inv/saveorder`,{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({orders})
+            })
+      }
+    }
     return (
         <>
             <h3 className="text-center mb-4">
@@ -166,20 +201,39 @@ export default function Label() {
             </div>
 
 
-            <div style={{ position: 'relative' , display: 'none' }} className="container-fluid p-4 bg-dark" id="txtarea">
-                <button className="mb-2 text-white border-white" style={{ position: 'absolute', right: '18%', top: '1%', background: 'transparent' }} onClick={copyText}> 
-                    {
-                        copied ?<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="me-2 bi bi-clipboard2-check-fill" viewBox="0 0 16 16">
-                        <path d="M10 .5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5.5.5 0 0 1-.5.5.5.5 0 0 0-.5.5V2a.5.5 0 0 0 .5.5h5A.5.5 0 0 0 11 2v-.5a.5.5 0 0 0-.5-.5.5.5 0 0 1-.5-.5"/>
-                        <path d="M4.085 1H3.5A1.5 1.5 0 0 0 2 2.5v12A1.5 1.5 0 0 0 3.5 16h9a1.5 1.5 0 0 0 1.5-1.5v-12A1.5 1.5 0 0 0 12.5 1h-.585q.084.236.085.5V2a1.5 1.5 0 0 1-1.5 1.5h-5A1.5 1.5 0 0 1 4 2v-.5q.001-.264.085-.5m6.769 6.854-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708.708"/>
-                      </svg>:<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="white" className="bi bi-copy me-2" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
-                    </svg>
-                    }
-                     Copy  </button>
+            <div style={{ position: 'relative', display: 'none' }} className="container-fluid p-4 bg-dark" id="txtarea">
+                <div className="row">
+                    <div className="col-md-9 col-sm-12">
+                        <button className="mb-2 text-white border-white" style={{ position: 'absolute', right: '28%', top: '1%', background: 'transparent' }} onClick={copyText}>
+                            {
+                                copied ? <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="me-2 bi bi-clipboard2-check-fill" viewBox="0 0 16 16">
+                                    <path d="M10 .5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5.5.5 0 0 1-.5.5.5.5 0 0 0-.5.5V2a.5.5 0 0 0 .5.5h5A.5.5 0 0 0 11 2v-.5a.5.5 0 0 0-.5-.5.5.5 0 0 1-.5-.5" />
+                                    <path d="M4.085 1H3.5A1.5 1.5 0 0 0 2 2.5v12A1.5 1.5 0 0 0 3.5 16h9a1.5 1.5 0 0 0 1.5-1.5v-12A1.5 1.5 0 0 0 12.5 1h-.585q.084.236.085.5V2a1.5 1.5 0 0 1-1.5 1.5h-5A1.5 1.5 0 0 1 4 2v-.5q.001-.264.085-.5m6.769 6.854-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708.708" />
+                                </svg> : <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="white" className="bi bi-copy me-2" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
+                                </svg>
+                            }
+                            Copy  </button>
 
-                <textarea id="myTextarea" rows="210" cols="150" className="bg-dark text-white border-0">
-                </textarea>
+                        <textarea id="myTextarea" rows="210" cols="130" className="bg-dark text-white border-0">
+                        </textarea>
+                    </div>
+                    <div className="col-md-3 col-sm-12 pb-4">
+
+                        <ol>
+                            {
+                                data.map((d, i) => (
+                                    d['AZ id'] && (
+                                        <li className="text-white fs-5" key={i}>{d['AZ id']} -   
+                                            <button className="p-2 m-0 border-0 text-white"  style={{background: clicked === d["AZ id"] ? "red" : "transparent"}} onClick={() => handleClick(d["AZ id"])}>PDF </button>        
+                                        </li>
+                                    )
+                                ))
+                            }
+                        </ol>
+
+                    </div>
+                </div>
             </div>
 
 
