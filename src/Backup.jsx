@@ -4,10 +4,10 @@ import Table from 'react-bootstrap/Table';
 import Pagination from 'react-bootstrap/Pagination';
 import * as XLSX from 'xlsx';
 import Spinner from 'react-bootstrap/Spinner';
-
+import { Navigate, useNavigate } from "react-router-dom";
 
 export default function Backup() {
-
+const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState([{}]);
   const [backup, setBackup] = useState([{}]);
@@ -21,6 +21,9 @@ export default function Backup() {
   const local = 'http://localhost:10000'
   const api = 'https://brand-b-1.onrender.com'
   useEffect(() => {
+    if (localStorage.getItem('Password') !== 'Prem@7367') {
+      navigate('/')
+    }
     getbackup();
   }, [])
 
@@ -56,6 +59,7 @@ export default function Backup() {
     setLoading(false);
     if (backup.status) {
       setList(backup.list)
+      console.log(list)
       setData(backup.data)
     } else {
       alert('Error while fetching backup')
@@ -92,14 +96,14 @@ export default function Backup() {
     return range;
   };
 
-  const handleDownload = async(name) => {
+  const handleDownload = async (name) => {
 
-    let res= await fetch(`${api}/downloadbackup`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name})
+    let res = await fetch(`${api}/downloadbackup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
     })
- res= await res.json();
+    res = await res.json();
     const jsondata = res.data.map((item) => {
       return {
         'Input UPC': item['Input UPC'],
@@ -127,8 +131,8 @@ export default function Backup() {
 
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'backup.xlsx'; 
-    link.click(); 
+    link.download = 'backup.xlsx';
+    link.click();
   };
 
   const deletebackup = async (name) => {
@@ -290,6 +294,7 @@ export default function Backup() {
           <tr>
             <th>No</th>
             <th>Name</th>
+            <th>Account</th>
             <th>Number of Products</th>
             <th>See Details</th>
             <th>Download</th>
@@ -301,6 +306,7 @@ export default function Backup() {
             <tr>
               <td className="fs-5">{i + 1}</td>
               <td className="fs-5">{b.name}</td>
+              <td className="fs-5">{b.account}</td>
               <td className="fs-5">{b.length}</td>
               <td>
                 <button onClick={() => getonebackup(b.name)} style={{ border: 'transparent' }}>
