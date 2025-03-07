@@ -6,11 +6,17 @@ import Spinner from 'react-bootstrap/Spinner';
 import './App.css'
 import Button from 'react-bootstrap/Button';
 import axios from 'axios'
+import { useNavigate } from "react-router-dom";
 export default function Mastersheet() {
-
+     const navigate= useNavigate()
     const [currentPage, setCurrentPage] = useState(localStorage.getItem('gstarpage'));
     useEffect(() => {
         let pagenumber = localStorage.getItem('gstarpage');
+        let password = localStorage.getItem('Password')
+        if(password !== 'Prem@7367'){
+            navigate('/')
+        }
+        getdata();
         setCurrentPage(pagenumber)
     }, [])
 
@@ -51,12 +57,6 @@ export default function Mastersheet() {
     const local = 'http://localhost:10000'
     const api = 'https://brand-b-1.onrender.com'
 
-    useEffect(() => {
-        getdata();
-    }, [])
-
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
     const setcurrentpage = async (n) => {
         await new Promise(resolve => setTimeout(resolve, 1000))
         n > 0 ? setCurrentPage(n) : setCurrentPage(1)
@@ -64,10 +64,10 @@ export default function Mastersheet() {
     }
 
     // ----------get data ---------
-    const [bj, setBj]=useState([{}])
-    const [rc,setRc]=useState([{}])
-    const [om, setOm]=useState([{}])
-    const [zl, setZl]=useState([{}])
+    const [bj, setBj] = useState([{}])
+    const [rc, setRc] = useState([{}])
+    const [om, setOm] = useState([{}])
+    const [zl, setZl] = useState([{}])
 
     const getdata = async () => {
         setLoading(true);
@@ -78,12 +78,11 @@ export default function Mastersheet() {
         res = await res.json();
         setLoading(false)
         if (res.status) {
-            setData(res.bj);
+            setData(res.rc);
             setBj(res.bj)
             setRc(res.rc)
             setOm(res.om)
             setZl(res.zl)
-          console.log(res)
         } else {
             setLoading(false)
             alert('Error while fetching data')
@@ -91,43 +90,12 @@ export default function Mastersheet() {
     }
 
     const downloadfinalexcel = () => {
-        let Brand = prompt('Enter Brand Name')
-
         let jsondata = data.map((d) => {
             return {
-                'Date': new Date().toDateString().slice(4).replaceAll(" ", '-'),
+                'Date': d.Date,
                 'SKU': d.SKU,
-                'Vendor': 'BELK',
-                'SKU length': d.SKU.length,
-                'Amz Title': d.Title,
-                'Belk link': d['Belk link'],
-                'Brand': Brand,
-                'upc': "'" + d.UPC.slice(3),
-                'UPC': d.UPC,
+                'upc': "'" + d.UPC,
                 'ASIN': d.ASIN,
-                'gap1': '',
-                'gap2': '',
-                'gap3': '',
-                'size': d.Size,
-                'sku2': d.SKU,
-                'Product price': d['Product price'],
-                'Vendor Shipping': '0.00',
-                'Fulfillment Shipping': d['Fulfillment Shipping'],
-
-
-                // 'BLK Title': d['Product name'],
-
-
-                // 'Available Quantity': d['Available Quantity'],
-
-                // 'EAN List': d['EAN List'],
-                // 'MPN': d.MPN,
-                // 'ISBN': d.ISBN,
-                // 'Amazon link': d['Amazon link'],
-                // 'Img link': d['Img link'],
-
-                // 'Color': d['Color'],
-                // 'Any other variations': d['Any other variations'],
             };
         })
         const wb = XLSX.utils.book_new();
@@ -142,23 +110,54 @@ export default function Mastersheet() {
         link.click(); // Trigger the download
     }
 
+
+
     const all = () => {
         setData(realdata)
     }
     const refresh = () => {
         window.location.reload()
     }
-function showdata(ac){
-    setData(ac)
-}
+    function showdata(ac) {
+        setData(ac)
+    }
 
-async function cleardata(){
-    let res= await fetch(`${api}/inv/cleardata`,{
-        method:'DELETE',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({})
-    })
-}
+    const filterdata = (inp) => {
+        if (inp.length == 5) {
+            setLoading(true)
+            let [s1, s2] = inp.split(',');
+            if (s1 == s2) {
+                alert('Give two different dataset name from - rc, zl, bj, om');
+                return;
+            }
+            let d1 = s1 === "rc" ? rc : s1 === "bj" ? bj : s1 === "zl" ? zl : s1 === "om" ? om : null;
+            let d2 = s2 === "rc" ? rc : s2 === "bj" ? bj : s2 === "zl" ? zl : s2 === "om" ? om : null;
+            if (d1.length > 0 && d2.length > 0) {
+                let commondata = []
+                d1.forEach((df) => {
+                    d2.forEach((ds) => {
+                        if (df.UPC == ds.UPC) {
+                            commondata.push(df)
+                        }
+                    })
+                })
+                console.log(commondata.length)
+                setData(commondata);
+            } else {
+                Alert('Please give right query as no data found.')
+            }
+            setLoading(false)
+        }
+    }
+
+    // async function cleardata() {
+    //     let res = await fetch(`${api}/inv/cleardata`, {
+    //         method: 'DELETE',
+    //         headers: { 'Content-Type': 'application/json' },
+    //         body: JSON.stringify({})
+    //     })
+    // }
+
     return (
         <div className="d-flex flex-column align-items-center" style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
             {loading && ( // Show spinner while loading is true
@@ -166,12 +165,12 @@ async function cleardata(){
                     <Spinner animation="border" variant="primary" /> {/* Spinner from Bootstrap */}
                 </div>
             )}
-<div className="w-100 dfjcac p-4">
-    <button className="ms-2 me-2" onClick={()=>showdata(rc)}>Rcube</button>
-    <button className="ms-2 me-2" onClick={()=>showdata(bj)}>Bijak</button>
-    <button className="ms-2 me-2" onClick={()=>showdata(zl)}>Zenith</button>
-    <button className="ms-2 me-2" onClick={()=>showdata(om)}>Om</button>
-</div>
+            <div className="w-100 dfjcac p-4">
+                <button className="ms-2 me-2" onClick={() => showdata(rc)}>Rcube</button>
+                <button className="ms-2 me-2" onClick={() => showdata(bj)}>Bijak</button>
+                <button className="ms-2 me-2" onClick={() => showdata(zl)}>Zenith</button>
+                <button className="ms-2 me-2" onClick={() => showdata(om)}>Om</button>
+            </div>
 
             <div className="container d-flex justify-content-center align-items-center flex-column">
                 <div className="tableheader row">
@@ -181,34 +180,35 @@ async function cleardata(){
                         <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
                     </svg></h5></button></div>
                     <div className="col-md-2"> <h5 className="text-white">Current Page {currentPage}</h5></div>
-                    <div className="col-md-3">
-                        <h5 className="text-white">Go to Page  <input type="text" className="w-25 ms-4 p-1" onChange={(e) => setcurrentpage(e.target.value)} /></h5>
+                    <div className="col-md-6 d-flex">
+                        <h5 className="text-white">Find Common Data  <input type="text" className="w-50 ms-4 p-1 ps-2" onChange={(e) => filterdata(e.target.value)} /></h5> 
+                        <h5 className="text-white">Page  <input type="text" className="w-25 ms-4 p-1" onChange={(e) => setcurrentpage(e.target.value)} /></h5>
                     </div>
                 </div>
 
                 <Table striped bordered hover className="bg-dark">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Input UPC</th>
-                  <th>ASIN</th>
-                  <th>SKU</th>
-                  <th>Product URL</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentItems.length > 0 && currentItems.map((d, i) => (
-                  <tr key={i}>
-                    <td>{indexOfFirstItem + i + 1}</td>
-                    <td>{d['UPC']}</td>
-                    <td>{d['ASIN']}</td>
-                    <td>{d['SKU']}</td>
-                    <td><a href={`https://www.belk.com/search/?lang=default&q=${d['UPC']}`} target="_blank">Belk Link</a></td>
-                   
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Input UPC</th>
+                            <th>ASIN</th>
+                            <th>SKU</th>
+                            <th>Product URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {currentItems.length > 0 && currentItems.map((d, i) => (
+                            <tr key={i}>
+                                <td>{indexOfFirstItem + i + 1}</td>
+                                <td>{d['UPC']}</td>
+                                <td>{d['ASIN']}</td>
+                                <td>{d['SKU']}</td>
+                                <td><a href={`https://www.belk.com/search/?lang=default&q=${d['UPC']}`} target="_blank">Belk Link</a></td>
+
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
                 <Pagination>
                     <Pagination.Prev onClick={() => handlePaginationClick(currentPage - 1)} disabled={currentPage === 1} />
 
@@ -232,10 +232,10 @@ async function cleardata(){
             </div>
             <h1>
                 <Button className="btn btn-primary mb-4" onClick={downloadfinalexcel}>Download Final Sheet</Button>
-                <button onClick={cleardata}>Clear Data</button>
+                {/* <button onClick={cleardata}>Clear Data</button> */}
             </h1>
 
-           
+
         </div>
     )
 }
