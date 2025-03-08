@@ -62,7 +62,21 @@ function App() {
   useEffect(() => {
     getinvurl();
     getupdatedproduct();
+    getpagedetails()
   }, []);
+
+  const [details, setDetails]= useState({})
+  async function getpagedetails(){
+    let res= await fetch(`${api}/inv/pagedetails`,{
+      method:'GET',
+      headers:{'Content-Type':'application/json'}
+    })
+    res = await res.json();
+    if(!res.status){
+      console.log(res.msg)
+    }
+    setDetails(res)
+  }
 
   function divideArrayIntoParts(array) {
     const totalParts = 8;
@@ -84,7 +98,6 @@ function App() {
         headers: { 'Content-Type': 'application/json' }
       })
       result = await result.json();
-      console.log(result)
       setLinkid(result.url._id)
       let dividedarr = divideArrayIntoParts(result.url.url);
       setLink(dividedarr)
@@ -123,7 +136,7 @@ function App() {
   };
 
   const uploadinventoryfile = async () => {
-    setLoading(true)
+    setLoading(true);
     if (!invfile) {
       alert("Please select file first");
       setLoading(false)
@@ -139,7 +152,8 @@ function App() {
       });
 
       window.location.reload();
-      setLoading(false)
+      setLoading(false);
+      getpagedetails()
 
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -160,7 +174,7 @@ function App() {
       });
       window.location.reload();
       setLoading(false)
-
+      getpagedetails()
     } catch (error) {
       console.error('Error uploading file:', error);
       setLoading(false)
@@ -522,6 +536,7 @@ function App() {
     });
     result = await result.json();
     setTotalProduct(result.num);
+    getpagedetails();
   }
 
 
@@ -584,7 +599,7 @@ function App() {
       });
       window.location.reload();
       setLoading(false)
-
+      getpagedetails()
     } catch (error) {
       console.error('Error uploading file:', error);
       setLoading(false)
@@ -607,27 +622,26 @@ const savemasterdata = async()=>{
     headers:{'Content-Type':'application/json'}
   })
   res= await res.json();
-  console.log(res.size)
 }
   const startall = async () => {
    await removeoutofstock();
     autofetch();
-    await delay(1000)
-    autofetch2();
-    await delay(1000)
-    autofetch3();
-    await delay(1000)
-    autofetch4();
-    await delay(1000)
-    autofetch5();
-    await delay(1000)
-    autofetch6();
-    await delay(1000)
-    autofetch7();
-    await delay(1000)
-    autofetch8();
-    await delay(1000)
-    savemasterdata();
+    // await delay(1000)
+    // autofetch2();
+    // await delay(1000)
+    // autofetch3();
+    // await delay(1000)
+    // autofetch4();
+    // await delay(1000)
+    // autofetch5();
+    // await delay(1000)
+    // autofetch6();
+    // await delay(1000)
+    // autofetch7();
+    // await delay(1000)
+    // autofetch8();
+    // await delay(1000)
+    // savemasterdata();
   }
 
   const [data, setData] = useState([])
@@ -691,23 +705,36 @@ const savemasterdata = async()=>{
       <div>
         <h2>Inventory Updation</h2>
 
-        <div className='p-2 mt-4' style={{ border: '1px solid black' }}>
-          <div className="container">
-            <div className="row">
-              <div className="col-md-6">
-                <h4>Upload direct Belk source file</h4>
-                <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
-                <button onClick={uploadinventoryfile2} >Upload</button>
-              </div>
-              <div className="col-md-6" style={{ borderLeft: '2px solid black' }}>
-                <h4>Upload direct Boscov source file</h4>
-                <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
-                <button onClick={uploadinventoryfile3} >Upload</button>
-              </div>
-
+       <div className="container mt-4">
+        <div className="row">
+          <div className="col-md-3 col-sm-6">
+            <div className="box">
+              <h5>Uploaded Products</h5>
+             
+              <h5>{details.uploaded}</h5>
+            </div>
+          </div>
+          <div className="col-md-3 col-sm-6">
+          <div className="box">
+              <h5>Synced Products</h5>
+              <h5>{details.updated}</h5>
+            </div>
+          </div>
+          <div className="col-md-3 col-sm-6">
+          <div className="box">
+              <h5>All Product</h5>
+              <p className="boxtext d-none mb-0">Rcube: {details.rc}, Zenith: {details.zl}, Bijak: {details.bj}, Om: {details.om}</p>
+              <h5>{details.om + details.rc + details.bj + details.zl}</h5>
+            </div>
+          </div>
+          <div className="col-md-3 col-sm-6">
+          <div className="box">
+              <h5>Out Of Stock</h5>
+              <h5>{details.outofstock}</h5>
             </div>
           </div>
         </div>
+       </div>
 
         <div>
           <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
@@ -1088,6 +1115,24 @@ const savemasterdata = async()=>{
         </div>
 
       }
+
+<div className='p-2 mt-4' style={{ border: '1px solid black' }}>
+          <div className="container">
+            <div className="row">
+              <div className="col-md-6">
+                <h4>Upload direct Belk source file</h4>
+                <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
+                <button onClick={uploadinventoryfile2} >Upload</button>
+              </div>
+              <div className="col-md-6" style={{ borderLeft: '2px solid black' }}>
+                <h4>Upload direct Boscov source file</h4>
+                <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
+                <button onClick={uploadinventoryfile3} >Upload</button>
+              </div>
+
+            </div>
+          </div>
+        </div>
       <Outlet />
     </div>
   )
