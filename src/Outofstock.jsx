@@ -6,13 +6,15 @@ import Spinner from 'react-bootstrap/Spinner';
 import './App.css'
 import Button from 'react-bootstrap/Button';
 import axios from 'axios'
+import { useNavigate } from "react-router-dom";
+
 export default function Outofstock() {
-
+    const navigate = useNavigate()
     const [currentPage, setCurrentPage] = useState(localStorage.getItem('gstarpage'));
-    const [show, setShow] = useState(false);
-
-
     useEffect(() => {
+        if (localStorage.getItem('Password') !== 'Prem@7367') {
+            navigate('/')
+        }
         let pagenumber = localStorage.getItem('gstarpage');
         setCurrentPage(pagenumber)
     }, [])
@@ -23,8 +25,7 @@ export default function Outofstock() {
     const [data, setData] = useState([{}])
     const [realdata, setRealData] = useState([{}])
     const [loading, setLoading] = useState(false)
-    const [uncheck, setUnCheck] = useState([{}]);
-    const [check, setCheck] = useState(0)
+
 
     const itemsPerPage = 50;
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -76,53 +77,24 @@ export default function Outofstock() {
         setLoading(false)
         if (res.status) {
             setData(res.data);
+            setRealData(res.data)
             console.log(res.data[0])
-          
+
         } else {
             setLoading(false)
             alert('Error while fetching data')
         }
     }
 
-
     const downloadfinalexcel = () => {
-        let Brand = prompt('Enter Brand Name')
 
         let jsondata = data.map((d) => {
             return {
-                'Date': new Date().toDateString().slice(4).replaceAll(" ", '-'),
+                'UPC': d['Input UPC'].slice(3),
                 'SKU': d.SKU,
-                'Vendor': 'BELK',
-                'SKU length': d.SKU.length,
                 'Amz Title': d.Title,
-                'Belk link': d['Belk link'],
-                'Brand': Brand,
-                'upc': "'" + d.UPC.slice(3),
-                'UPC': d.UPC,
+                'Product link': d['Product link'],
                 'ASIN': d.ASIN,
-                'gap1': '',
-                'gap2': '',
-                'gap3': '',
-                'size': d.Size,
-                'sku2': d.SKU,
-                'Product price': d['Product price'],
-                'Vendor Shipping': '0.00',
-                'Fulfillment Shipping': d['Fulfillment Shipping'],
-
-
-                // 'BLK Title': d['Product name'],
-
-
-                // 'Available Quantity': d['Available Quantity'],
-
-                // 'EAN List': d['EAN List'],
-                // 'MPN': d.MPN,
-                // 'ISBN': d.ISBN,
-                // 'Amazon link': d['Amazon link'],
-                // 'Img link': d['Img link'],
-
-                // 'Color': d['Color'],
-                // 'Any other variations': d['Any other variations'],
             };
         })
         const wb = XLSX.utils.book_new();
@@ -133,16 +105,29 @@ export default function Outofstock() {
 
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = 'Final_Product_list.xlsx'; // Set the file name
+        link.download = 'Outofstock_product.xlsx'; // Set the file name
         link.click(); // Trigger the download
     }
-
 
     const all = () => {
         setData(realdata)
     }
     const refresh = () => {
         window.location.reload()
+    }
+
+    const filteraccount = (acc) => {
+        let acdata = realdata.filter((d) => d.SKU.startsWith(acc))
+        console.log(acdata)
+        setData(acdata)
+    }
+    const filterbydate = (date)=>{
+
+       if(date.length==10){
+        let acdata = realdata.filter((d) => d.Date==date)
+        console.log(acdata)
+        setData(acdata)
+       }
     }
 
     return (
@@ -152,52 +137,57 @@ export default function Outofstock() {
                     <Spinner animation="border" variant="primary" /> {/* Spinner from Bootstrap */}
                 </div>
             )}
-           
-          
-           
 
             <div className="container d-flex justify-content-center align-items-center flex-column">
-                <div className="tableheader row">
-                    <div className="col-md-2"> <button className="nobtn p-2 text-white" onClick={all}><h5>Total Products : {realdata.length}</h5></button></div>
-                    <div className="col-md-2"> <button onClick={refresh} className="nobtn p-2 text-white"><h5> Refresh <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="ms-2 mb-1 bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                <div className="tableheader">
+                    <button className="nobtn p-2 text-white" onClick={all}><h5>Total: {data.length}</h5></button>
+                    <button className="nobtn p-2 text-white" onClick={()=>filteraccount('RC')}><h5>Rcube</h5></button>
+                    <button className="nobtn p-2 text-white" onClick={()=>filteraccount('ZL')}><h5>Zenith</h5></button>
+                    <button className="nobtn p-2 text-white" onClick={()=>filteraccount('BJ')}><h5>Bijek</h5></button>
+                    <button className="nobtn p-2 text-white" onClick={()=>filteraccount('OM')}><h5>Om ||</h5></button>
+                    <h5 className="text-white ms-3 me-2">Filter By Date</h5>
+                    <input className="ps-2" type="text" onChange={(e)=>filterbydate(e.target.value)}/>
+
+                    <button onClick={refresh} className="nobtn p-2 text-white"><h5> Refresh <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="ms-2 mb-1 me-4 bi bi-arrow-clockwise" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z" />
                         <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
-                    </svg></h5></button></div>
-                    <div className="col-md-2"> <h5 className="text-white">Current Page {currentPage}</h5></div>
-                    <div className="col-md-3">
-                        <h5 className="text-white">Go to Page  <input type="text" className="w-25 ms-4 p-1" onChange={(e) => setcurrentpage(e.target.value)} /></h5>
-                    </div>
+                    </svg></h5></button>
+                    <h5 className="text-white">Current Page {currentPage}</h5>
+                    <h5 className="text-white">Go to Page  <input type="text" className="w-25 ms-4 p-1" onChange={(e) => setcurrentpage(e.target.value)} /></h5>
                 </div>
 
                 <Table striped bordered hover className="bg-dark">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Image</th>
-                  <th>Input UPC</th>
-                  <th>ASIN</th>
-                  <th>SKU</th>
-                  <th>Price</th>
-                  <th>Out of stk Date</th>
-                  <th>Product URL</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentItems.length > 0 && currentItems.map((d, i) => (
-                  <tr key={i}>
-                    <td>{indexOfFirstItem + i + 1}</td>
-                    <td className="p-0"><img src={d['Image link']} alt="img" height='50px' className="brand_img" /></td>
-                    <td>{d['Input UPC']}</td>
-                    <td>{d['ASIN']}</td>
-                    <td>{d['SKU']}</td>
-                    <td>{d['Product price']}</td>
-                    <td>{d['Date']}</td>
-                    <td><a href={d['Product link']}>Belk Link</a></td>
-                   
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Image</th>
+                            <th>Input UPC</th>
+                            <th>ASIN</th>
+                            <th>SKU</th>
+                            <th>Price</th>
+                            <th>Out of stk Date</th>
+                            <th>UPC url</th>
+                            <th>Product url</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {currentItems.length > 0 && currentItems.map((d, i) => (
+                            <tr key={i}>
+                                <td>{indexOfFirstItem + i + 1}</td>
+                                <td className="p-0"><img src={d['Image link']} alt="img" height='50px' className="brand_img" /></td>
+                                <td>{d['Input UPC']}</td>
+                                <td>{d['ASIN']}</td>
+                                <td>{d['SKU']}</td>
+                                <td>{d['Product price']}</td>
+                                <td>{d['Date']}</td>
+                                <td> { d['Input UPC'] && 
+                                    <a href={`https://www.belk.com/search/?lang=default&q=${d['Input UPC'].slice(3)}}`} target="_blank">Link-I</a>} </td>
+                                     <td> { d['Input UPC'] && 
+                                    <a href={d['Product link']} target="_blank">Link-II</a>} </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
                 <Pagination>
                     <Pagination.Prev onClick={() => handlePaginationClick(currentPage - 1)} disabled={currentPage === 1} />
 
@@ -223,7 +213,7 @@ export default function Outofstock() {
                 <Button className="btn btn-primary mb-4" onClick={downloadfinalexcel}>Download Final Sheet</Button>
             </h1>
 
-           
+
         </div>
     )
 }
