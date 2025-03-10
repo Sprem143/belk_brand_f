@@ -29,12 +29,7 @@ export default function Brand() {
   const local = 'http://localhost:10000'
   const api = 'https://brand-b-1.onrender.com'
   useEffect(() => {
-      let pagenumber = localStorage.getItem('gstarpage');
-        let password = localStorage.getItem('Password')
-        if(password !== 'Prem@7367'){
-          alert("You are not authorize to access this page")
-            navigate('/')
-        }
+      let pagenumber = localStorage.getItem('gstarpage')
     getproductslink();
     getupdatedproduct()
   }, []);
