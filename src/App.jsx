@@ -619,7 +619,7 @@ function App() {
       await delay(1000)
       autofetch8();
       await delay(1000)
-    savemasterdata();
+    // savemasterdata();
   }
 
   const [data, setData] = useState([])
