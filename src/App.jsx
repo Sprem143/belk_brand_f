@@ -92,7 +92,7 @@ function App() {
     return result;
   }
 
-  const [account, setAccount]= useState('')
+  const [account, setAccount] = useState('')
   const getinvurl = async () => {
     try {
       let result = await fetch(`${api}/getinvurl`, {
@@ -103,12 +103,10 @@ function App() {
       setLinkid(result.url._id)
       let dividedarr = divideArrayIntoParts(result.url.url);
       setLink(dividedarr)
-     result.data.length > 0 ? setData(result.data): null 
-      if(result.account){
-        result.account =='RC'? setAccount('Rcube'): result.account =='ZL'? setAccount('Zenith'):  result.account =='BJ'? setAccount('Bijek'): result.account =='OM'? setAccount('OM'): null
+      result.data.length > 0 ? setData(result.data) : null
+      if (result.account) {
+        result.account == 'RC' ? setAccount('Rcube') : result.account == 'ZL' ? setAccount('Zenith') : result.account == 'BJ' ? setAccount('Bijek') : result.account == 'OM' ? setAccount('OM') : null
       }
-
-
     } catch (err) {
       console.log(err)
     }
@@ -147,16 +145,16 @@ function App() {
     const formData = new FormData();
     formData.append('file', invfile);
     try {
-      const response = await axios.post(`${api}/uploadinvfile`, formData, {
+      const res = await axios.post(`${api}/uploadinvfile`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-
-      window.location.reload();
-      setLoading(false);
-      getpagedetails()
-
+      console.log(res.data)
+      await removeoutofstock();
+      await getinvurl();
+      setLoading(false)
+     await getpagedetails();
     } catch (error) {
       console.error('Error uploading file:', error);
       setLoading(false)
@@ -579,8 +577,11 @@ function App() {
     })
     res = await res.json();
     if (res.status) {
-      return res.count
+      setupdated(res.count)
+      await getinvurl()
+      handleShowAlert()
     }
+
   }
   const savemasterdata = async () => {
     let res = await fetch(`${api}/inv/savemasterdata`, {
@@ -589,25 +590,36 @@ function App() {
     })
     res = await res.json();
   }
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [updatedproduct, setupdated]= useState(0)
+
+  const handleShowAlert = () => {
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 2000); // Alert disappears after 2 seconds
+  };
+
+
   const startall = async () => {
-    await removeoutofstock();
-    autofetch();
-    await delay(1000)
-    autofetch2();
-    await delay(1000)
-    autofetch3();
-    await delay(1000)
-    autofetch4();
-    await delay(1000)
-    autofetch5();
-    await delay(1000)
-    autofetch6();
-    await delay(1000)
-    autofetch7();
-    await delay(1000)
-    autofetch8();
-    await delay(1000)
-    // savemasterdata();
+      autofetch();
+      await delay(1000)
+      autofetch2();
+      await delay(1000)
+      autofetch3();
+      await delay(1000)
+      autofetch4();
+      await delay(1000)
+      autofetch5();
+      await delay(1000)
+      autofetch6();
+      await delay(1000)
+      autofetch7();
+      await delay(1000)
+      autofetch8();
+      await delay(1000)
+    savemasterdata();
   }
 
   const [data, setData] = useState([])
@@ -690,10 +702,11 @@ function App() {
     link.click();
   }
   return (
-    <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
+    <div style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw', zIndex: '10000' }}>
       {loading && (
         <div className="loading-overlay">
           <Spinner animation="border" variant="primary" />
+          <p>Please wait </p>
         </div>
       )}
       <div>
@@ -730,12 +743,23 @@ function App() {
           </div>
         </div>
 
-        <div className="container-fluid border p-4 mt-4 mb-1">
+{/* ------------------shoew alert-------- */}
+        {showAlert && (
+          <div className="d-flex justify-content-end">
+            <h5
+              className="fixed alrtcolor text-dark w-20 px-4 py-3 shadow-lg"
+              style={{ zIndex: 1000, position: 'fixed', top:'13%' }}
+            >
+              {updatedproduct} productd already updated today.
+            </h5>
+          </div>
+        )}
+        <div className="container-fluid border p-4 mt-4 mb-1 w-75">
           <div className="row">
             <div className="col-md-4 border">
               <h5 className="mb-2 mt-2">Download Required Format </h5>
               <button onClick={downloadformat}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="55" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
                   <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5" />
                   <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z" />
                 </svg>
@@ -743,14 +767,14 @@ function App() {
             </div>
             <div className="col-md-4 border p-2">
               <h5 className="mb-3">Choose Excel Sheet</h5>
-             <input type="file" accept=".xlsx, .xls" onChange={setInventoryfile} />
+              <input type="file" accept=".xlsx, .xls" onChange={setInventoryfile} />
             </div>
             <div className="col-md-4 border p-2">
               <h5 className="mb-3">Upload </h5>
-              <button onClick={uploadinventoryfile} >  <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" className="me-4 bi bi-upload" viewBox="0 0 16 16">
+              <button onClick={uploadinventoryfile} > <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" className="bi bi-upload" viewBox="0 0 16 16">
                 <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5" />
                 <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z" />
-              </svg>  </button>
+              </svg></button>
             </div>
 
           </div>
@@ -1129,7 +1153,7 @@ function App() {
 
       }
 
-    
+
       <Outlet />
     </div>
   )
