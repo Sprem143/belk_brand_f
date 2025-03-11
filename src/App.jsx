@@ -592,21 +592,21 @@ function App() {
   const startall = async () => {
     await removeoutofstock();
     autofetch();
-    // await delay(1000)
-    // autofetch2();
-    // await delay(1000)
-    // autofetch3();
-    // await delay(1000)
-    // autofetch4();
-    // await delay(1000)
-    // autofetch5();
-    // await delay(1000)
-    // autofetch6();
-    // await delay(1000)
-    // autofetch7();
-    // await delay(1000)
-    // autofetch8();
-    // await delay(1000)
+    await delay(1000)
+    autofetch2();
+    await delay(1000)
+    autofetch3();
+    await delay(1000)
+    autofetch4();
+    await delay(1000)
+    autofetch5();
+    await delay(1000)
+    autofetch6();
+    await delay(1000)
+    autofetch7();
+    await delay(1000)
+    autofetch8();
+    await delay(1000)
     // savemasterdata();
   }
 
