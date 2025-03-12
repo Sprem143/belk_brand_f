@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import Table from 'react-bootstrap/Table';
 import Pagination from 'react-bootstrap/Pagination';
 import * as XLSX from 'xlsx';
@@ -8,12 +8,12 @@ import Button from 'react-bootstrap/Button';
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
 export default function Mastersheet() {
-     const navigate= useNavigate()
+    const navigate = useNavigate()
     const [currentPage, setCurrentPage] = useState(localStorage.getItem('gstarpage'));
     useEffect(() => {
         let pagenumber = localStorage.getItem('gstarpage');
         let password = localStorage.getItem('Password')
-        if(password !== 'Prem@7367'){
+        if (password !== 'Prem@7367') {
             navigate('/')
         }
         getdata();
@@ -72,8 +72,9 @@ export default function Mastersheet() {
     const getdata = async () => {
         setLoading(true);
         let res = await fetch(`${api}/inv/mastersheet`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            // body:JSON.stringify({})
         })
         res = await res.json();
         setLoading(false)
@@ -106,11 +107,36 @@ export default function Mastersheet() {
 
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = 'Final_Product_list.xlsx'; // Set the file name
-        link.click(); // Trigger the download
+        link.download = 'Masterseet.xlsx';
+        link.click();
     }
 
+    const uploadmastersheet = async () => {
+        setLoading(true);
+        if (!invfile) {
+            alert("Please select file first");
+            setLoading(false)
+            return;
+        }
+        const formData = new FormData();
+        formData.append('file', invfile);
+        try {
+            const response = await axios.post(`${api}/inv/uploadmastersheet`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
 
+            window.location.reload();
+            setLoading(false);
+            getpagedetails()
+
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            setLoading(false)
+            alert(error);
+        }
+    };
 
     const all = () => {
         setData(realdata)
@@ -157,6 +183,50 @@ export default function Mastersheet() {
     //         body: JSON.stringify({})
     //     })
     // }
+    const [invfile, setInvFile] = useState('');
+
+    const setInventoryfile = (e) => {
+        setInvFile(e.target.files[0]);
+    };
+    const uploadinventoryfile2 = async () => {
+        setLoading(true)
+        const formData = new FormData();
+        formData.append('file', invfile);
+        try {
+            await axios.post(`${api}/uploadinvfile2`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            window.location.reload();
+            setLoading(false);
+            navigate('/')
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            setLoading(false)
+            alert(error);
+        }
+    };
+
+    const uploadinventoryfile3 = async () => {
+        setLoading(true)
+        const formData = new FormData();
+        formData.append('file', invfile);
+        try {
+            await axios.post(`${api}/uploadinvfile3`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            setLoading(false);
+            navigate('/')
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            setLoading(false)
+            alert(error);
+        }
+    };
+
 
     return (
         <div className="d-flex flex-column align-items-center" style={{ opacity: loading ? 0.5 : 1, color: loading ? 'black' : null, paddingLeft: '3vw', paddingRight: '3vw' }}>
@@ -181,7 +251,7 @@ export default function Mastersheet() {
                     </svg></h5></button></div>
                     <div className="col-md-2"> <h5 className="text-white">Current Page {currentPage}</h5></div>
                     <div className="col-md-6 d-flex">
-                        <h5 className="text-white">Find Common Data  <input type="text" className="w-50 ms-4 p-1 ps-2" onChange={(e) => filterdata(e.target.value)} /></h5> 
+                        <h5 className="text-white">Find Common Data  <input type="text" className="w-50 ms-4 p-1 ps-2" onChange={(e) => filterdata(e.target.value)} /></h5>
                         <h5 className="text-white">Page  <input type="text" className="w-25 ms-4 p-1" onChange={(e) => setcurrentpage(e.target.value)} /></h5>
                     </div>
                 </div>
@@ -193,6 +263,7 @@ export default function Mastersheet() {
                             <th>Input UPC</th>
                             <th>ASIN</th>
                             <th>SKU</th>
+                            <th>Title</th>
                             <th>Product URL</th>
                         </tr>
                     </thead>
@@ -200,10 +271,11 @@ export default function Mastersheet() {
                         {currentItems.length > 0 && currentItems.map((d, i) => (
                             <tr key={i}>
                                 <td>{indexOfFirstItem + i + 1}</td>
-                                <td>{d['UPC']}</td>
+                                <td>{d['Input UPC']}</td>
                                 <td>{d['ASIN']}</td>
                                 <td>{d['SKU']}</td>
-                                <td><a href={`https://www.belk.com/search/?lang=default&q=${d['UPC']}`} target="_blank">Belk Link</a></td>
+                                <td>{d['Amazon Title']}</td>
+                                <td><a href={d['Product link']} target="_blank">Belk Link</a></td>
 
                             </tr>
                         ))}
@@ -235,7 +307,23 @@ export default function Mastersheet() {
                 {/* <button onClick={cleardata}>Clear Data</button> */}
             </h1>
 
+            <div className='p-2 mt-4 mb-4 w-75' style={{ border: '1px solid black' }}>
+                <div className="container w-100">
+                    <div className="row w-100">
+                        <div className="col-md-6">
+                            <h4 className="mb-3">Upload direct Belk source file</h4>
+                            <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
+                            <button onClick={uploadinventoryfile2} >Upload</button>
+                        </div>
+                        <div className="col-md-6" style={{ borderLeft: '2px solid black' }}>
+                            <h4 className="mb-3">Upload direct Boscov source file</h4>
+                            <input type="file" onChange={setInventoryfile} accept=".xlsx, .xls" />
+                            <button onClick={uploadinventoryfile3} >Upload</button>
+                        </div>
 
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
