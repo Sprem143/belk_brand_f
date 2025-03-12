@@ -72,7 +72,7 @@ export default function Mastersheet() {
     const getdata = async () => {
         setLoading(true);
         let res = await fetch(`${api}/inv/mastersheet`, {
-            method: 'POST',
+            method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             // body:JSON.stringify({})
         })
