@@ -535,7 +535,6 @@ export default function Checkproduct() {
                         </button>
 
                         <input type="text" className="w-25 rounded-pill p-2 me-2 border-opacity-10" placeholder="Shipping" onChange={(e) => setshippingcost(e.target.value)} />
-{/*                         <button onClick={setbulkshippingcost}>Set</button> */}
                     </div>
                 </div>
             }
